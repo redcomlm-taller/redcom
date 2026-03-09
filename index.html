@@ -6,17 +6,15 @@
 <title>Redcom · Sistema de Reparaciones</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
 <!-- ── FIREBASE SDK ── -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.14.0/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.14.0/firebase-firestore-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.14.0/firebase-auth-compat.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%}
-body{overflow:hidden}
-#root{overflow:hidden}
+html,body,#root{height:100%;overflow:hidden}
 body{font-family:'IBM Plex Sans',sans-serif;background:#f1f5f9;color:#1e293b}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:#f1f5f9}
@@ -68,21 +66,10 @@ label{font-size:12px;font-weight:500;color:#475569;display:block;margin-bottom:4
 
 /* ── BOTTOM NAV MOBILE ── */
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:50;padding:4px 0 env(safe-area-inset-bottom,4px)}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:9px;font-weight:600;color:#94a3b8;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;min-height:54px;-webkit-tap-highlight-color:transparent}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:9px;font-weight:600;color:#94a3b8;transition:color .15s;text-transform:uppercase;letter-spacing:.5px}
 .bnav-btn.active{color:#1d4ed8}
-.bnav-btn:active{transform:scale(.92);background:rgba(29,78,216,.06);border-radius:10px}
-.mob-card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;margin:8px 12px;padding:14px 16px;cursor:pointer;transition:box-shadow .15s;-webkit-tap-highlight-color:transparent}
-.mob-card:active{box-shadow:0 0 0 2px #bfdbfe;background:#f8fafc}
-
-/* ── BOTTOM NAV EXTRA MENU ── */
-.bnav-more-menu{display:none;position:fixed;bottom:66px;right:0;left:0;margin:0 12px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:60;overflow:hidden}
-.bnav-more-menu.open{display:block;animation:fi .15s ease}
-.bnav-more-item{display:flex;align-items:center;gap:12px;padding:13px 18px;font-size:14px;font-weight:500;color:#1e293b;cursor:pointer;border-bottom:1px solid #f1f5f9;-webkit-tap-highlight-color:transparent;transition:background .1s}
-.bnav-more-item:last-child{border-bottom:none}
-.bnav-more-item:active{background:#f1f5f9}
-.bnav-more-item.active{color:#1d4ed8;background:#eff6ff}
-.bnav-overlay{display:none;position:fixed;inset:0;z-index:55}
-.bnav-overlay.open{display:block}
+.mob-card{background:#fff;border-radius:10px;border:1px solid #e2e8f0;margin:8px 12px;padding:12px 14px;cursor:pointer;transition:box-shadow .15s;active:box-shadow: 0 0 0 2px #bfdbfe}
+.mob-card:active{box-shadow:0 0 0 2px #bfdbfe}
 
 @media(max-width:768px){
   /* Hide desktop sidebar */
@@ -90,45 +77,21 @@ label{font-size:12px;font-weight:500;color:#475569;display:block;margin-bottom:4
   /* Show bottom nav */
   .bottom-nav{display:flex}
   /* Main takes full width, add bottom padding for nav */
-  main{padding-bottom:66px}
-
-  /* ── Bigger touch targets for ALL buttons ── */
-  .btn{min-height:40px;padding:9px 16px;font-size:14px;border-radius:8px}
-  .btn-sm{min-height:36px;padding:7px 12px;font-size:13px}
-  input[type=text],input[type=number],input[type=tel],input[type=email],input[type=date],select,textarea{
-    min-height:44px;font-size:16px!important;padding:10px 12px;border-radius:8px
-  }
-  label{font-size:13px;margin-bottom:6px}
-
-  /* ── Modals: bottom sheet style ── */
+  main{padding-bottom:62px}
+  /* Modals full screen on mobile */
   .modal-bg{padding:0;align-items:flex-end}
-  .modal{border-radius:20px 20px 0 0;max-height:94vh;padding-bottom:env(safe-area-inset-bottom,12px)}
-  .modal::before{content:"";display:block;width:36px;height:4px;background:#e2e8f0;border-radius:99px;margin:10px auto 4px}
-
-  /* ── Order list → card style ── */
+  .modal{border-radius:16px 16px 0 0;max-height:96vh}
+  /* Order list → card style */
   .order-hdr{display:none}
-  .order-row{display:flex;flex-direction:column;align-items:flex-start;padding:14px 16px;gap:6px;border-radius:0;border-bottom:1px solid #f1f5f9}
+  .order-row{display:flex;flex-direction:column;align-items:flex-start;padding:12px 14px;gap:6px}
   .order-row>div{padding:0;font-size:13px}
-
-  /* ── Tables → card style ── */
+  /* Tables → hide extra columns on mobile */
   .tbl-hdr{display:none}
-  .tbl-row{display:flex!important;flex-wrap:wrap;padding:12px 16px;gap:6px;border-bottom:1px solid #f1f5f9}
-  .tbl-row>div{padding:2px 6px;font-size:13px}
-
-  /* ── Section headers stack ── */
-  .section-header{flex-direction:column;align-items:stretch;gap:8px}
+  .tbl-row{display:flex!important;flex-wrap:wrap;padding:10px 14px;gap:4px}
+  .tbl-row>div{padding:2px 6px;font-size:12px}
+  /* Section headers stack */
+  .section-header{flex-direction:column;align-items:flex-start}
   .search-bar{max-width:100%;width:100%}
-  .section-header .btn{width:100%;justify-content:center;min-height:44px}
-
-  /* ── Scrollable content area ── */
-  main > div:not(.bottom-nav){-webkit-overflow-scrolling:touch}
-
-  /* ── Status pills bigger on mobile ── */
-  .status-pill{font-size:12px;padding:4px 12px}
-
-  /* ── Topbar compact on mobile ── */
-  .mob-topbar-title{font-size:16px!important}
-  .mob-hide{display:none!important}
 }
 
 
@@ -321,7 +284,6 @@ const html=htm.bind(React.createElement);
     };
     if(!firebase.apps.length) firebase.initializeApp(cfg);
     window.fbDb = firebase.firestore();
-    window.fbDb.settings({ experimentalForceLongPolling: true, merge: true });
     window.fbAuth = firebase.auth();
     console.log("✅ Firebase conectado");
   }catch(e){ console.warn("⚠️ Firebase no disponible:",e); window.fbDb=null; }
@@ -2888,7 +2850,7 @@ function LoginScreen({users,onLogin,config}){
     {ic:"🛡️",title:"Garantías",desc:"90 días automáticos al entregar"},
   ];
 
-  return html`<div style=${{minHeight:"100vh",display:"flex",fontFamily:"'IBM Plex Sans',sans-serif",background:"#f8fafc",overflow:"auto"}}>
+  return html`<div style=${{minHeight:"100vh",display:"flex",fontFamily:"'IBM Plex Sans',sans-serif",background:"#f8fafc"}}>
 
     <!-- LEFT: decorative panel -->
     <div class="lright-panel" style=${{
@@ -6010,12 +5972,6 @@ function App(){
 • Garantía de 90 días en mano de obra. Garantía de fábrica en equipos.
 • Redcom no se hace responsable de daños por mal uso del equipo después de la entrega.`
   }));
-  const [fbOk,setFbOk]=React.useState(()=>!!window.fbDb);
-  React.useEffect(()=>{
-    setFbOk(!!window.fbDb);
-    const t=setTimeout(()=>setFbOk(!!window.fbDb),2000);
-    return()=>clearTimeout(t);
-  },[]);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<=768);
   React.useEffect(()=>{
     function hk(e){if((e.ctrlKey||e.metaKey)&&e.key==="k"){e.preventDefault();setShowSearch(p=>!p);}if(e.key==="Escape")setShowSearch(false);}
@@ -6341,30 +6297,15 @@ function App(){
 
   const NAV_ITEMS=[
     {key:"orders",lbl:"Órdenes",icon:"orders"},
-    {key:"clients",lbl:"Clientes",icon:"clients"},
-    {key:"caja",lbl:"Caja",icon:"caja"},
-    {key:"dash",lbl:"Dashboard",icon:"dash"},
-    {key:"_more",lbl:"Más",icon:"list"},
-  ];
-
-  // Todas las secciones disponibles para el menú "Más"
-  const MORE_ITEMS=[
-    ...(canCotizar?[[{key:"cots",lbl:"Cotizaciones",icon:"tag"}]]:[]),
-    {key:"inv",lbl:"Inventario",icon:"inv"},
-    {key:"techs",lbl:"Técnicos",icon:"techs"},
-    {key:"garantias",lbl:"Garantías",icon:"shield"},
-    {key:"cal",lbl:"Calendario",icon:"cal"},
-    {key:"ia",lbl:"Asistente IA",icon:"shield"},
+    {key:"ia",lbl:"IA",icon:"shield"},
+    ...(canCotizar?[{key:"cots",lbl:"Cotizar",icon:"tag"}]:[]),
     ...(isAdmin?[
-      {key:"reportes",lbl:"Reportes",icon:"dash"},
-      {key:"provs",lbl:"Proveedores",icon:"pc"},
-      {key:"ocs",lbl:"Órdenes de Compra",icon:"orders"},
-      {key:"servicios",lbl:"Servicios",icon:"tag"},
-      {key:"users",lbl:"Usuarios",icon:"clients"},
+      {key:"clients",lbl:"Clientes",icon:"clients"},
+      {key:"inv",lbl:"Inventario",icon:"inv"},
+      {key:"techs",lbl:"Técnicos",icon:"techs"},
+      {key:"dash",lbl:"Dashboard",icon:"dash"},
     ]:[]),
-  ].flat();
-
-  const [showMoreMenu,setShowMoreMenu]=React.useState(false);
+  ];
 
   return html`<div style=${{display:"flex",height:"100vh",overflow:"hidden"}}>
     <!-- SIDEBAR (desktop only) -->
@@ -6438,11 +6379,11 @@ function App(){
           <!-- Firebase sync indicator -->
           <div title="Sincronización Firebase" style=${{
             display:"flex",alignItems:"center",gap:4,padding:"4px 8px",
-            borderRadius:6,background:fbOk?"#f0fdf4":"#fef2f2",
-            border:"1px solid",borderColor:fbOk?"#bbf7d0":"#fca5a5",
-            fontSize:10,fontWeight:700,color:fbOk?"#059669":"#dc2626"}}>
-            <span style=${{fontSize:11}}>${fbOk?"☁️":"⚠️"}</span>
-            <span>${fbOk?"Nube":"Sin nube"}</span>
+            borderRadius:6,background:window.fbDb?"#f0fdf4":"#fef2f2",
+            border:"1px solid",borderColor:window.fbDb?"#bbf7d0":"#fca5a5",
+            fontSize:10,fontWeight:700,color:window.fbDb?"#059669":"#dc2626"}}>
+            <span style=${{fontSize:11}}>${window.fbDb?"☁️":"⚠️"}</span>
+            <span>${window.fbDb?"Nube":"Sin nube"}</span>
           </div>
           <!-- Bell -->
           <button onClick=${()=>setShowNotif(p=>!p)} style=${{position:"relative",background:"transparent",border:"1px solid #e2e8f0",borderRadius:8,padding:"6px 10px",cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
@@ -6515,7 +6456,7 @@ function App(){
               borderLeft:"1px solid #e2e8f0",
               overflowY:"auto",
               position:isMobile?"fixed":"relative",
-              inset:isMobile?"0 0 66px 0":"auto",
+              inset:isMobile?"0 0 62px 0":"auto",
               zIndex:isMobile?40:"auto",
               background:"#fff"
             }}>
@@ -6588,35 +6529,12 @@ function App(){
     <nav class="bottom-nav">
       ${NAV_ITEMS.map(({key,lbl,icon})=>html`
         <button key=${key} class=${"bnav-btn"+(sec===key?" active":"")}
-          onClick=${()=>{
-            if(key==="_more"){setShowMoreMenu(p=>!p);return;}
-            setSec(key);setSel(null);setShowMoreMenu(false);
-          }}>
-          <${Ic} n=${icon} z=${20} s=${sec===key?"#1d4ed8":"#94a3b8"}/>
+          onClick=${()=>{setSec(key);setSel(null);}}>
+          <${Ic} n=${icon} z=${18} s=${sec===key?"#1d4ed8":"#94a3b8"}/>
           ${lbl}
-          ${key==="orders"&&ords.filter(o=>o.est!=="Entregado").length>0?html`
-            <span style=${{background:"#eff6ff",color:"#1d4ed8",fontSize:8,padding:"0 5px",borderRadius:99,fontWeight:800,lineHeight:"16px"}}>
-              ${ords.filter(o=>o.est!=="Entregado").length}
-            </span>`:""
-          }
-          ${key==="_more"&&MORE_ITEMS.some(i=>i.key===sec)?html`
-            <span style=${{width:6,height:6,borderRadius:"50%",background:"#1d4ed8",position:"absolute",top:6,right:"calc(50% - 3px)"}}/>`:""
-          }
+          ${key==="orders"&&ords.length>0?html`<span style=${{background:"#eff6ff",color:"#1d4ed8",fontSize:8,padding:"0 5px",borderRadius:99,fontWeight:700}}>${ords.length}</span>`:""}
         </button>`)}
     </nav>
-
-    <!-- MÁS MENU overlay -->
-    <div class=${"bnav-overlay"+(showMoreMenu?" open":"")} onClick=${()=>setShowMoreMenu(false)}/>
-    <div class=${"bnav-more-menu"+(showMoreMenu?" open":"")}>
-      <div style=${{padding:"10px 18px 6px",fontSize:11,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1}}>Más secciones</div>
-      ${MORE_ITEMS.map(({key,lbl,icon})=>html`
-        <div key=${key} class=${"bnav-more-item"+(sec===key?" active":"")}
-          onClick=${()=>{setSec(key);setSel(null);setShowMoreMenu(false);}}>
-          <${Ic} n=${icon} z=${18} s=${sec===key?"#1d4ed8":"#64748b"}/>
-          <span>${lbl}</span>
-          ${sec===key?html`<span style=${{marginLeft:"auto",fontSize:11,color:"#1d4ed8"}}>●</span>`:""}
-        </div>`)}
-    </div>
 
     <!-- NOTIFICACIONES -->
     ${showSearch&&html`<${GlobalSearch} ords=${ords} cls=${cls} inv=${inv} cots=${cots} onNav=${k=>{setSec(k);setSel(null);}} onClose=${()=>setShowSearch(false)}/>`}
