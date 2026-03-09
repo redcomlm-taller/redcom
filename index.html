@@ -14,7 +14,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.14.0/firebase-auth-compat.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%;overflow:hidden}
+html,body,#root{height:100%}
+body{overflow:hidden}
+#root{overflow:hidden}
 body{font-family:'IBM Plex Sans',sans-serif;background:#f1f5f9;color:#1e293b}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:#f1f5f9}
@@ -2886,7 +2888,7 @@ function LoginScreen({users,onLogin,config}){
     {ic:"🛡️",title:"Garantías",desc:"90 días automáticos al entregar"},
   ];
 
-  return html`<div style=${{minHeight:"100vh",display:"flex",fontFamily:"'IBM Plex Sans',sans-serif",background:"#f8fafc"}}>
+  return html`<div style=${{minHeight:"100vh",display:"flex",fontFamily:"'IBM Plex Sans',sans-serif",background:"#f8fafc",overflow:"auto"}}>
 
     <!-- LEFT: decorative panel -->
     <div class="lright-panel" style=${{
@@ -6008,6 +6010,12 @@ function App(){
 • Garantía de 90 días en mano de obra. Garantía de fábrica en equipos.
 • Redcom no se hace responsable de daños por mal uso del equipo después de la entrega.`
   }));
+  const [fbOk,setFbOk]=React.useState(()=>!!window.fbDb);
+  React.useEffect(()=>{
+    setFbOk(!!window.fbDb);
+    const t=setTimeout(()=>setFbOk(!!window.fbDb),2000);
+    return()=>clearTimeout(t);
+  },[]);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<=768);
   React.useEffect(()=>{
     function hk(e){if((e.ctrlKey||e.metaKey)&&e.key==="k"){e.preventDefault();setShowSearch(p=>!p);}if(e.key==="Escape")setShowSearch(false);}
@@ -6430,11 +6438,11 @@ function App(){
           <!-- Firebase sync indicator -->
           <div title="Sincronización Firebase" style=${{
             display:"flex",alignItems:"center",gap:4,padding:"4px 8px",
-            borderRadius:6,background:window.fbDb?"#f0fdf4":"#fef2f2",
-            border:"1px solid",borderColor:window.fbDb?"#bbf7d0":"#fca5a5",
-            fontSize:10,fontWeight:700,color:window.fbDb?"#059669":"#dc2626"}}>
-            <span style=${{fontSize:11}}>${window.fbDb?"☁️":"⚠️"}</span>
-            <span>${window.fbDb?"Nube":"Sin nube"}</span>
+            borderRadius:6,background:fbOk?"#f0fdf4":"#fef2f2",
+            border:"1px solid",borderColor:fbOk?"#bbf7d0":"#fca5a5",
+            fontSize:10,fontWeight:700,color:fbOk?"#059669":"#dc2626"}}>
+            <span style=${{fontSize:11}}>${fbOk?"☁️":"⚠️"}</span>
+            <span>${fbOk?"Nube":"Sin nube"}</span>
           </div>
           <!-- Bell -->
           <button onClick=${()=>setShowNotif(p=>!p)} style=${{position:"relative",background:"transparent",border:"1px solid #e2e8f0",borderRadius:8,padding:"6px 10px",cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
