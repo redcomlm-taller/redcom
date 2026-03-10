@@ -337,7 +337,7 @@ function dm(lightVal, darkKey){
 }
 
 /* ══ DATOS INICIALES ══════════════════════════════════════════════════ */
-let OTS=5,PRES=2,CLISEQ=5,INVSEQ=15,TECSEQ=4,CITASEQ=0,RECSEQ=0;
+let OTS=5,PRES=2,CLISEQ=5,INVSEQ=88,TECSEQ=4,CITASEQ=0,RECSEQ=0;
 // Restore sequence counters from localStorage
 (function(){
   try{
@@ -408,8 +408,64 @@ const INV0=[
   {id:"P43",nombre:'Switch 8 puertos Gigabit TP-Link',              cat:"Redes",                 precio:550,  costo:350,  margen:57, stock:8},
   {id:"P44",nombre:'Access Point PoE Ubiquiti UniFi U6 Lite',       cat:"Redes",                 precio:2800, costo:1900, margen:47, stock:3},
   {id:"P45",nombre:'Repetidor WiFi TP-Link RE305 AC1200',           cat:"Redes",                 precio:480,  costo:300,  margen:60, stock:5},
-  {id:"P46",nombre:'Disco Duro 2TB SATA WD Purple (CCTV)',          cat:"Almacenamiento",        precio:1450, costo:950,  margen:52, stock:6},
-  {id:"P47",nombre:'Disco Duro 4TB SATA WD Purple (CCTV)',          cat:"Almacenamiento",        precio:2400, costo:1580, margen:51, stock:4},
+  {id:"P46",nombre:'Disco Duro 2TB SATA WD Purple (CCTV)',          cat:"Almacenamiento",        precio:1450, costo:950,  margen:52, stock:6,  unidad:"Pieza"},
+  {id:"P47",nombre:'Disco Duro 4TB SATA WD Purple (CCTV)',          cat:"Almacenamiento",        precio:2400, costo:1580, margen:51, stock:4,  unidad:"Pieza"},
+
+  /* ── CONECTORES Y ACCESORIOS ─── */
+  // Panduit
+  {id:"P48",nombre:'Conector RJ45 Cat6 Panduit (pieza suelta)',      cat:"Conectores y Accesorios", precio:12,   costo:5,    margen:140, stock:200, unidad:"Pieza",  notas:"Bote 50pzas en P49 — venta unitaria"},
+  {id:"P49",nombre:'Conector RJ45 Cat6 Panduit (bote 50 pzas)',      cat:"Conectores y Accesorios", precio:380,  costo:240,  margen:58,  stock:10,  unidad:"Bote",   notas:"Bote completo 50 pzas"},
+  {id:"P50",nombre:'Jack Keystone Cat6 Panduit NK688MMEI (pieza)',    cat:"Conectores y Accesorios", precio:65,   costo:38,   margen:71,  stock:80,  unidad:"Pieza"},
+  {id:"P51",nombre:'Tapa ejecutiva 1 puerto Panduit NK1FGWH',         cat:"Conectores y Accesorios", precio:45,   costo:25,   margen:80,  stock:50,  unidad:"Pieza"},
+  {id:"P52",nombre:'Tapa ejecutiva 2 puertos Panduit NK2FGWH',        cat:"Conectores y Accesorios", precio:55,   costo:30,   margen:83,  stock:40,  unidad:"Pieza"},
+  {id:"P53",nombre:'Tapa ciega Panduit NKBGWH',                       cat:"Conectores y Accesorios", precio:28,   costo:14,   margen:100, stock:60,  unidad:"Pieza"},
+  {id:"P54",nombre:'Face plate 1 puerto Panduit',                     cat:"Conectores y Accesorios", precio:38,   costo:20,   margen:90,  stock:40,  unidad:"Pieza"},
+  {id:"P55",nombre:'Face plate 2 puertos Panduit',                    cat:"Conectores y Accesorios", precio:48,   costo:26,   margen:85,  stock:40,  unidad:"Pieza"},
+  {id:"P56",nombre:'Face plate 4 puertos Panduit',                    cat:"Conectores y Accesorios", precio:65,   costo:36,   margen:80,  stock:20,  unidad:"Pieza"},
+  // Commscope / Netkey
+  {id:"P57",nombre:'Conector RJ45 Cat6 Commscope/AMP (pieza)',        cat:"Conectores y Accesorios", precio:14,   costo:6,    margen:133, stock:150, unidad:"Pieza"},
+  {id:"P58",nombre:'Jack Netkey Cat6 Commscope NK688MG (pieza)',       cat:"Conectores y Accesorios", precio:72,   costo:42,   margen:71,  stock:60,  unidad:"Pieza"},
+  {id:"P59",nombre:'Módulo Netkey Cat6 Commscope (pieza)',             cat:"Conectores y Accesorios", precio:85,   costo:50,   margen:70,  stock:30,  unidad:"Pieza"},
+  {id:"P60",nombre:'Patch panel Netkey 24 puertos Cat6',               cat:"Conectores y Accesorios", precio:1850, costo:1200, margen:54,  stock:3,   unidad:"Pieza"},
+  {id:"P61",nombre:'Patch panel Netkey 48 puertos Cat6',               cat:"Conectores y Accesorios", precio:3200, costo:2100, margen:52,  stock:1,   unidad:"Pieza"},
+  // Plus
+  {id:"P62",nombre:'Conector RJ45 Cat6 Plus (pieza suelta)',           cat:"Conectores y Accesorios", precio:10,   costo:4,    margen:150, stock:300, unidad:"Pieza",  notas:"Bote 100pzas en P63"},
+  {id:"P63",nombre:'Conector RJ45 Cat6 Plus (bote 100 pzas)',          cat:"Conectores y Accesorios", precio:520,  costo:340,  margen:53,  stock:8,   unidad:"Bote"},
+  {id:"P64",nombre:'Jack Keystone Cat6 Plus (pieza)',                  cat:"Conectores y Accesorios", precio:55,   costo:30,   margen:83,  stock:80,  unidad:"Pieza"},
+
+  /* ── CABLEADO ESTRUCTURADO ─── */
+  {id:"P65",nombre:'Cable UTP Cat6 Panduit (metro)',                   cat:"Cableado Estructurado",   precio:18,   costo:10,   margen:80,  stock:500, unidad:"Metro"},
+  {id:"P66",nombre:'Cable UTP Cat6 Plus (metro)',                      cat:"Cableado Estructurado",   precio:15,   costo:8,    margen:87,  stock:600, unidad:"Metro"},
+  {id:"P67",nombre:'Cable UTP Cat6 Plus caja 305m',                    cat:"Cableado Estructurado",   precio:2400, costo:1550, margen:54,  stock:5,   unidad:"Caja"},
+  {id:"P68",nombre:'Cable UTP Cat6 Panduit caja 305m',                 cat:"Cableado Estructurado",   precio:3200, costo:2100, margen:52,  stock:3,   unidad:"Caja"},
+
+  /* ── VIDEOVIGILANCIA IP — DAHUA ─── */
+  {id:"P69",nombre:'Cámara IP Dahua IPC-HDW2849H-S-IL 4K Eyeball',    cat:"Videovigilancia IP",      precio:1850, costo:1180, margen:56,  stock:6,   unidad:"Pieza"},
+  {id:"P70",nombre:'Cámara IP Dahua IPC-HFW2849S-S-IL 4K Bala',       cat:"Videovigilancia IP",      precio:1950, costo:1250, margen:56,  stock:6,   unidad:"Pieza"},
+  {id:"P71",nombre:'Cámara IP Dahua IPC-HDW3849H-ZAS 4K Varifocal',   cat:"Videovigilancia IP",      precio:3200, costo:2050, margen:56,  stock:3,   unidad:"Pieza"},
+  {id:"P72",nombre:'Cámara IP Dahua IPC-HFW3849T1-ZAS 4K Bala Varifocal', cat:"Videovigilancia IP", precio:3500, costo:2250, margen:55,  stock:2,   unidad:"Pieza"},
+  {id:"P73",nombre:'Cámara IP Dahua IPC-HDW1439T1-LED Full-Color 4MP', cat:"Videovigilancia IP",     precio:1450, costo:920,  margen:57,  stock:8,   unidad:"Pieza"},
+  {id:"P74",nombre:'Cámara IP Dahua IPC-HFW1439S1-LED Full-Color 4MP', cat:"Videovigilancia IP",     precio:1520, costo:970,  margen:56,  stock:6,   unidad:"Pieza"},
+  {id:"P75",nombre:'NVR Dahua NVR2108HS-8P-I 8ch PoE 4K',             cat:"Videovigilancia IP",      precio:4200, costo:2700, margen:55,  stock:3,   unidad:"Pieza"},
+  {id:"P76",nombre:'NVR Dahua NVR2116HS-16P-I 16ch PoE 4K',           cat:"Videovigilancia IP",      precio:6800, costo:4400, margen:54,  stock:2,   unidad:"Pieza"},
+
+  /* ── KITS CCTV ─── */
+  {id:"P77",nombre:'Kit Dahua 4 cámaras 8MP + NVR 4K PoE completo',   cat:"Kits CCTV",               precio:10500,costo:6800, margen:54,  stock:3,   unidad:"Kit",  notas:"Incluye: 4x IPC-HDW2849H + NVR2104HS + HDD 1TB + cables"},
+  {id:"P78",nombre:'Kit Dahua 8 cámaras 8MP + NVR 4K PoE completo',   cat:"Kits CCTV",               precio:19500,costo:12500,margen:56,  stock:2,   unidad:"Kit",  notas:"Incluye: 8x IPC-HDW2849H + NVR2108HS + HDD 2TB + cables"},
+  {id:"P79",nombre:'Kit Dahua 4 cámaras Full-Color 4MP + NVR',         cat:"Kits CCTV",               precio:8500, costo:5500, margen:54,  stock:3,   unidad:"Kit",  notas:"Ideal para interiores con poca luz"},
+  {id:"P80",nombre:'Kit Dahua 8 cámaras Full-Color 4MP + NVR',         cat:"Kits CCTV",               precio:15500,costo:9900, margen:56,  stock:2,   unidad:"Kit"},
+
+  /* ── SWITCHES POE DAHUA ─── */
+  {id:"P81",nombre:'Switch PoE Dahua PFS3006-4ET-60 4+2 100Mbps',     cat:"Redes",                   precio:980,  costo:620,  margen:58,  stock:8,   unidad:"Pieza"},
+  {id:"P82",nombre:'Switch PoE Dahua PFS3010-8ET-96 8+2 Gigabit',     cat:"Redes",                   precio:1650, costo:1050, margen:57,  stock:5,   unidad:"Pieza"},
+  {id:"P83",nombre:'Switch PoE Dahua PFS4210-8GT-DP 8+2 Managed',     cat:"Redes",                   precio:3200, costo:2050, margen:56,  stock:3,   unidad:"Pieza"},
+  {id:"P84",nombre:'Switch PoE Dahua PFS3016-16GT 16 puertos Gigabit', cat:"Redes",                   precio:2800, costo:1800, margen:55,  stock:2,   unidad:"Pieza"},
+
+  /* ── UPS / ENERGÍA DAHUA ─── */
+  {id:"P85",nombre:'UPS Dahua PFM350-900 900VA / 540W (CCTV)',         cat:"UPS / Energía",            precio:1850, costo:1180, margen:56,  stock:4,   unidad:"Pieza",  notas:"Ideal para NVR + 4 cámaras PoE"},
+  {id:"P86",nombre:'UPS Dahua PFM350-1000 1000VA / 600W (CCTV)',       cat:"UPS / Energía",            precio:2200, costo:1400, margen:57,  stock:3,   unidad:"Pieza",  notas:"Ideal para NVR 8ch + switch PoE"},
+  {id:"P87",nombre:'UPS Dahua PFM354-1150 1150VA torre',               cat:"UPS / Energía",            precio:2800, costo:1800, margen:55,  stock:2,   unidad:"Pieza"},
+  {id:"P88",nombre:'UPS APC BX1000M-LM60 1000VA Back-UPS',             cat:"UPS / Energía",            precio:2600, costo:1680, margen:54,  stock:3,   unidad:"Pieza",  notas:"Para servidores o equipos críticos"},
 ];
 
 const TECHS0=[
@@ -544,7 +600,14 @@ const STS=[
   {k:"Entregado",    c:"#0891b2",bg:"#ecfeff"},
 ];
 const URGS=[{k:"Normal",c:"#059669",bg:"#f0fdf4"},{k:"Alta",c:"#d97706",bg:"#fffbeb"},{k:"Urgente",c:"#dc2626",bg:"#fef2f2"}];
-const CATS=["Almacenamiento","Memoria","Hardware","Pantallas","Periféricos","Cargadores","Baterías","Conectividad","Cables","Consumible","Otro"];
+const CATS=[
+  "Almacenamiento","Memoria","Hardware","Pantallas","Periféricos","Cargadores","Baterías","Conectividad",
+  "Cableado Estructurado","Conectores y Accesorios","Redes",
+  "Videovigilancia IP","Videovigilancia Analógica","Kits CCTV",
+  "UPS / Energía",
+  "Consumible","Cables","Otro"
+];
+const UNIDADES=["Pieza","Metro","Par","Bote","Caja","Rollo","Kit","Juego","Paquete"];
 const ROLES=["Administrador","Técnico","Auxiliar","Sistema"];
 
 /* ══ UTILS ═════════════════════════════════════════════════════════════ */
@@ -593,7 +656,7 @@ function printTicket(o,c){
   ${o.ent?`<div class="s"><div class="st">Entrega estimada</div><div class="v">${fmtD(o.ent)}</div></div>`:""}
   ${o.notas?`<div class="s"><div class="st">Notas</div><div style="font-size:10px;color:#64748b">${o.notas}</div></div>`:""}
   <div class="bc"><div class="bg">||| || ||| | || ||| |||| || |</div><div class="bi">${o.id} · REDCOM</div></div>
-  <div class="ft">Al recoger su equipo presente este comprobante<br/>Redcom Servicio Técnico · Gracias por su preferencia</div>
+  <div class="ft">Al recoger su equipo presente este comprobante<br/>Redcom — Redes · Cómputo · Videovigilancia · Gracias por su preferencia</div>
   </div><script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
@@ -651,8 +714,8 @@ function newNVId(){NV_SEQ++;localStorage.setItem("redcom_nvseq",NV_SEQ);return`N
 
 function printNotaVenta(nv, cfg){
   cfg=cfg||{};
-  const cfgEmpresa=cfg.empresa||"Redcom Servicio Técnico en Cómputo";
-  const cfgTel=cfg.tel??""; const cfgEmail=cfg.email??""; const cfgDir=(cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+cfg.cp+" "+cfg.estado+", "+cfg.pais):"Los Mochis, Sinaloa");
+  const cfgEmpresa=cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
+  const cfgTel=cfg.tel??""; const cfgEmail=cfg.email??""; const cfgDir=(cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||cfg.estado||"Los Mochis")+", "+cfg.estado):"Los Mochis, Sinaloa");
   const cfgLogo=cfg.logo||"";
   const cfgWeb=cfg.web||"";
 
@@ -691,8 +754,9 @@ function printNotaVenta(nv, cfg){
       ${cfgLogo?`<img src="${cfgLogo}" style="height:48px;max-width:100px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,.15);padding:3px"/>`:`<div class="logo">RED<span>COM</span></div>`}
       <div>
         <div style="font-size:15px;font-weight:800;letter-spacing:.5px">${cfgEmpresa}</div>
-        ${cfgTel?`<div class="sub">${cfgTel}</div>`:""}
-        ${cfgDir?`<div class="sub">${cfgDir}</div>`:""}
+        ${cfgDir?`<div class="sub" style="margin-top:3px">📍 ${cfgDir}</div>`:""}
+        ${cfgTel?`<div class="sub" style="margin-top:2px">📞 ${cfgTel}</div>`:""}
+        ${cfgEmail?`<div class="sub" style="margin-top:2px">✉️ ${cfgEmail}</div>`:""}
       </div>
     </div>
     <div style="text-align:right">
@@ -719,7 +783,7 @@ function printNotaVenta(nv, cfg){
   <div class="footer">
     <div style="margin-bottom:4px"><span class="badge">✓ PAGADO</span></div>
     Equipo entregado al cliente el ${nv.fecha}<br/>
-    Redcom Servicio Técnico · Conserve este documento como comprobante
+    Redcom — Redes · Cómputo · Videovigilancia · Conserve este documento como comprobante
   </div>
   </div><script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
@@ -728,7 +792,7 @@ function printNotaVenta(nv, cfg){
 /* ── Ticket de cobro (impresión térmica 80mm) ────────────────────────── */
 function printTicketCobro(pago, ord, cli, cfg){
   cfg = cfg||{};
-  const empresa = cfg.empresa||"Redcom Servicio Técnico";
+  const empresa = cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
   const tel     = cfg.tel||"";
   const dir     = cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+cfg.cp+" "+cfg.estado):"";
   const web     = cfg.web||"";
@@ -839,7 +903,7 @@ function fmtTelWA(tel){
 function buildWAMsg(ord,cli,bud,tec){
   const cv=bud?calc(bud.items):{s:0,iv:0,tot:0};
   const lines=[];
-  lines.push(`🔧 *REDCOM — Servicio Técnico*`);
+  lines.push(`🔧 *REDCOM — Redes · Cómputo · Videovigilancia*`);
   lines.push(`─────────────────────`);
   lines.push(`📋 *Orden:* ${ord.id}`);
   lines.push(`👤 *Cliente:* ${cli.nombre}`);
@@ -1019,7 +1083,7 @@ function ClientModal({edit,onSave,onClose}){
 
 /* ══ MODAL INVENTARIO ══════════════════════════════════════════════════ */
 function InvModal({edit,onSave,onClose}){
-  const [f,setF]=useState(edit||{nombre:"",cat:CATS[0],precio:"",costo:"",margen:"",stock:"",puntoReorden:""});
+  const [f,setF]=useState(edit||{nombre:"",cat:CATS[0],unidad:"Pieza",precio:"",costo:"",margen:"",stock:"",puntoReorden:"",notas:""});
   const s=k=>e=>setF(p=>({...p,[k]:e.target.value}));
   // Auto-calc precio from costo+margen or margen from costo+precio
   function onCostoChange(e){
@@ -1043,7 +1107,7 @@ function InvModal({edit,onSave,onClose}){
   const utilidad=(Number(f.precio)||0)-(Number(f.costo)||0);
   function save(){
     if(!f.nombre.trim()||!f.precio){alert("Nombre y precio son obligatorios.");return;}
-    onSave({...f,precio:Number(f.precio),costo:Number(f.costo)||0,margen:Number(f.margen)||0,stock:Number(f.stock)||0,puntoReorden:Number(f.puntoReorden)||0,id:edit?.id||`P${++INVSEQ}`});
+    onSave({...f,precio:Number(f.precio),costo:Number(f.costo)||0,margen:Number(f.margen)||0,stock:Number(f.stock)||0,puntoReorden:Number(f.puntoReorden)||0,unidad:f.unidad||"Pieza",notas:f.notas||"",id:edit?.id||`P${++INVSEQ}`});
   }
   return html`<div class="modal-bg" onClick=${onClose}>
     <div class="modal fade-in" style=${{maxWidth:480}} onClick=${e=>e.stopPropagation()}>
@@ -1052,11 +1116,16 @@ function InvModal({edit,onSave,onClose}){
         <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
       </div>
       <div style=${{padding:"20px 24px",display:"grid",gap:12}}>
-        <div><label>Nombre / Descripción *</label><input value=${f.nombre} onChange=${s("nombre")} placeholder='ej. SSD NVMe M.2 500GB'/></div>
-        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+        <div><label>Nombre / Descripción *</label><input value=${f.nombre} onChange=${s("nombre")} placeholder='ej. Jack Keystone Cat6 Panduit'/></div>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
           <div><label>Categoría</label>
             <select value=${f.cat} onChange=${s("cat")}>
               ${CATS.map(c=>html`<option key=${c} value=${c}>${c}</option>`)}
+            </select>
+          </div>
+          <div><label>Unidad de venta</label>
+            <select value=${f.unidad||"Pieza"} onChange=${s("unidad")}>
+              ${UNIDADES.map(u=>html`<option key=${u} value=${u}>${u}</option>`)}
             </select>
           </div>
           <div><label>ID / SKU</label><input value=${f.id||""} disabled style=${{background:"#f8fafc",color:"#94a3b8"}} placeholder="Auto-generado"/></div>
@@ -1088,10 +1157,10 @@ function InvModal({edit,onSave,onClose}){
             </div>`}
         </div>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <div></div>
           <div><label>Stock disponible</label><input type="number" min="0" value=${f.stock} onChange=${s("stock")} placeholder="0"/></div>
           <div><label>Punto de reorden</label><input type="number" min="0" value=${f.puntoReorden} onChange=${s("puntoReorden")} placeholder="ej. 3"/></div>
         </div>
+        <div><label>Notas internas (proveedor, referencia, etc.)</label><input value=${f.notas||""} onChange=${s("notas")} placeholder="ej. Comprar en Syscom, código DAH-IPC2849"/></div>
       </div>
       <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
         <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
@@ -1281,8 +1350,10 @@ function printCotizacion(cot, cli, tec, cfg){
         `<div class="logo-box">RC</div>`}
       <div>
         <div style="font-size:18px;font-weight:900;letter-spacing:.5px">${(cfg&&cfg.empresa)||"REDCOM"}</div>
-        <div style="font-size:11px;color:#64748b">${(cfg&&cfg.tel)?cfg.tel+" · ":""}${(cfg&&cfg.calle)?cfg.calle+" "+cfg.numExt+", "+cfg.estado:"Los Mochis, Sin."}</div>
-        ${(cfg&&cfg.email)?`<div style="font-size:11px;color:#64748b">${cfg.email}${cfg.web?" · "+cfg.web:""}</div>`:""}
+        ${(cfg&&cfg.calle)?`<div style="font-size:11px;color:#64748b;margin-top:3px">📍 ${cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||cfg.estado||"Los Mochis")+", "+cfg.estado}</div>`:`<div style="font-size:11px;color:#64748b;margin-top:3px">📍 Los Mochis, Sinaloa</div>`}
+        ${(cfg&&cfg.tel)?`<div style="font-size:11px;color:#64748b;margin-top:2px">📞 ${cfg.tel}</div>`:""}
+        ${(cfg&&cfg.email)?`<div style="font-size:11px;color:#64748b;margin-top:2px">✉️ ${cfg.email}</div>`:""}
+        ${(cfg&&cfg.web)?`<div style="font-size:11px;color:#64748b;margin-top:2px">🌐 ${cfg.web}</div>`:""}
       </div>
     </div>
     <div class="folio-block">
@@ -1331,7 +1402,7 @@ function printCotizacion(cot, cli, tec, cfg){
 function buildCotWAMsg(cot, cli, tec){
   const sub=cot.items.reduce((a,i)=>a+(i.qty*i.precio),0);
   const tot=cot.iva?+(sub*1.16).toFixed(2):sub;
-  let msg=`*REDCOM* — Servicio Técnico en Cómputo\n`;
+  let msg=`*REDCOM* — Redes · Cómputo · Videovigilancia\n`;
   msg+=`_Los Mochis, Sinaloa_\n\n`;
   msg+=`📋 *Cotización ${cot.id}*\n`;
   msg+=`📅 Fecha: ${fmtD(cot.fecha)}\n`;
@@ -2131,6 +2202,11 @@ function InvSection({inv,provs,ocs,onAdd,onEdit,onDel,onSaveOC,session}){
   const [filtro,setFiltro]=useState("todos"); // todos|bajo|ok
   const [confirm,setConfirm]=useState(null);
   const [showOCConfirm,setShowOCConfirm]=useState(false);
+  const isAdmin=session?.rol==="admin";
+  // Columnas: con o sin columnas de costo (solo admin)
+  const cols=isAdmin
+    ?"60px 1fr 120px 100px 90px 90px 80px 80px 90px"
+    :"60px 1fr 120px 100px 90px 100px 90px";
 
   const cats=["Todas",...new Set(inv.map(i=>i.cat))];
 
@@ -2243,8 +2319,17 @@ function InvSection({inv,provs,ocs,onAdd,onEdit,onDel,onSaveOC,session}){
 
     <!-- Tabla -->
     <div style=${{flex:1,overflowY:"auto"}}>
-      <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"70px 1fr 120px 100px 90px 100px 90px"}}>
-        ${["SKU","Artículo","Categoría","Precio","Stock","Pto. Reorden",""].map(h=>html`<div key=${h}>${h}</div>`)}
+      <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:cols}}>
+        <div>SKU</div>
+        <div>Artículo</div>
+        <div>Categoría</div>
+        <div>Precio venta</div>
+        ${isAdmin&&html`<div style=${{color:"#7c3aed"}}>Costo</div>`}
+        ${isAdmin&&html`<div style=${{color:"#059669"}}>Utilidad</div>`}
+        ${isAdmin&&html`<div style=${{color:"#059669"}}>%</div>`}
+        <div>Stock</div>
+        <div>Pto. Reorden</div>
+        <div></div>
       </div>
       ${filt.length===0
         ?html`<div class="empty-state"><${Ic} n="box" z=${28} s="#cbd5e1"/><div style=${{marginTop:10}}>Sin resultados</div></div>`
@@ -2252,15 +2337,33 @@ function InvSection({inv,provs,ocs,onAdd,onEdit,onDel,onSaveOC,session}){
           const pr=Number(p.puntoReorden)||0;
           const bajo=pr>0&&p.stock<=pr;
           const cerca=pr>0&&p.stock>pr&&p.stock<=pr*2;
-          return html`<div key=${p.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"70px 1fr 120px 100px 90px 100px 90px",background:bajo?"#fffbeb":""}}>
+          const costo=Number(p.costo)||0;
+          const precio=Number(p.precio)||0;
+          const utilidad=precio-costo;
+          const margen=Number(p.margen)||( costo>0?+((precio/costo-1)*100).toFixed(1):0 );
+          return html`<div key=${p.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:cols,background:bajo?"#fffbeb":""}}>
             <div style=${{fontFamily:"monospace",fontSize:11,color:"var(--text4)"}}>${p.id}</div>
             <div>
               <div style=${{fontWeight:500,fontSize:13,color:"var(--text)"}}>${p.nombre}</div>
+              ${p.unidad&&p.unidad!=="Pieza"&&html`<div style=${{fontSize:10,color:"#7c3aed",fontWeight:600,marginTop:1}}>por ${p.unidad}</div>`}
               ${bajo&&html`<div style=${{fontSize:9,color:"#dc2626",fontWeight:700,marginTop:1}}>⚠️ BAJO REORDEN</div>`}
               ${cerca&&html`<div style=${{fontSize:9,color:"#d97706",fontWeight:700,marginTop:1}}>⚡ CERCA DEL LÍMITE</div>`}
             </div>
             <div><span style=${{background:"var(--bg3)",color:"var(--text3)",padding:"2px 8px",borderRadius:99,fontSize:11}}>${p.cat}</span></div>
-            <div style=${{fontWeight:600,color:"#059669",fontSize:13}}>${mxn(p.precio)}</div>
+            <div style=${{fontWeight:600,color:"#059669",fontSize:13}}>${mxn(precio)}</div>
+            ${isAdmin&&html`<div style=${{fontSize:13,color:costo>0?"#7c3aed":"#cbd5e1",fontWeight:500}}>${costo>0?mxn(costo):"—"}</div>`}
+            ${isAdmin&&html`<div style=${{fontSize:13,fontWeight:700,color:costo>0&&utilidad>0?"#059669":costo>0?"#dc2626":"#cbd5e1"}}>
+              ${costo>0?(utilidad>=0?"+":"")+mxn(utilidad):"—"}
+            </div>`}
+            ${isAdmin&&html`<div>
+              ${costo>0
+                ?html`<span style=${{display:"inline-flex",padding:"2px 8px",borderRadius:99,fontSize:11,fontWeight:700,
+                  background:margen>=30?"#f0fdf4":margen>=15?"#fffbeb":"#fef2f2",
+                  color:margen>=30?"#059669":margen>=15?"#d97706":"#dc2626"}}>
+                  ${margen}%
+                </span>`
+                :html`<span style=${{color:"#cbd5e1",fontSize:12}}>—</span>`}
+            </div>`}
             <div style=${{background:stockBg(p),borderRadius:6,padding:"2px 6px",display:"inline-flex",alignItems:"center",gap:4}}>
               <span style=${{fontWeight:700,fontSize:13,color:stockColor(p)}}>${p.stock}</span>
               ${bajo&&html`<span style=${{fontSize:9,color:"#dc2626"}}>▼</span>`}
@@ -2840,7 +2943,7 @@ function LoginScreen({users,onLogin,config}){
 
   const empresa=config?.empresa||"Redcom";
   const logoSrc=config?.logo||"";
-  const tagline=config?.ciudad||"Servicio Técnico en Cómputo";
+  const tagline=config?.ciudad||"Redes · Cómputo · Videovigilancia";
   const yr=new Date().getFullYear();
 
   const features=[
@@ -5062,7 +5165,7 @@ function NotifPanel({ords,inv,gars,cls,session,onClose,onNavTo}){
 function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
   const blank={
     titulo:"Redcom — Sistema de Reparaciones",logo:"",
-    empresa:"Redcom Servicio Técnico en Cómputo",
+    empresa:"Redcom — Redes · Cómputo · Videovigilancia",
     email:"",tel:"",web:"",
     calle:"",numExt:"",cp:"",pais:"México",estado:"Sinaloa",
     ciudad:"Los Mochis, Sinaloa",
@@ -5153,29 +5256,33 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
       <div style=${{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:10,padding:"16px",display:"grid",gap:12}}>
         <div style=${{fontWeight:700,fontSize:12,color:"var(--text)",marginBottom:2}}>📋 Datos de contacto</div>
         <div><label>Nombre de la tienda</label>
-          <input value=${f.empresa||""} onChange=${sf("empresa")} placeholder="Redcom Servicio Técnico en Cómputo"/></div>
+          <input value=${f.empresa||""} onChange=${sf("empresa")} placeholder="Redcom — Redes · Cómputo · Videovigilancia"/></div>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <div><label>Email</label>
-            <input type="email" value=${f.email||""} onChange=${sf("email")} placeholder="contacto@redcom.mx"/></div>
           <div><label>Teléfono</label>
             <input value=${f.tel||""} onChange=${sf("tel")} placeholder="668 XXX XXXX"/></div>
+          <div><label>Email</label>
+            <input type="email" value=${f.email||""} onChange=${sf("email")} placeholder="contacto@redcom.mx"/></div>
         </div>
         <div><label>Sitio web</label>
           <input value=${f.web||""} onChange=${sf("web")} placeholder="www.redcom.mx"/></div>
       </div>
       <div style=${{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:10,padding:"16px",display:"grid",gap:12}}>
         <div style=${{fontWeight:700,fontSize:12,color:"var(--text)",marginBottom:2}}>📍 Dirección</div>
-        <div style=${{display:"grid",gridTemplateColumns:"1fr 110px",gap:10}}>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 100px",gap:10}}>
           <div><label>Calle</label>
-            <input value=${f.calle||""} onChange=${sf("calle")} placeholder="Blvd. Jiquilpan"/></div>
+            <input value=${f.calle||""} onChange=${sf("calle")} placeholder="Santos Degollado"/></div>
           <div><label>Núm. exterior</label>
-            <input value=${f.numExt||""} onChange=${sf("numExt")} placeholder="1234"/></div>
+            <input value=${f.numExt||""} onChange=${sf("numExt")} placeholder="528 Nte"/></div>
         </div>
-        <div style=${{display:"grid",gridTemplateColumns:"90px 1fr 1fr",gap:10}}>
-          <div><label>C.P.</label>
-            <input value=${f.cp||""} onChange=${sf("cp")} placeholder="81200"/></div>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div><label>Ciudad</label>
+            <input value=${f.ciudad||""} onChange=${sf("ciudad")} placeholder="Los Mochis"/></div>
           <div><label>Estado</label>
             <input value=${f.estado||""} onChange=${sf("estado")} placeholder="Sinaloa"/></div>
+        </div>
+        <div style=${{display:"grid",gridTemplateColumns:"90px 1fr",gap:10}}>
+          <div><label>C.P.</label>
+            <input value=${f.cp||""} onChange=${sf("cp")} placeholder="81200"/></div>
           <div><label>País</label>
             <input value=${f.pais||""} onChange=${sf("pais")} placeholder="México"/></div>
         </div>
@@ -6047,7 +6154,7 @@ function App(){
   const [config,setConfig]=useState(()=>lsGet("redcom_config",{
     titulo:"Redcom — Sistema de Reparaciones",
     logo:"",
-    empresa:"Redcom Servicio Técnico en Cómputo",
+    empresa:"Redcom — Redes · Cómputo · Videovigilancia",
     ciudad:"Los Mochis, Sinaloa",
     tel:"",email:"",web:"",
     calle:"",numExt:"",cp:"",pais:"México",estado:"Sinaloa",
@@ -6113,7 +6220,19 @@ function App(){
       watch("redcom_recs",   setRecs),
       watch("redcom_cortes", setCortes),
       watch("redcom_users",  setUsers),
-      watch("redcom_config", setConfig),
+      watch("redcom_config", (cfg)=>{
+        // Migración automática del nombre de empresa
+        const OLD=["Redcom Servicio Técnico en Cómputo","Redcom Servicio Técnico","Redcom — Servicio Técnico"];
+        const NEW="Redcom — Redes · Cómputo · Videovigilancia";
+        if(cfg && OLD.includes(cfg.empresa)){
+          const updated={...cfg, empresa:NEW};
+          setConfig(updated);
+          lsSet("redcom_config", updated);
+          fbSet("redcom_config", updated);
+        } else {
+          setConfig(cfg);
+        }
+      }),
       watch("redcom_notas",  setNotas),
     ];
     window._fbSyncOk=true;
@@ -6388,7 +6507,7 @@ function App(){
           <div style=${{width:38,height:38,borderRadius:10,background:"rgba(255,255,255,.18)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><${Ic} n="pc" z=${19} s="#fff"/></div>
           <div>
             <div style=${{fontSize:15,fontWeight:800,letterSpacing:.3,color:"#fff",lineHeight:1.2}}>${config.empresa||"REDCOM"}</div>
-            <div style=${{fontSize:9,color:"rgba(255,255,255,.45)",letterSpacing:1.5,textTransform:"uppercase",marginTop:2}}>${config.ciudad||"Servicio Técnico"}</div>
+            <div style=${{fontSize:9,color:"rgba(255,255,255,.45)",letterSpacing:1.5,textTransform:"uppercase",marginTop:2}}>${config.ciudad||"Redes · Cómputo · Videovigilancia"}</div>
           </div>
         </div>
       </div>
