@@ -2700,21 +2700,15 @@ function lsSet(key,val){
   fbSet(key,val); // ← espejo en Firestore
 }
 
-/* ══ GOOGLE DRIVE SYNC ══════════════════════════════════════════════════ */
+/* ══ GOOGLE DRIVE — SOLO PARA ASISTENTE IA ═══════════════════════════ */
+/* Drive ya NO guarda la base de datos. Firebase es la fuente de verdad. */
+/* Drive/GAS se usa únicamente para enviar contexto al Asistente IA.     */
 const GAS_KEY = "redcom_gas_url";
 let gasUrl = "";
 try{ gasUrl = localStorage.getItem(GAS_KEY)||""; }catch(e){}
 
-let syncTimer = null;
-let syncCallbacks = [];
-
-function scheduleSave(getData){
-  if(!gasUrl) return;
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(()=>pushToDrive(getData()), 1200);
-}
-
 async function pushToDrive(data){
+  // Mantenida solo para compatibilidad con el Asistente IA
   if(!gasUrl) return;
   try{
     window._syncStatus && window._syncStatus("saving");
@@ -2728,16 +2722,6 @@ async function pushToDrive(data){
   }catch(e){
     window._syncStatus && window._syncStatus("error");
   }
-}
-
-async function pullFromDrive(){
-  if(!gasUrl) return null;
-  try{
-    const res = await fetch(gasUrl+"?t="+Date.now());
-    const json = await res.json();
-    if(json.error) return null;
-    return json;
-  }catch(e){ return null; }
 }
 
 /* ══ GOOGLE DRIVE CONFIG MODAL ══════════════════════════════════════════ */
@@ -4904,85 +4888,170 @@ function ReclamoModal({gar,cls,tecs,onSave,onClose}){
 }
 
 /* ══ PANEL NOTIFICACIONES ════════════════════════════════════════════════ */
-function NotifPanel({ords,inv,gars,cls,onClose,onNavTo}){
+function NotifPanel({ords,inv,gars,cls,session,onClose,onNavTo}){
   const hoy=new Date();
+  const myTecId=session?.tecId||null;
+  const isAdmin=session?.rol==="admin";
 
-  // Build notifications
+  // Helper: días desde una fecha
+  const diasDesde=(f)=>Math.floor((hoy-new Date(f))/(864e5));
+  const diasHasta=(f)=>Math.ceil((new Date(f)-hoy)/(864e5));
+
   const notifs=[];
 
-  // 1. Órdenes urgentes sin mover en 2+ días
-  ords.filter(o=>o.urg==="Urgente"&&o.est!=="Entregado"&&o.est!=="Listo").forEach(o=>{
-    const dias=Math.floor((hoy-new Date(o.fecha))/(1000*60*60*24));
+  /* ── RECORDATORIOS POR TÉCNICO ────────────────────────────────────── */
+
+  // R1. Fecha de entrega prometida vencida
+  ords.filter(o=>o.ent&&o.est!=="Entregado"&&(isAdmin||o.tec===myTecId)).forEach(o=>{
+    const dias=diasHasta(o.ent);
+    if(dias<0){
+      const cli=cls.find(c=>c.id===o.cid);
+      const tec=o.tec;
+      notifs.push({
+        id:"ent"+o.id, tipo:"entrega_vencida", prioridad:1,
+        color:"#dc2626", bg:"#fef2f2", borde:"#fecaca",
+        icon:"📅",
+        titulo:`Entrega vencida hace ${Math.abs(dias)} día${Math.abs(dias)!==1?"s":""}`,
+        desc:`${o.id} · ${cli?.nombre||"?"} · ${o.equipo}`,
+        sub:`Prometida: ${fmtD(o.ent)} · Estado: ${o.est}`,
+        nav:"orders", ordId:o.id
+      });
+    }
+  });
+
+  // R2. Orden sin movimiento +3 días
+  ords.filter(o=>o.est!=="Entregado"&&o.est!=="Listo"&&(isAdmin||o.tec===myTecId)).forEach(o=>{
+    const dias=diasDesde(o.fecha);
+    if(dias>=3){
+      const cli=cls.find(c=>c.id===o.cid);
+      notifs.push({
+        id:"mov"+o.id, tipo:"sin_movimiento", prioridad:2,
+        color:"#d97706", bg:"#fffbeb", borde:"#fde68a",
+        icon:"⏳",
+        titulo:`Sin movimiento por ${dias} día${dias!==1?"s":""}`,
+        desc:`${o.id} · ${cli?.nombre||"?"} · ${o.equipo}`,
+        sub:`Estado actual: ${o.est}${o.urg==="Urgente"?" · 🔴 URGENTE":""}`,
+        nav:"orders", ordId:o.id
+      });
+    }
+  });
+
+  // R3. Orden "Listo" sin entregar +2 días
+  ords.filter(o=>o.est==="Listo"&&(isAdmin||o.tec===myTecId)).forEach(o=>{
+    const dias=diasDesde(o.fecha);
     if(dias>=2){
       const cli=cls.find(c=>c.id===o.cid);
-      notifs.push({id:"u"+o.id,tipo:"urgente",icn:"warn",color:"#dc2626",bg:"#fef2f2",
-        titulo:`Orden urgente sin mover — ${o.id}`,
-        desc:`${cli?.nombre||"?"} · ${o.equipo} · ${dias} días en "${o.est}"`,nav:"orders"});
+      notifs.push({
+        id:"lst"+o.id, tipo:"listo_pendiente", prioridad:2,
+        color:"#059669", bg:"#f0fdf4", borde:"#bbf7d0",
+        icon:"✅",
+        titulo:`Lista para entrega hace ${dias} día${dias!==1?"s":""}`,
+        desc:`${o.id} · ${cli?.nombre||"?"} · ${o.equipo}`,
+        sub:`Avisar al cliente para coordinar entrega`,
+        nav:"orders", ordId:o.id
+      });
     }
   });
 
-  // 2. Órdenes sin movimiento en 5+ días
-  ords.filter(o=>o.est!=="Entregado"&&o.est!=="Listo").forEach(o=>{
-    const dias=Math.floor((hoy-new Date(o.fecha))/(1000*60*60*24));
-    if(dias>=5&&o.urg!=="Urgente"){
-      const cli=cls.find(c=>c.id===o.cid);
-      notifs.push({id:"s"+o.id,tipo:"sin_movimiento",icn:"warn",color:"#d97706",bg:"#fffbeb",
-        titulo:`Orden sin movimiento — ${o.id}`,
-        desc:`${cli?.nombre||"?"} · ${o.equipo} · ${dias} días en "${o.est}"`,nav:"orders"});
-    }
-  });
+  /* ── ALERTAS GENERALES (solo admin) ──────────────────────────────── */
+  if(isAdmin){
+    // Stock bajo
+    inv.filter(i=>i.stock<=3).forEach(i=>{
+      notifs.push({
+        id:"i"+i.id, tipo:"stock", prioridad:3,
+        color:"#ea580c", bg:"#fff7ed", borde:"#fed7aa",
+        icon:"📦",
+        titulo:`Stock bajo — ${i.nombre}`,
+        desc:`Solo ${i.stock} unidad${i.stock!==1?"es":""} disponible${i.stock!==1?"s":""}`,
+        sub:"Considera hacer un pedido pronto",
+        nav:"inv"
+      });
+    });
 
-  // 3. Stock bajo (≤3)
-  inv.filter(i=>i.stock<=3).forEach(i=>{
-    notifs.push({id:"i"+i.id,tipo:"stock",icn:"box",color:"#ea580c",bg:"#fff7ed",
-      titulo:`Stock bajo — ${i.nombre}`,
-      desc:`Solo ${i.stock} unidad${i.stock!==1?"es":""} disponible${i.stock!==1?"s":""}`,nav:"inv"});
-  });
+    // Garantías por vencer
+    gars.forEach(g=>{
+      const dias=diasHasta(g.fechaVence);
+      if(dias>=0&&dias<=7&&g.estado!=="Reclamada"){
+        const cli=cls.find(c=>c.id===g.cliId);
+        notifs.push({
+          id:"g"+g.id, tipo:"garantia", prioridad:3,
+          color:"#7c3aed", bg:"#f5f3ff", borde:"#ddd6fe",
+          icon:"🛡️",
+          titulo:`Garantía por vencer — ${g.ordId}`,
+          desc:`${cli?.nombre||"?"} · ${g.equipo}`,
+          sub:`Vence ${dias===0?"hoy":dias===1?"mañana":"en "+dias+" días"}`,
+          nav:"garantias"
+        });
+      }
+    });
+  }
 
-  // 4. Garantías por vencer en 7 días
-  gars.forEach(g=>{
-    const vence=new Date(g.fechaVence);
-    const dias=Math.ceil((vence-hoy)/(1000*60*60*24));
-    if(dias>=0&&dias<=7&&g.estado!=="Reclamada"){
-      const cli=cls.find(c=>c.id===g.cliId);
-      notifs.push({id:"g"+g.id,tipo:"garantia",icn:"warranty",color:"#7c3aed",bg:"#f5f3ff",
-        titulo:`Garantía por vencer — ${g.ordId}`,
-        desc:`${cli?.nombre||"?"} · ${g.equipo} · vence en ${dias===0?"hoy":dias+" días"}`,nav:"garantias"});
-    }
-  });
+  // Ordenar por prioridad
+  notifs.sort((a,b)=>a.prioridad-b.prioridad);
 
-  return html`<div style=${{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-start",justifyContent:"flex-end",padding:"60px 16px 16px",background:"rgba(0,0,0,.15)"}} onClick=${onClose}>
-    <div class="modal fade-in" style=${{width:380,maxHeight:"80vh",boxShadow:"0 20px 60px rgba(0,0,0,.2)"}} onClick=${e=>e.stopPropagation()}>
-      <div style=${{padding:"16px 20px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <h3 style=${{fontSize:15,fontWeight:700,display:"flex",alignItems:"center",gap:8}}>
-          <${Ic} n="bell" z=${17} s="#1d4ed8"/> Notificaciones
-          ${notifs.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 7px",borderRadius:99}}>${notifs.length}</span>`}
-        </h3>
+  const grupos=[
+    {label:"🔴 Entregas vencidas",   tipos:["entrega_vencida"]},
+    {label:"⏳ Sin movimiento",       tipos:["sin_movimiento"]},
+    {label:"✅ Listos sin entregar",  tipos:["listo_pendiente"]},
+    {label:"📦 Stock bajo",           tipos:["stock"]},
+    {label:"🛡️ Garantías",           tipos:["garantia"]},
+  ];
+
+  return html`<div style=${{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-start",justifyContent:"flex-end",padding:"60px 16px 16px",background:"rgba(0,0,0,.18)"}} onClick=${onClose}>
+    <div class="modal fade-in" style=${{width:420,maxHeight:"84vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,.25)"}} onClick=${e=>e.stopPropagation()}>
+
+      <!-- Header -->
+      <div style=${{padding:"18px 22px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+        <div style=${{display:"flex",alignItems:"center",gap:10}}>
+          <div style=${{width:34,height:34,borderRadius:9,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <${Ic} n="bell" z=${17} s="#1d4ed8"/>
+          </div>
+          <div>
+            <div style=${{fontSize:15,fontWeight:700,color:"#0f172a"}}>Recordatorios</div>
+            <div style=${{fontSize:11,color:"#94a3b8",marginTop:1}}>${notifs.length===0?"Sin alertas":notifs.length+" alerta"+( notifs.length!==1?"s":"")+" pendiente"+(notifs.length!==1?"s":"")}</div>
+          </div>
+        </div>
         <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
       </div>
-      <div style=${{overflowY:"auto",maxHeight:"calc(80vh - 56px)"}}>
+
+      <!-- Body -->
+      <div style=${{overflowY:"auto",flex:1}}>
         ${notifs.length===0
-          ?html`<div style=${{padding:"32px 20px",textAlign:"center",color:"#94a3b8"}}>
-            <div style=${{fontSize:28,marginBottom:8}}>✓</div>
-            <div style=${{fontWeight:600,marginBottom:4}}>Todo en orden</div>
-            <div style=${{fontSize:12}}>Sin alertas pendientes</div>
+          ?html`<div style=${{padding:"48px 24px",textAlign:"center",color:"#94a3b8"}}>
+            <div style=${{fontSize:40,marginBottom:12}}>🎉</div>
+            <div style=${{fontWeight:700,fontSize:15,color:"#475569",marginBottom:6}}>¡Todo en orden!</div>
+            <div style=${{fontSize:13,lineHeight:1.6}}>No hay órdenes vencidas<br/>ni alertas pendientes</div>
           </div>`
-          :notifs.map(n=>html`
-            <div key=${n.id} onClick=${()=>{onNavTo(n.nav);onClose();}} style=${{
-              padding:"12px 18px",borderBottom:"1px solid #f1f5f9",cursor:"pointer",
-              display:"flex",gap:10,alignItems:"flex-start",background:"#fff",
-              transition:"background .1s"}}
-              onMouseOver=${e=>e.currentTarget.style.background=n.bg}
-              onMouseOut=${e=>e.currentTarget.style.background="#fff"}>
-              <div style=${{width:32,height:32,borderRadius:8,background:n.bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <${Ic} n=${n.icn} z=${16} s=${n.color}/>
-              </div>
-              <div>
-                <div style=${{fontWeight:600,fontSize:12,color:n.color}}>${n.titulo}</div>
-                <div style=${{fontSize:11,color:"#64748b",marginTop:2}}>${n.desc}</div>
-              </div>
-            </div>`)}
+          :grupos.map(({label,tipos})=>{
+            const items=notifs.filter(n=>tipos.includes(n.tipo));
+            if(!items.length) return null;
+            return html`<div key=${label}>
+              <div style=${{padding:"8px 22px 4px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,background:"#f8fafc",borderBottom:"1px solid #f1f5f9"}}>${label} · ${items.length}</div>
+              ${items.map(n=>html`
+                <div key=${n.id} onClick=${()=>{onNavTo(n.nav);onClose();}}
+                  style=${{padding:"13px 20px",borderBottom:"1px solid #f8fafc",cursor:"pointer",
+                    display:"flex",gap:12,alignItems:"flex-start",
+                    borderLeft:"3px solid",borderLeftColor:n.borde,
+                    transition:"background .1s"}}
+                  onMouseOver=${e=>{e.currentTarget.style.background=n.bg}}
+                  onMouseOut=${e=>{e.currentTarget.style.background="#fff"}}>
+                  <div style=${{fontSize:20,flexShrink:0,marginTop:1}}>${n.icon}</div>
+                  <div style=${{flex:1,minWidth:0}}>
+                    <div style=${{fontWeight:700,fontSize:12,color:n.color,marginBottom:2}}>${n.titulo}</div>
+                    <div style=${{fontSize:12,color:"#1e293b",fontWeight:500,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${n.desc}</div>
+                    <div style=${{fontSize:11,color:"#94a3b8"}}>${n.sub}</div>
+                  </div>
+                  <${Ic} n="chevron" z=${14} s="#cbd5e1"/>
+                </div>`)}
+            </div>`;
+          })}
       </div>
+
+      <!-- Footer -->
+      ${notifs.length>0&&html`<div style=${{padding:"12px 20px",borderTop:"1px solid #f1f5f9",background:"#f8fafc",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style=${{fontSize:11,color:"#94a3b8"}}>Toca una alerta para ir a la orden</span>
+        <button class="btn btn-ghost btn-sm" onClick=${()=>{onNavTo("orders");onClose();}}>Ver órdenes</button>
+      </div>`}
     </div>
   </div>`;
 }
@@ -6052,29 +6121,8 @@ function App(){
   },[]); // solo al montar
   React.useEffect(()=>{
     window._syncStatus=setSyncSt;
-    if(gas){
-      setSyncSt("loading");
-      pullFromDrive().then(data=>{
-        if(!data){setSyncSt("error");return;}
-        if(data.ords?.length)  setOrds(data.ords);
-        if(data.cls?.length)   setCls(data.cls);
-        if(data.inv?.length)   setInv(data.inv);
-        if(data.tecs?.length)  setTecs(data.tecs);
-        if(data.buds&&Object.keys(data.buds).length) setBuds(data.buds);
-        if(data.notas?.length) setNotas(data.notas);
-        if(data.users?.length) setUsers(data.users);
-        if(data.svcs?.length)  setSvcs(data.svcs);
-        if(data.cots?.length)  setCots(data.cots);
-        if(data.pagos?.length) setPagos(data.pagos);
-        if(data.cortes?.length)setCortes(data.cortes);
-        if(data.gars?.length)  setGars(data.gars);
-        if(data.provs?.length) setProvs(data.provs);
-        if(data.ocs?.length)   setOcs(data.ocs);
-        if(data.config)        setConfig(data.config);
-        if(data.seqs){const s=data.seqs;OTS=s.OTS||OTS;PRES=s.PRES||PRES;CLISEQ=s.CLISEQ||CLISEQ;INVSEQ=s.INVSEQ||INVSEQ;TECSEQ=s.TECSEQ||TECSEQ;}
-        setSyncSt("ok");
-      });
-    }
+    // Drive ya NO carga la base de datos al iniciar.
+    // Firebase Firestore es la única fuente de verdad.
   },[gas]);
   const [tarifaMO,setTarifaMO]=useState(200);
 
@@ -6100,13 +6148,28 @@ function App(){
   const isAdmin=session?.rol==="admin";
   const notifCount=React.useMemo(()=>{
     const hoy=new Date();
+    const myTecId=session?.tecId||null;
+    const isAdm=session?.rol==="admin";
     let n=0;
-    ords.filter(o=>o.urg==="Urgente"&&o.est!=="Entregado"&&o.est!=="Listo").forEach(o=>{if(Math.floor((hoy-new Date(o.fecha))/(864e5))>=2)n++;});
-    ords.filter(o=>o.est!=="Entregado"&&o.est!=="Listo"&&o.urg!=="Urgente").forEach(o=>{if(Math.floor((hoy-new Date(o.fecha))/(864e5))>=5)n++;});
-    inv.filter(i=>i.stock<=3).forEach(()=>n++);
-    gars.forEach(g=>{const d=Math.ceil((new Date(g.fechaVence)-hoy)/(864e5));if(d>=0&&d<=7&&g.estado!=="Reclamada")n++;});
+    // R1. Fecha entrega vencida
+    ords.filter(o=>o.ent&&o.est!=="Entregado"&&(isAdm||o.tec===myTecId)).forEach(o=>{
+      if(Math.ceil((new Date(o.ent)-hoy)/(864e5))<0) n++;
+    });
+    // R2. Sin movimiento +3 días
+    ords.filter(o=>o.est!=="Entregado"&&o.est!=="Listo"&&(isAdm||o.tec===myTecId)).forEach(o=>{
+      if(Math.floor((hoy-new Date(o.fecha))/(864e5))>=3) n++;
+    });
+    // R3. Listo sin entregar +2 días
+    ords.filter(o=>o.est==="Listo"&&(isAdm||o.tec===myTecId)).forEach(o=>{
+      if(Math.floor((hoy-new Date(o.fecha))/(864e5))>=2) n++;
+    });
+    // Stock bajo y garantías (solo admin)
+    if(isAdm){
+      inv.filter(i=>i.stock<=3).forEach(()=>n++);
+      gars.forEach(g=>{const d=Math.ceil((new Date(g.fechaVence)-hoy)/(864e5));if(d>=0&&d<=7&&g.estado!=="Reclamada")n++;});
+    }
     return n;
-  },[ords,inv,gars]);
+  },[ords,inv,gars,session]);
   const canCotizar=isAdmin||session?.canCotizar===true;
   const myTecId=session?.tecId||null;
   // Técnicos only see their own orders
@@ -6125,7 +6188,7 @@ function App(){
 
   function saveOrd(o){
     if(!o.token) o={...o,token:genToken()};
-    setOrds(p=>{const n=p.find(x=>x.id===o.id)?p.map(x=>x.id===o.id?o:x):[o,...p];lsSet("redcom_ords",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});
+    setOrds(p=>{const n=p.find(x=>x.id===o.id)?p.map(x=>x.id===o.id?o:x):[o,...p];lsSet("redcom_ords",n);saveSeqs();return n;});
     // Auto-create garantía when marking as Entregado
     if(o.est==="Entregado"){
       setGars(prev=>{
@@ -6135,18 +6198,17 @@ function App(){
         const g={id:`GAR${String(++GARSEQ).padStart(4,"0")}`,ordId:o.id,cliId:o.cid,equipo:o.equipo,
           fechaEntrega:fechaEnt,fechaVence:vence.toISOString().slice(0,10),dias:90,
           estado:"Vigente",reclamoNotas:"",reclamoFecha:""};
-        const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);
+        const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();
         return n;
       });
     }
     setNewOrd(false);setEditOrd(null);setSel(o.id);
   }
-  function saveFotos(ordId,fotos){setOrds(p=>{const n=p.map(o=>o.id===ordId?{...o,fotos}:o);lsSet("redcom_ords",n);setTimeout(()=>scheduleSave(getAllData),50);return n;});setShowFotos(null);}
+  function saveFotos(ordId,fotos){setOrds(p=>{const n=p.map(o=>o.id===ordId?{...o,fotos}:o);lsSet("redcom_ords",n);return n;});setShowFotos(null);}
   function saveFirma(ordId,firma){
     setOrds(p=>{
       const n=p.map(o=>o.id===ordId?{...o,firma,est:"Entregado"}:o);
       lsSet("redcom_ords",n);
-      setTimeout(()=>scheduleSave(getAllData),50);
       return n;
     });
     // Create garantía if not exists
@@ -6160,18 +6222,17 @@ function App(){
         fechaVence:vence.toISOString().slice(0,10),dias:90,
         estado:"Vigente",reclamoNotas:"",reclamoFecha:""};
       const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();
-      setTimeout(()=>scheduleSave(getAllData),50);
       return n;
     });
     setShowFirma(null);
   }
-  function delOrd(id){setOrds(p=>{const n=p.filter(o=>o.id!==id);lsSet("redcom_ords",n);setTimeout(()=>scheduleSave(getAllData),50);return n;});setSel(null);}
+  function delOrd(id){setOrds(p=>{const n=p.filter(o=>o.id!==id);lsSet("redcom_ords",n);return n;});setSel(null);}
   function saveBud(b){
     setBuds(p=>{const n={...p,[b.id]:b};lsSet("redcom_buds",n);saveSeqs();return n;});
     setOrds(p=>{const n=p.map(o=>o.id===b.oid?{...o,pid:b.id}:o);lsSet("redcom_ords",n);return n;});
     setBudOrd(null);
   }
-  function saveSvc(s){setSvcs(p=>{const n=p.find(x=>x.id===s.id)?p.map(x=>x.id===s.id?s:x):[...p,s];lsSet("redcom_svcs",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewSvc(false);setEditSvc(null);}
+  function saveSvc(s){setSvcs(p=>{const n=p.find(x=>x.id===s.id)?p.map(x=>x.id===s.id?s:x):[...p,s];lsSet("redcom_svcs",n);saveSeqs();return n;});setNewSvc(false);setEditSvc(null);}
   function delSvc(id){setSvcs(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_svcs",n);return n;});}
   function importInv(nuevos){
     setInv(prev=>{
@@ -6184,16 +6245,15 @@ function App(){
       });
       lsSet("redcom_inv",next);
       saveSeqs();
-      setTimeout(()=>scheduleSave(getAllData),50);
       alert(`Importación completada.
 ✓ ${added} artículos nuevos
 ✎ ${updated} actualizados`);
       return next;
     });
   }
-  function saveProv(pv){setProvs(p=>{const n=p.find(x=>x.id===pv.id)?p.map(x=>x.id===pv.id?pv:x):[pv,...p];lsSet("redcom_provs",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewProv(false);setEditProv(null);}
+  function saveProv(pv){setProvs(p=>{const n=p.find(x=>x.id===pv.id)?p.map(x=>x.id===pv.id?pv:x):[pv,...p];lsSet("redcom_provs",n);saveSeqs();return n;});setNewProv(false);setEditProv(null);}
   function delProv(id){setProvs(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_provs",n);return n;});}
-  function saveOC(oc){setOcs(p=>{const n=p.find(x=>x.id===oc.id)?p.map(x=>x.id===oc.id?oc:x):[oc,...p];lsSet("redcom_ocs",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewOC(false);setEditOC(null);setNewOCPrvInit(null);}
+  function saveOC(oc){setOcs(p=>{const n=p.find(x=>x.id===oc.id)?p.map(x=>x.id===oc.id?oc:x):[oc,...p];lsSet("redcom_ocs",n);saveSeqs();return n;});setNewOC(false);setEditOC(null);setNewOCPrvInit(null);}
   function saveCita(cita){
     setCitas(p=>{const n=p.find(x=>x.id===cita.id)?p.map(x=>x.id===cita.id?cita:x):[cita,...p];lsSet("redcom_citas",n);return n;});
   }
@@ -6215,16 +6275,16 @@ function App(){
   }
 
   function delOC(id){setOcs(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_ocs",n);return n;});}
-  function addPago(p){setPagos(prev=>{const n=[p,...prev];lsSet("redcom_pagos",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});}
+  function addPago(p){setPagos(prev=>{const n=[p,...prev];lsSet("redcom_pagos",n);saveSeqs();return n;});}
   function delPago(id){setPagos(prev=>{const n=prev.filter(p=>p.id!==id);lsSet("redcom_pagos",n);return n;});}
   function addCorte(totales,fecha){
     const ct={id:`CRT${String(++CORTEQ).padStart(3,"0")}`,fecha,...totales,user:session?.nombre||""};
-    setCortes(prev=>{const n=[ct,...prev];lsSet("redcom_cortes",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});
+    setCortes(prev=>{const n=[ct,...prev];lsSet("redcom_cortes",n);saveSeqs();return n;});
     alert(`Corte realizado. Total: ${mxn(totales.total)}`);
   }
-  function addGar(g){setGars(prev=>{const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});}
+  function addGar(g){setGars(prev=>{const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();return n;});}
   function delGar(id){setGars(prev=>{const n=prev.filter(g=>g.id!==id);lsSet("redcom_gars",n);return n;});}
-  function reclamoGar(g,notas){setGars(prev=>{const n=prev.map(x=>x.id===g.id?{...x,estado:"Reclamada",reclamoNotas:notas,reclamoFecha:new Date().toISOString().slice(0,10)}:x);lsSet("redcom_gars",n);setTimeout(()=>scheduleSave(getAllData),50);return n;});}
+  function reclamoGar(g,notas){setGars(prev=>{const n=prev.map(x=>x.id===g.id?{...x,estado:"Reclamada",reclamoNotas:notas,reclamoFecha:new Date().toISOString().slice(0,10)}:x);lsSet("redcom_gars",n);return n;});}
   function saveConfig(cfg){
     setConfig(cfg);
     lsSet("redcom_config",cfg);
@@ -6234,19 +6294,17 @@ function App(){
     if(cfg.darkMode) document.documentElement.classList.add("dark-mode");
     else document.documentElement.classList.remove("dark-mode");
     setDarkTick(t=>t+1); // trigger re-render so dm() calls update
-    setTimeout(()=>scheduleSave(getAllData),50);
   }
-  function saveCot(ct){setCots(p=>{const n=p.find(x=>x.id===ct.id)?p.map(x=>x.id===ct.id?ct:x):[ct,...p];lsSet("redcom_cots",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewCot(false);setEditCot(null);}
+  function saveCot(ct){setCots(p=>{const n=p.find(x=>x.id===ct.id)?p.map(x=>x.id===ct.id?ct:x):[ct,...p];lsSet("redcom_cots",n);saveSeqs();return n;});setNewCot(false);setEditCot(null);}
   function delCot(id){setCots(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_cots",n);return n;});}
   function login(u){setSession(u);try{sessionStorage.setItem("redcom_session",JSON.stringify(u));}catch(e){}}
   function logout(){setSession(null);try{sessionStorage.removeItem("redcom_session");}catch(e){}}
-  function saveUser(u){setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewUser(false);setEditUser(null);}
+  function saveUser(u){setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});setNewUser(false);setEditUser(null);}
   function delUser(id){setUsers(p=>{const n=p.filter(u=>u.id!==id);lsSet("redcom_users",n);return n;});}
   function addNota(nv){
     setNotas(p=>{
       const next=[nv,...p];
       try{localStorage.setItem("redcom_notas",JSON.stringify(next));}catch(e){}
-      setTimeout(()=>scheduleSave(getAllData),50);
       return next;
     });
   }
@@ -6254,18 +6312,17 @@ function App(){
     setNotas(p=>{
       const next=p.filter(n=>n.id!==id);
       try{localStorage.setItem("redcom_notas",JSON.stringify(next));}catch(e){}
-      setTimeout(()=>scheduleSave(getAllData),50);
       return next;
     });
   }
-  function saveCli(c){setCls(p=>{const n=p.find(x=>x.id===c.id)?p.map(x=>x.id===c.id?c:x):[c,...p];lsSet("redcom_cls",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewCli(false);setEditCli(null);}
-  function delCli(id){setCls(p=>{const n=p.filter(c=>c.id!==id);lsSet("redcom_cls",n);setTimeout(()=>scheduleSave(getAllData),50);return n;});}
-  function saveInv(p){setInv(prev=>{const n=prev.find(x=>x.id===p.id)?prev.map(x=>x.id===p.id?p:x):[p,...prev];lsSet("redcom_inv",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewInv(false);setEditInv(null);}
-  function delInv(id){setInv(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_inv",n);setTimeout(()=>scheduleSave(getAllData),50);return n;});}
-  function saveTec(t){setTecs(p=>{const n=p.find(x=>x.id===t.id)?p.map(x=>x.id===t.id?t:x):[t,...p];lsSet("redcom_tecs",n);saveSeqs();setTimeout(()=>scheduleSave(getAllData),50);return n;});setNewTec(false);setEditTec(null);}
+  function saveCli(c){setCls(p=>{const n=p.find(x=>x.id===c.id)?p.map(x=>x.id===c.id?c:x):[c,...p];lsSet("redcom_cls",n);saveSeqs();return n;});setNewCli(false);setEditCli(null);}
+  function delCli(id){setCls(p=>{const n=p.filter(c=>c.id!==id);lsSet("redcom_cls",n);return n;});}
+  function saveInv(p){setInv(prev=>{const n=prev.find(x=>x.id===p.id)?prev.map(x=>x.id===p.id?p:x):[p,...prev];lsSet("redcom_inv",n);saveSeqs();return n;});setNewInv(false);setEditInv(null);}
+  function delInv(id){setInv(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_inv",n);return n;});}
+  function saveTec(t){setTecs(p=>{const n=p.find(x=>x.id===t.id)?p.map(x=>x.id===t.id?t:x):[t,...p];lsSet("redcom_tecs",n);saveSeqs();return n;});setNewTec(false);setEditTec(null);}
   function delTec(id){
     setTecs(p=>{const n=p.filter(t=>t.id!==id);lsSet("redcom_tecs",n);return n;});
-    setOrds(p=>{const n=p.map(o=>o.tec===id?{...o,tec:"T4"}:o);lsSet("redcom_ords",n);setTimeout(()=>scheduleSave(getAllData),50);return n;});
+    setOrds(p=>{const n=p.map(o=>o.tec===id?{...o,tec:"T4"}:o);lsSet("redcom_ords",n);return n;});
   }
 
   // Apply saved config on mount (title + dark mode)
@@ -6280,7 +6337,7 @@ function App(){
     setOrds(prev=>{
       let changed=false;
       const updated=prev.map(o=>{if(!o.token){changed=true;return{...o,token:genToken()};}return o;});
-      if(changed){lsSet("redcom_ords",updated);setTimeout(()=>scheduleSave(getAllData),1000);}
+      if(changed){lsSet("redcom_ords",updated);}
       return changed?updated:prev;
     });
   },[]);
@@ -6363,8 +6420,8 @@ function App(){
           color:gas?"#86efac":"rgba(255,255,255,.8)"}}
           onMouseOver=${e=>{e.currentTarget.style.background=gas?"rgba(74,222,128,.22)":"rgba(255,255,255,.16)"}}
           onMouseOut=${e=>{e.currentTarget.style.background=gas?"rgba(74,222,128,.12)":"rgba(255,255,255,.08)"}}>
-          <span style=${{fontSize:14}}>${gas?"☁️":"🔗"}</span>
-          <span style=${{flex:1,textAlign:"left"}}>${gas?"Drive activo":"Conectar Drive"}</span>
+          <span style=${{fontSize:14}}>${gas?"🤖":"🔗"}</span>
+          <span style=${{flex:1,textAlign:"left"}}>${gas?"IA conectada":"Conectar IA (Drive)"}</span>
           ${syncSt==="saving"&&html`<span style=${{fontSize:10,fontWeight:700,animation:"spin 1s linear infinite",display:"inline-block"}}>⟳</span>`}
           ${syncSt==="ok"&&html`<span style=${{fontSize:10,fontWeight:700,color:"#86efac"}}>✓</span>`}
           ${syncSt==="error"&&html`<span style=${{fontSize:10,color:"#fca5a5",fontWeight:700}}>✗</span>`}
@@ -6557,7 +6614,7 @@ function App(){
     <!-- NOTIFICACIONES -->
     ${showSearch&&html`<${GlobalSearch} ords=${ords} cls=${cls} inv=${inv} cots=${cots} onNav=${k=>{setSec(k);setSel(null);}} onClose=${()=>setShowSearch(false)}/>`}
     ${showNotif&&html`<${NotifPanel}
-      ords=${ords} inv=${inv} gars=${gars} cls=${cls}
+      ords=${ords} inv=${inv} gars=${gars} cls=${cls} session=${session}
       onClose=${()=>setShowNotif(false)}
       onNavTo=${k=>{setSec(k);setSel(null);setShowNotif(false);}}/>`}
     <!-- FOTOS -->
