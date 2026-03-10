@@ -657,7 +657,10 @@ function printTicket(o,c){
   ${o.notas?`<div class="s"><div class="st">Notas</div><div style="font-size:10px;color:#64748b">${o.notas}</div></div>`:""}
   <div class="bc"><div class="bg">||| || ||| | || ||| |||| || |</div><div class="bi">${o.id} · REDCOM</div></div>
   <div class="ft">Al recoger su equipo presente este comprobante<br/>Redcom — Redes · Cómputo · Videovigilancia · Gracias por su preferencia</div>
-  </div><script>window.onload=()=>window.print()<\/script></body></html>`);
+  </div><div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
+    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  </div></body></html>`);
   w.document.close();
 }
 
@@ -788,7 +791,10 @@ function printNotaVenta(nv, cfg){
     Equipo entregado al cliente el ${nv.fecha}<br/>
     Redcom — Redes · Cómputo · Videovigilancia · Conserve este documento como comprobante
   </div>
-  </div><script>window.onload=()=>window.print()<\/script></body></html>`);
+  </div><div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
+    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  </div></body></html>`);
   w.document.close();
 }
 
@@ -890,7 +896,10 @@ function printTicketCobro(pago, ord, cli, cfg){
   </div>
 
   </div>
-  <script>window.onload=()=>{window.print();}<\/script>
+  <div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
+    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  </div>
   </body></html>`);
   w.document.close();
 }
