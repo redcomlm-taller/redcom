@@ -6526,28 +6526,14 @@ function App(){
               </div>`)}
           </div>`)}
       </nav>
-      <div style=${{padding:"12px 10px 16px",borderTop:"1px solid rgba(255,255,255,.1)",display:"flex",flexDirection:"column",gap:5}}>
+      <div style=${{padding:"10px 10px 14px",borderTop:"1px solid rgba(255,255,255,.1)"}}>
         <button onClick=${()=>setShowConfig(true)} style=${{
-          width:"100%",padding:"8px 12px",borderRadius:9,border:"1px solid rgba(255,255,255,.12)",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:8,background:"rgba(255,255,255,.08)",color:"rgba(255,255,255,.8)",transition:"all .15s"}}
+          width:"100%",padding:"9px 12px",borderRadius:9,border:"1px solid rgba(255,255,255,.12)",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:8,background:"rgba(255,255,255,.08)",color:"rgba(255,255,255,.8)",transition:"all .15s"}}
           onMouseOver=${e=>{e.currentTarget.style.background="rgba(255,255,255,.16)"}}
           onMouseOut=${e=>{e.currentTarget.style.background="rgba(255,255,255,.08)"}}>
-          <span style=${{fontSize:14}}>⚙️</span>
+          <span style=${{fontSize:15}}>⚙️</span>
           <span style=${{flex:1,textAlign:"left"}}>Preferencias</span>
           ${config.logo&&html`<span style=${{width:16,height:16,borderRadius:3,overflow:"hidden",display:"inline-flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><img src=${config.logo} style=${{height:16,width:16,objectFit:"contain"}}/></span>`}
-        </button>
-        <button onClick=${()=>setShowGasModal(true)} style=${{
-          width:"100%",padding:"8px 12px",borderRadius:9,border:"1px solid",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:8,transition:"all .15s",
-          borderColor:gas?"rgba(74,222,128,.35)":"rgba(255,255,255,.12)",
-          background:gas?"rgba(74,222,128,.12)":"rgba(255,255,255,.08)",
-          color:gas?"#86efac":"rgba(255,255,255,.8)"}}
-          onMouseOver=${e=>{e.currentTarget.style.background=gas?"rgba(74,222,128,.22)":"rgba(255,255,255,.16)"}}
-          onMouseOut=${e=>{e.currentTarget.style.background=gas?"rgba(74,222,128,.12)":"rgba(255,255,255,.08)"}}>
-          <span style=${{fontSize:14}}>${gas?"🤖":"🔗"}</span>
-          <span style=${{flex:1,textAlign:"left"}}>${gas?"IA conectada":"Conectar IA (Drive)"}</span>
-          ${syncSt==="saving"&&html`<span style=${{fontSize:10,fontWeight:700,animation:"spin 1s linear infinite",display:"inline-block"}}>⟳</span>`}
-          ${syncSt==="ok"&&html`<span style=${{fontSize:10,fontWeight:700,color:"#86efac"}}>✓</span>`}
-          ${syncSt==="error"&&html`<span style=${{fontSize:10,color:"#fca5a5",fontWeight:700}}>✗</span>`}
-          ${syncSt==="loading"&&html`<span style=${{fontSize:10,fontWeight:700}}>↓</span>`}
         </button>
       </div>
     </aside>
