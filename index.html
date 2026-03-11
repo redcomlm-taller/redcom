@@ -6443,7 +6443,7 @@ function App(){
   const [showConfig,setShowConfig]=useState(false);
   const [darkTick,setDarkTick]=useState(0);
   const [showUserMenu,setShowUserMenu]=useState(false);
-  const [showSearch,setShowSearch]=useState(false); // forces re-render on theme change
+  const [showSearch,setShowSearch]=useState(false);
   const [config,setConfig]=useState(()=>lsGet("redcom_config",{
     titulo:"Redcom — Sistema de Reparaciones",
     logo:"",
@@ -6776,7 +6776,7 @@ function App(){
   if(!session) return html`<${LoginScreen} users=${users} onLogin=${login} config=${config}/>`;
 
   const NAV=[
-    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["cal","Calendario","cal"],["ia","Asistente IA","shield"],...(canCotizar?[["cots","Cotizaciones","tag"]]:[]),...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
+    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],...(canCotizar?[["cots","Cotizaciones","tag"]]:[]),...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
     ...(isAdmin?[{g:"CATÁLOGOS",items:[["clients","Clientes","clients"],["inv","Inventario","inv"],["techs","Técnicos","techs"],["servicios","Servicios","tag"],["users","Usuarios","shield"]]},{g:"COMPRAS",items:[["provs","Proveedores","truck"],["ocs","Órdenes de Compra","truck"],["reportes","Reportes","xls"]]}]:[]),
   ];
 
@@ -6834,19 +6834,9 @@ function App(){
       <div style=${{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"0 24px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,gap:12,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
         <div style=${{display:"flex",alignItems:"center",gap:14}}>
           <div style=${{fontWeight:700,fontSize:15,color:"#0f172a",letterSpacing:-.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"clamp(80px,25vw,220px)"}}>
-            ${{"orders":"Órdenes","cal":"Calendario","clients":"Clientes","inv":"Inventario","techs":"Técnicos","cots":"Cotizaciones","caja":"Caja","garantias":"Garantías","dash":"Dashboard","ia":"Asistente IA","servicios":"Servicios","users":"Usuarios","provs":"Proveedores","ocs":"Órd. Compra","reportes":"Reportes"}[sec]||""}
+            ${{"orders":"Órdenes","clients":"Clientes","inv":"Inventario","techs":"Técnicos","cots":"Cotizaciones","caja":"Caja","garantias":"Garantías","dash":"Dashboard","ia":"Asistente IA","servicios":"Servicios","users":"Usuarios","provs":"Proveedores","ocs":"Órd. Compra","reportes":"Reportes"}[sec]||""}
           </div>
-          <button onClick=${()=>setShowSearch(true)} style=${{
-            display:"flex",alignItems:"center",gap:8,padding:"7px 14px",
-            borderRadius:9,border:"1px solid #e2e8f0",background:"#f8fafc",
-            cursor:"pointer",fontFamily:"inherit",color:"#94a3b8",fontSize:13,
-            minWidth:window.innerWidth>480?200:0,maxWidth:window.innerWidth>480?"none":"90px",transition:"all .15s"}}
-            onMouseOver=${e=>{e.currentTarget.style.borderColor="#bfdbfe";e.currentTarget.style.background="#eff6ff";e.currentTarget.style.color="#1d4ed8";}}
-            onMouseOut=${e=>{e.currentTarget.style.borderColor="#e2e8f0";e.currentTarget.style.background="#f8fafc";e.currentTarget.style.color="#94a3b8";}}>
-            <${Ic} n="search" z=${14} s="#94a3b8"/>
-            <span style=${{flex:1,textAlign:"left"}}>Buscar…</span>
-            <kbd style=${{fontSize:10,padding:"2px 6px",borderRadius:5,background:"#e2e8f0",border:"1px solid #cbd5e1",fontFamily:"monospace",color:"#64748b"}}>Ctrl K</kbd>
-          </button>
+
         </div>
         <div style=${{display:"flex",alignItems:"center",gap:6}}>
           <!-- Firebase indicator -->
@@ -7026,7 +7016,7 @@ function App(){
       ${sec==="servicios"&&isAdmin&&html`<${ServiciosSection} svcs=${svcs} onAdd=${()=>setNewSvc(true)} onEdit=${s=>setEditSvc(s)} onDel=${delSvc}/>`}
       ${sec==="users"&&isAdmin&&html`<${UsersSection} users=${users} tecs=${tecs} session=${session} onAdd=${()=>setNewUser(true)} onEdit=${u=>setEditUser(u)} onDel=${delUser}/>`}
       ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} notas=${notas} pagos=${pagos} onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
-      ${sec==="cal"&&html`<${CalendarioSection} ords=${ords} cls=${cls} tecs=${tecs} citas=${citas} recs=${recs} session=${session} config=${config} onSaveCita=${saveCita} onDelCita=${delCita} onSaveRec=${saveRec} onDelRec=${delRec} onSyncGCal=${syncGCal}/>`}
+      ${false&&html`<${CalendarioSection} ords=${ords} cls=${cls} tecs=${tecs} citas=${citas} recs=${recs} session=${session} config=${config} onSaveCita=${saveCita} onDelCita=${delCita} onSaveRec=${saveRec} onDelRec=${delRec} onSyncGCal=${syncGCal}/>`}
     </main>
 
     <!-- MODALS ÓRDENES -->
@@ -7048,7 +7038,7 @@ function App(){
     </nav>
 
     <!-- NOTIFICACIONES -->
-    ${showSearch&&html`<${GlobalSearch} ords=${ords} cls=${cls} inv=${inv} cots=${cots} onNav=${k=>{setSec(k);setSel(null);}} onClose=${()=>setShowSearch(false)}/>`}
+
     ${showNotif&&html`<${NotifPanel}
       ords=${ords} inv=${inv} gars=${gars} cls=${cls} session=${session}
       onClose=${()=>setShowNotif(false)}
