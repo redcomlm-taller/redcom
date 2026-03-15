@@ -76,6 +76,7 @@ label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:5
 .order-hdr{display:grid;grid-template-columns:90px 1fr 140px 110px 110px 90px 90px}
 .th{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;padding:10px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:1}
 .kcol.over{background:#dbeafe!important;border-color:#3b82f6!important}
+.kcol.touch-over{border:2px dashed currentColor!important;opacity:.9;transform:scale(.99)}
 .tbl-row{display:grid;align-items:center;border-bottom:1px solid #f1f5f9;transition:background .1s}
 .inv-row{grid-template-columns:50px 1fr 100px 88px 80px 70px 60px 70px 64px}
 .tbl-row:hover{background:#f8fafc}
@@ -2142,6 +2143,9 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
 }
 
 /* ══ KANBAN ═════════════════════════════════════════════════════════════ */
+// Touch drag state (global para el componente)
+let _touchDragId=null, _touchDragEl=null, _touchClone=null;
+
 function Kanban({ords,cls,tecs,buds,sel,onSel,onMv}){
   const EMPTY={
     "Ingreso":       {icon:"📥", msg:"Ningún equipo por ingresar"},
@@ -2150,6 +2154,53 @@ function Kanban({ords,cls,tecs,buds,sel,onSel,onMv}){
     "Listo":         {icon:"📦", msg:"Sin equipos esperando"},
     "Entregado":     {icon:"🎉", msg:"Todo entregado hoy"},
   };
+
+  // Helpers para touch drag
+  function onTouchStart(e,ordId){
+    _touchDragId=ordId;
+    _touchDragEl=e.currentTarget;
+    // Crear clon flotante
+    const rect=e.currentTarget.getBoundingClientRect();
+    const clone=e.currentTarget.cloneNode(true);
+    clone.style.cssText="position:fixed;left:"+rect.left+"px;top:"+rect.top+"px;width:"+rect.width+"px;opacity:.85;z-index:9999;pointer-events:none;transform:scale(1.04);box-shadow:0 8px 32px rgba(0,0,0,.25);transition:none;border-radius:9px;";
+    document.body.appendChild(clone);
+    _touchClone=clone;
+    e.currentTarget.style.opacity=".3";
+  }
+
+  function onTouchMove(e){
+    if(!_touchClone) return;
+    e.preventDefault();
+    const t=e.touches[0];
+    const rect=_touchClone.getBoundingClientRect();
+    _touchClone.style.left=(t.clientX - rect.width/2)+"px";
+    _touchClone.style.top=(t.clientY - rect.height/2)+"px";
+    // Highlight columna debajo
+    _touchClone.style.display="none";
+    const el=document.elementFromPoint(t.clientX,t.clientY);
+    _touchClone.style.display="";
+    const col=el?.closest(".kcol");
+    document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("touch-over"));
+    if(col) col.classList.add("touch-over");
+  }
+
+  function onTouchEnd(e){
+    if(!_touchClone||!_touchDragId) return;
+    const t=e.changedTouches[0];
+    _touchClone.style.display="none";
+    const el=document.elementFromPoint(t.clientX,t.clientY);
+    _touchClone.style.display="";
+    const col=el?.closest(".kcol");
+    const destState=col?.dataset?.state;
+    if(destState && destState!==ords.find(o=>o.id===_touchDragId)?.est){
+      onMv(_touchDragId, destState);
+    }
+    // Limpiar
+    _touchClone.remove(); _touchClone=null;
+    if(_touchDragEl) _touchDragEl.style.opacity="1";
+    _touchDragEl=null; _touchDragId=null;
+    document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("touch-over"));
+  }
 
   return html`<div style=${{display:"flex",gap:10,height:"100%",overflowX:"auto",padding:"12px 16px 16px"}}>
     ${STS.map(st=>{
