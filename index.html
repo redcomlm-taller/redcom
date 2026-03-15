@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#1d4ed8"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Redcom"/>
+<meta name="description" content="Redcom — Sistema de reparaciones, redes y cómputo"/>
+<link rel="manifest" id="pwa-manifest"/>
+<link rel="apple-touch-icon" id="pwa-icon"/>
 <title>Redcom · Sistema de Reparaciones</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -15,7 +23,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;overflow:hidden}
-body{font-family:'IBM Plex Sans',sans-serif;background:#eef2f7;color:#1e293b}
+body{font-family:'IBM Plex Sans',sans-serif;background:#eef2f7;color:#1e293b;font-size:14px}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
@@ -26,20 +34,20 @@ select,input,textarea{font-family:'IBM Plex Sans',sans-serif}
 .card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04)}
 
 /* ── BUTTONS ── */
-.btn{cursor:pointer;border:none;font-family:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:8px 16px;transition:all .15s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.1px}
+.btn{cursor:pointer;border:none;font-family:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:9px 18px;transition:all .15s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.1px;min-height:36px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn-primary{background:#1d4ed8;color:#fff;box-shadow:0 1px 3px rgba(29,78,216,.25)}.btn-primary:hover:not(:disabled){background:#1e40af;box-shadow:0 3px 10px rgba(29,78,216,.3);transform:translateY(-1px)}
 .btn-primary:active{transform:translateY(0)}
 .btn-ghost{background:#fff;color:#475569;border:1px solid #e2e8f0}.btn-ghost:hover{background:#f8fafc;color:#1e293b;border-color:#cbd5e1}
 .btn-danger{background:#fff0f0;color:#dc2626;border:1px solid #fecaca}.btn-danger:hover{background:#fee2e2}
 .btn-success{background:#f0fdf4;color:#059669;border:1px solid #bbf7d0}.btn-success:hover{background:#dcfce7}
-.btn-sm{padding:5px 12px;font-size:12px;border-radius:7px}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:7px;min-height:32px}
 
 /* ── INPUTS ── */
 input[type=text],input[type=number],input[type=tel],input[type=email],input[type=date],select,textarea{
   background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;
   font-size:13px;color:#1e293b;outline:none;transition:border .15s,box-shadow .15s;width:100%;
-  box-shadow:0 1px 2px rgba(0,0,0,.04)
+  box-shadow:0 1px 2px rgba(0,0,0,.04);min-height:38px
 }
 input:focus,select:focus,textarea:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
 textarea{resize:vertical;min-height:80px}
@@ -53,10 +61,11 @@ label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:5
 .modal{background:#fff;border-radius:16px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.22);border:1px solid rgba(0,0,0,.06)}
 
 /* ── SIDEBAR ── */
-.sidebar-link{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);margin-bottom:1px}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);margin-bottom:1px}
 .sidebar-link:hover{background:rgba(255,255,255,.1);color:#fff}
 .sidebar-link.active{background:rgba(255,255,255,.15);color:#fff;font-weight:700;box-shadow:inset 3px 0 0 #CE4E29}
 .sidebar-group{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);padding:14px 12px 5px}
+@media(max-width:1024px){aside{width:200px!important}}
 @media(max-width:768px){aside{display:none!important}}
 
 /* ── TABLES ── */
@@ -69,15 +78,29 @@ label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:5
 .kcol.over{background:#dbeafe!important;border-color:#3b82f6!important}
 .tbl-row{display:grid;align-items:center;border-bottom:1px solid #f1f5f9;transition:background .1s}
 .inv-row{grid-template-columns:50px 1fr 100px 88px 80px 70px 60px 70px 64px}
-@media(max-width:768px){
-  .tbl-hdr.inv-hdr{display:none!important}
-  .tbl-row.inv-row{display:flex!important;flex-wrap:wrap;align-items:center;padding:10px 14px;gap:4px}
-  .tbl-row.inv-row>div{padding:2px 4px;font-size:12px}
-}
 .tbl-row:hover{background:#f8fafc}
 .tbl-row>div{padding:11px 16px;font-size:13px}
 .tbl-hdr{background:#f8fafc;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:1}
 .tbl-hdr>div{padding:10px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px}
+
+/* ── TABLET (769px – 1024px) ── */
+@media(min-width:769px) and (max-width:1024px){
+  body{font-size:14px}
+  .btn{padding:10px 18px;min-height:40px;font-size:13px}
+  .btn-sm{padding:8px 14px;font-size:12px;min-height:36px}
+  input[type=text],input[type=number],input[type=tel],input[type=email],input[type=date],select,textarea{
+    padding:10px 13px;font-size:14px;min-height:42px
+  }
+  label{font-size:13px;margin-bottom:6px}
+  .tbl-row>div{padding:13px 14px;font-size:13px}
+  .tbl-hdr>div{padding:10px 14px}
+  .order-row>div{padding:13px 12px;font-size:13px}
+  .sidebar-link{padding:11px 12px;font-size:13px}
+  .card{border-radius:12px}
+  .modal-bg{padding:16px}
+  .section-header{margin-bottom:16px}
+  .status-pill{font-size:12px;padding:4px 11px}
+}
 
 /* ── MISC ── */
 .fade-in{animation:fi .2s ease}
@@ -95,7 +118,7 @@ label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:5
 
 /* ── BOTTOM NAV MOBILE ── */
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:50;padding:4px 0 env(safe-area-inset-bottom,4px)}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:9px;font-weight:600;color:#94a3b8;transition:color .15s;text-transform:uppercase;letter-spacing:.5px}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:9px;font-weight:600;color:#94a3b8;transition:color .15s;text-transform:uppercase;letter-spacing:.5px}
 .bnav-btn.active{color:#1d4ed8}
 .mob-card{background:#fff;border-radius:10px;border:1px solid #e2e8f0;margin:8px 12px;padding:12px 14px;cursor:pointer;transition:box-shadow .15s}
 .mob-card:active{box-shadow:0 0 0 2px #bfdbfe}
@@ -111,9 +134,17 @@ label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:5
   .order-row>div{padding:0;font-size:13px}
   .tbl-hdr{display:none}
   .tbl-row{display:flex!important;flex-wrap:wrap;padding:10px 14px;gap:4px}
+  .tbl-row.inv-row{display:flex!important;flex-wrap:wrap;align-items:center;padding:10px 14px;gap:4px}
+  .tbl-row.inv-row>div{padding:2px 4px;font-size:12px}
   .tbl-row>div{padding:2px 6px;font-size:12px}
   .section-header{flex-direction:column;align-items:flex-start}
   .search-bar{max-width:100%;width:100%}
+  .btn{min-height:44px;padding:10px 18px}
+  .btn-sm{min-height:40px;padding:8px 12px}
+  input[type=text],input[type=number],input[type=tel],input[type=email],input[type=date],select,textarea{
+    min-height:44px;padding:11px 13px;font-size:15px
+  }
+  label{font-size:14px}
 }
 
 
@@ -280,11 +311,97 @@ html.dark-mode ::-webkit-scrollbar-track      { background:var(--bg) }
 html.dark-mode ::-webkit-scrollbar-thumb      { background:var(--border); border-radius:99px }
 html.dark-mode ::-webkit-scrollbar-thumb:hover{ background:var(--text4) }
 
-/* Detail panel */
-html.dark-mode .slide-in          { background:var(--bg2)!important }
-
-/* Empty states */
-html.dark-mode .empty-state       { color:var(--text4)!important }
+/* ── LIQUID GLASS ─────────────────────────────────────────────────────── */
+.glass{
+  background:rgba(255,255,255,.55)!important;
+  backdrop-filter:blur(20px) saturate(180%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(180%)!important;
+  border:1px solid rgba(255,255,255,.7)!important;
+  box-shadow:0 2px 24px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(0,0,0,.04)!important;
+}
+.glass-modal{
+  background:rgba(255,255,255,.82)!important;
+  backdrop-filter:blur(32px) saturate(200%)!important;
+  -webkit-backdrop-filter:blur(32px) saturate(200%)!important;
+  border:1px solid rgba(255,255,255,.85)!important;
+  box-shadow:0 32px 80px rgba(0,0,0,.18),0 8px 32px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(0,0,0,.04)!important;
+}
+.glass-card{
+  background:rgba(255,255,255,.65)!important;
+  backdrop-filter:blur(16px) saturate(160%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(160%)!important;
+  border:1px solid rgba(255,255,255,.8)!important;
+  box-shadow:0 4px 24px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.85)!important;
+  border-radius:14px!important;
+}
+.glass-topbar{
+  background:rgba(255,255,255,.72)!important;
+  backdrop-filter:blur(20px) saturate(180%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(180%)!important;
+  border-bottom:1px solid rgba(255,255,255,.6)!important;
+  box-shadow:0 1px 0 rgba(0,0,0,.06),0 2px 12px rgba(0,0,0,.04),inset 0 1px 0 rgba(255,255,255,.9)!important;
+}
+.btn-primary{
+  background:linear-gradient(135deg,rgba(37,99,235,.92),rgba(29,78,216,.97))!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  box-shadow:0 1px 3px rgba(29,78,216,.35),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+.btn-primary:hover:not(:disabled){
+  background:linear-gradient(135deg,rgba(37,99,235,1),rgba(30,64,175,.99))!important;
+  box-shadow:0 6px 20px rgba(29,78,216,.42),0 2px 6px rgba(29,78,216,.3),inset 0 1px 0 rgba(255,255,255,.28)!important;
+  transform:translateY(-1px)!important;
+}
+.btn-primary:active{transform:translateY(0)!important}
+.sidebar-link.active{
+  background:rgba(255,255,255,.15)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  box-shadow:inset 3px 0 0 #CE4E29,inset 0 1px 0 rgba(255,255,255,.1),0 2px 8px rgba(0,0,0,.15)!important;
+}
+.sidebar-link:hover{
+  background:rgba(255,255,255,.11)!important;
+  backdrop-filter:blur(6px)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+}
+.modal-bg{
+  background:rgba(15,23,42,.38)!important;
+  backdrop-filter:blur(8px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(150%)!important;
+}
+.modal{
+  background:rgba(255,255,255,.86)!important;
+  backdrop-filter:blur(32px) saturate(200%)!important;
+  -webkit-backdrop-filter:blur(32px) saturate(200%)!important;
+  border:1px solid rgba(255,255,255,.9)!important;
+  box-shadow:0 32px 80px rgba(0,0,0,.2),0 8px 32px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.95)!important;
+}
+@keyframes glassIn{
+  from{opacity:0;transform:translateY(-6px) scale(.97);filter:blur(3px)}
+  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+.modal{animation:glassIn .25s cubic-bezier(.16,1,.3,1) both}
+html.dark-mode .glass{
+  background:rgba(30,41,59,.62)!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  box-shadow:0 2px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+html.dark-mode .glass-topbar{
+  background:rgba(15,23,42,.78)!important;
+  border-bottom:1px solid rgba(255,255,255,.06)!important;
+  box-shadow:0 1px 0 rgba(0,0,0,.4),0 2px 12px rgba(0,0,0,.2)!important;
+}
+html.dark-mode .modal{
+  background:rgba(30,41,59,.9)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 32px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+html.dark-mode .glass-card{
+  background:rgba(30,41,59,.72)!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+}
 </style>
 </head>
 <body>
@@ -716,6 +833,7 @@ function Ic({n,z=16,s="#64748b"}){
   if(n==="cloudok")  return html`<svg ...${a}><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="9 16 12 19 15 16"/></svg>`;
   if(n==="cloudno")  return html`<svg ...${a}><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
   if(n==="shield")   return html`<svg ...${a}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+  if(n==="calc")     return html`<svg ...${a}><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg>`;
   if(n==="wa")       return html`<svg ...${a}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
 return null;
 }
@@ -805,7 +923,7 @@ function printNotaVenta(nv, cfg){
 }
 
 /* ── Ticket de cobro (impresión térmica 80mm) ────────────────────────── */
-function printTicketCobro(pago, ord, cli, cfg){
+function printTicketCobro(pago, ord, cli, cfg, bud){
   cfg = cfg||{};
   const empresa = cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
   const tel     = cfg.tel||"";
@@ -815,8 +933,31 @@ function printTicketCobro(pago, ord, cli, cfg){
   const METODO_LABEL = {efectivo:"💵 Efectivo",transferencia:"🏦 Transferencia",tarjeta:"💳 Tarjeta"};
   const METODO_COLOR = {efectivo:"#059669",transferencia:"#1d4ed8",tarjeta:"#9333ea"};
   const col = METODO_COLOR[pago.metodo]||"#1d4ed8";
+  const items = bud?.items||[];
+  const cv = items.length>0 ? calc(items) : null;
 
-  const w = window.open("","_blank","width=380,height=620");
+  const itemsHTML = items.length>0 ? `
+  <div class="section" style="padding:0">
+    <div style="background:#f8fafc;padding:6px 18px;border-bottom:1px dashed #e2e8f0">
+      <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8">Desglose — Presupuesto ${bud.id}</span>
+    </div>
+    ${items.map(it=>{
+      const desc = it.t==="r" ? `${it.n} × ${it.q}` : it.t==="s" ? `${it.n} × ${it.q}` : `${it.n} (${it.h}h)`;
+      const imp  = it.t==="m" ? it.h*it.ph : it.q*it.p;
+      return `<div style="display:flex;justify-content:space-between;padding:5px 18px;border-bottom:1px solid #f8fafc;font-size:11px">
+        <span style="color:#475569;flex:1;padding-right:8px">${desc}</span>
+        <span style="font-weight:600;color:#1e293b;white-space:nowrap">${mxn(imp)}</span>
+      </div>`;
+    }).join("")}
+    ${cv?`<div style="display:flex;justify-content:space-between;padding:6px 18px;font-size:11px;background:#f8fafc">
+      <span style="color:#94a3b8">Subtotal</span><span style="font-weight:600">${mxn(cv.s)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:4px 18px;font-size:11px">
+      <span style="color:#94a3b8">IVA (16%)</span><span style="color:#64748b">${mxn(cv.iv)}</span>
+    </div>`:""}
+  </div>` : "";
+
+  const w = window.open("","_blank","width=380,height=680");
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
   <title>Recibo ${pago.id}</title>
   <style>
@@ -874,11 +1015,13 @@ function printTicketCobro(pago, ord, cli, cfg){
     ${cli.tel?`<div class="val-sub">${cli.tel}</div>`:""}
   </div>`:""}
 
-  <div class="section">
+  ${itemsHTML}
+
+  ${!itemsHTML?`<div class="section">
     <div class="lbl">Concepto</div>
     <div class="val">${pago.concepto}</div>
     ${pago.nota?`<div class="val-sub" style="font-style:italic;margin-top:3px">${pago.nota}</div>`:""}
-  </div>
+  </div>`:""}
 
   <div class="monto-section">
     <div class="monto-lbl">Total cobrado</div>
@@ -1282,14 +1425,17 @@ function OrdModal({cls,tecs,edit,onSave,onClose,onPrint}){
         <div><label>Descripción del problema *</label>
           <textarea rows=${3} value=${f.prob} onChange=${s("prob")} placeholder="Describe el fallo reportado..." style=${{resize:"vertical"}}/>
         </div>
-        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div><label>Estado</label><select value=${f.est} onChange=${s("est")}>${STS.map(x=>html`<option key=${x.k} value=${x.k}>${x.k}</option>`)}</select></div>
           <div><label>Urgencia</label><select value=${f.urg} onChange=${s("urg")}>${URGS.map(x=>html`<option key=${x.k} value=${x.k}>${x.k}</option>`)}</select></div>
-          <div><label>Fecha ingreso</label><input type="date" value=${f.fecha} onChange=${s("fecha")}/></div>
         </div>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div><label>Fecha ingreso</label><input type="date" value=${f.fecha} onChange=${s("fecha")}/></div>
           <div><label>Entrega estimada</label><input type="date" value=${f.ent} onChange=${s("ent")}/></div>
-          <div><label>Notas internas</label><input value=${f.notas} onChange=${s("notas")} placeholder="Condición, accesorios..."/></div>
+        </div>
+        <div>
+          <label>Notas internas</label>
+          <textarea rows=${2} value=${f.notas} onChange=${s("notas")} placeholder="Condición del equipo, accesorios incluidos, observaciones..." style=${{resize:"vertical"}}/>
         </div>
       </div>
       <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
@@ -1563,7 +1709,7 @@ function ServiciosSection({svcs,onAdd,onEdit,onDel}){
     return mq&&mc;
   });
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Catálogo de Servicios</h2>
@@ -1857,6 +2003,15 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
           style=${{fontSize:11,display:"flex",alignItems:"center",gap:4}}>
           <${Ic} n="link" z=${12} s="#1d4ed8"/> Link cliente
         </button>
+        ${ord.est==="Listo"&&html`
+          <button class="btn btn-sm" onClick=${()=>{
+            const tel=fmtTelWA(cli?.tel||"");
+            if(!tel||tel.length<10){alert("El cliente no tiene teléfono registrado. Agrégalo en la sección Clientes.");return;}
+            const msg="🔧 *REDCOM — Servicio Técnico*\n─────────────────────\nHola *"+cli.nombre+"*, le informamos que su equipo ya está *listo para entrega* ✅\n\n📋 *Orden:* "+ord.id+"\n💻 *Equipo:* "+ord.equipo+(ord.serie&&ord.serie!=="N/A"?"\n🔢 *Serie:* "+ord.serie:"")+"\n👨‍🔧 *Técnico:* "+(tec?.nombre||"—")+"\n\nPasar a recoger en horario de oficina.\n🙏 ¡Gracias por su preferencia!";
+            window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
+          }} style=${{fontSize:11,background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
+            <${Ic} n="wa" z=${12} s="#16a34a"/> Avisar listo
+          </button>`}
       </div>
       <div style=${{display:"flex",gap:4,flexWrap:"wrap"}}>
         ${STS.map((x,i)=>html`<button key=${x.k} onClick=${()=>onSt(ord.id,x.k)} style=${{padding:"3px 9px",borderRadius:99,fontSize:10,fontWeight:600,cursor:"pointer",border:"1.5px solid",borderColor:ord.est===x.k?x.c:i<idx?"#cbd5e1":"#e2e8f0",background:ord.est===x.k?x.bg:i<idx?"#f8fafc":"#fff",color:ord.est===x.k?x.c:i<idx?"#94a3b8":"#cbd5e1",transition:"all .15s"}}>${ord.est===x.k?"● ":i<idx?"✓ ":""}${x.k}</button>`)}
@@ -1963,6 +2118,23 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
             :html`<button class="btn" style=${{width:"100%",justifyContent:"center",background:"#eff6ff",color:"#1d4ed8",border:"1.5px dashed #93c5fd"}} onClick=${()=>onBud(ord)}><${Ic} n="plus" z=${14} s="#1d4ed8"/> Generar presupuesto</button>`}
           </div>`}
       </div>
+
+      <!-- Historial de cambios -->
+      ${ord.log?.length>0&&html`
+        <div style=${{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}}>
+          <div style=${{padding:"8px 12px",background:"var(--bg3)",borderBottom:"1px solid var(--border)",fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:.8,display:"flex",alignItems:"center",gap:6}}>
+            <${Ic} n="list" z=${12} s="var(--text4)"/> Historial
+          </div>
+          ${ord.log.map((e,i)=>html`
+            <div key=${i} style=${{display:"flex",gap:8,padding:"7px 12px",borderBottom:i<ord.log.length-1?"1px solid var(--border2)":"none",alignItems:"flex-start"}}>
+              <div style=${{fontSize:9,color:"var(--text4)",fontFamily:"monospace",whiteSpace:"nowrap",minWidth:72,paddingTop:2}}>${e.fecha}<br/>${e.hora||""}</div>
+              <div style=${{flex:1}}>
+                <div style=${{fontSize:11,fontWeight:600,color:e.estado==="Orden creada"?"#059669":e.estado==="Orden editada"?"#64748b":e.estado==="Diagnóstico guardado"?"#7c3aed":"#1d4ed8"}}>${e.estado}</div>
+                ${e.nota&&html`<div style=${{fontSize:10,color:"var(--text4)",marginTop:1}}>${e.nota}</div>`}
+              </div>
+              <div style=${{fontSize:10,color:"var(--text4)",whiteSpace:"nowrap"}}>${e.user||""}</div>
+            </div>`)}
+        </div>`}
     </div>
   </div>
   ${showWA&&bud&&html`<${WAModal} ord=${ord} cli=${cli} bud=${bud} tec=${tec} onClose=${()=>setWA(false)}/>`}
@@ -1971,32 +2143,102 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
 
 /* ══ KANBAN ═════════════════════════════════════════════════════════════ */
 function Kanban({ords,cls,tecs,buds,sel,onSel,onMv}){
-  return html`<div style=${{display:"flex",gap:10,height:"100%",overflowX:"auto",padding:"0 4px 8px"}}>
+  const EMPTY={
+    "Ingreso":       {icon:"📥", msg:"Ningún equipo por ingresar"},
+    "Diagnóstico":   {icon:"🔍", msg:"Nada bajo el microscopio"},
+    "En Reparación": {icon:"🛠️", msg:"El taller está tranquilo"},
+    "Listo":         {icon:"📦", msg:"Sin equipos esperando"},
+    "Entregado":     {icon:"🎉", msg:"Todo entregado hoy"},
+  };
+
+  return html`<div style=${{display:"flex",gap:10,height:"100%",overflowX:"auto",padding:"12px 16px 16px"}}>
     ${STS.map(st=>{
       const col=ords.filter(o=>o.est===st.k);
-      return html`<div key=${st.k} class="kcol" style=${{minWidth:200,flex:"1 1 0",background:"#f8fafc",borderRadius:10,border:"1px solid #e2e8f0",display:"flex",flexDirection:"column"}}
-        onDragOver=${e=>{e.preventDefault();e.currentTarget.classList.add("over")}}
-        onDragLeave=${e=>e.currentTarget.classList.remove("over")}
-        onDrop=${e=>{e.preventDefault();e.currentTarget.classList.remove("over");const id=e.dataTransfer.getData("oid");if(id)onMv(id,st.k);}}>
-        <div style=${{padding:"9px 12px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style=${{fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,color:st.c}}>${st.k}</span>
-          <span style=${{fontSize:11,fontWeight:600,color:"#94a3b8",background:"#e2e8f0",borderRadius:99,padding:"0 7px"}}>${col.length}</span>
+      const colBg=st.c+"12";
+      const colBorder=st.c+"30";
+      const headerBg=st.c+"20";
+      const emp=EMPTY[st.k]||{icon:"📭",msg:"Sin órdenes"};
+      return html`<div key=${st.k} class="kcol" style=${{
+        minWidth:210,flex:"1 1 0",
+        background:colBg,
+        borderRadius:12,
+        border:"1.5px solid "+colBorder,
+        display:"flex",flexDirection:"column",
+        backdropFilter:"blur(8px)",
+        WebkitBackdropFilter:"blur(8px)",
+        transition:"border .15s,background .15s"}}
+        onDragOver=${e=>{
+          e.preventDefault();
+          e.currentTarget.classList.add("over");
+          e.currentTarget.style.border="2px dashed "+st.c;
+          e.currentTarget.style.background=st.c+"20";
+        }}
+        onDragLeave=${e=>{
+          e.currentTarget.classList.remove("over");
+          e.currentTarget.style.border="1.5px solid "+colBorder;
+          e.currentTarget.style.background=colBg;
+        }}
+        onDrop=${e=>{
+          e.preventDefault();
+          e.currentTarget.classList.remove("over");
+          e.currentTarget.style.border="1.5px solid "+colBorder;
+          e.currentTarget.style.background=colBg;
+          const id=e.dataTransfer.getData("oid");
+          if(id) onMv(id,st.k);
+        }}>
+
+        <!-- Column header -->
+        <div style=${{
+          padding:"10px 14px",
+          borderBottom:"1.5px solid "+colBorder,
+          background:headerBg,
+          borderRadius:"10px 10px 0 0",
+          display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style=${{display:"flex",alignItems:"center",gap:7}}>
+            <div style=${{width:8,height:8,borderRadius:"50%",background:st.c,boxShadow:"0 0 6px "+st.c+"88"}}/>
+            <span style=${{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:.9,color:st.c}}>${st.k}</span>
+          </div>
+          <span style=${{fontSize:11,fontWeight:700,color:st.c,background:st.bg,borderRadius:99,padding:"1px 9px",border:"1px solid "+st.c+"30"}}>${col.length}</span>
         </div>
-        <div style=${{flex:1,overflow:"auto",padding:8,display:"flex",flexDirection:"column",gap:7}}>
+
+        <!-- Cards -->
+        <div style=${{flex:1,overflow:"auto",padding:"8px",display:"flex",flexDirection:"column",gap:7}}>
+          ${col.length===0&&html`
+            <div style=${{
+              flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+              padding:"32px 12px",color:st.c,opacity:.45,
+              border:"1.5px dashed "+st.c+"50",borderRadius:8,margin:"4px 0",
+              minHeight:120}}>
+              <div style=${{fontSize:32,marginBottom:8,filter:"grayscale(.2)"}}>${emp.icon}</div>
+              <div style=${{fontSize:11,fontWeight:600,textAlign:"center",lineHeight:1.4}}>${emp.msg}</div>
+            </div>`}
           ${col.map(o=>{
             const c=gcl(cls,o.cid),t=gtec(tecs,o.tec),bud=Object.values(buds).find(b=>b.oid===o.id),cv=bud?calc(bud.items):null;
-            return html`<div key=${o.id} draggable onDragStart=${e=>e.dataTransfer.setData("oid",o.id)} onClick=${()=>onSel(o.id)}
-              style=${{background:"#fff",border:`1.5px solid ${sel===o.id?"#1d4ed8":"#e2e8f0"}`,borderRadius:8,padding:"9px 11px",cursor:"grab",boxShadow:sel===o.id?"0 0 0 3px #bfdbfe":undefined,transition:"all .15s"}}>
-              <div style=${{display:"flex",justifyContent:"space-between",marginBottom:3}}>
-                <span style=${{fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:"#94a3b8"}}>${o.id}</span>
+            const isSelected=sel===o.id;
+            return html`<div key=${o.id} draggable
+              onDragStart=${e=>{e.dataTransfer.setData("oid",o.id);e.currentTarget.style.opacity=".4";}}
+              onDragEnd=${e=>{e.currentTarget.style.opacity="1";}}
+              onClick=${()=>onSel(o.id)}
+              style=${{
+                background:isSelected?"#fff":"rgba(255,255,255,.82)",
+                border:"1.5px solid "+(isSelected?st.c:st.c+"35"),
+                borderRadius:9,padding:"10px 12px",cursor:"grab",
+                boxShadow:isSelected
+                  ?"0 0 0 3px "+st.c+"40,0 4px 16px rgba(0,0,0,.1)"
+                  :"0 1px 4px rgba(0,0,0,.06)",
+                transition:"all .15s",
+                backdropFilter:"blur(8px)",
+                WebkitBackdropFilter:"blur(8px)"}}>
+              <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
+                <span style=${{fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:st.c,fontWeight:600,background:st.c+"12",padding:"1px 6px",borderRadius:4}}>${o.id}</span>
                 <${UPill} u=${o.urg}/>
               </div>
-              <div style=${{fontSize:13,fontWeight:600}}>${c.nombre}</div>
-              <div style=${{fontSize:11,color:"#1d4ed8",marginTop:1}}>${o.equipo}</div>
-              <div style=${{fontSize:10,color:"#94a3b8",marginTop:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${o.prob}</div>
-              <div style=${{display:"flex",justifyContent:"space-between",marginTop:5,paddingTop:5,borderTop:"1px solid #f1f5f9"}}>
-                <span style=${{fontSize:9,color:"#94a3b8"}}>${t.nombre}</span>
-                ${cv&&html`<span style=${{fontSize:10,fontWeight:700,color:"#059669"}}>${mxn(cv.tot)}</span>`}
+              <div style=${{fontSize:13,fontWeight:700,color:"#0f172a",marginBottom:2,lineHeight:1.3}}>${c.nombre}</div>
+              <div style=${{fontSize:11,color:st.c,fontWeight:600,marginBottom:3}}>${o.equipo}</div>
+              <div style=${{fontSize:10,color:"#64748b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:6}}>${o.prob}</div>
+              <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:6,borderTop:"1px solid "+st.c+"20"}}>
+                <span style=${{fontSize:9,color:"#94a3b8",fontWeight:500}}>${t.nombre}</span>
+                ${cv&&html`<span style=${{fontSize:10,fontWeight:700,color:"#059669",background:"#f0fdf4",padding:"1px 6px",borderRadius:4}}>${mxn(cv.tot)}</span>`}
               </div>
             </div>`;
           })}
@@ -2030,22 +2272,22 @@ function CliDetalle({cl,ords,pagos,gars,onEdit,onClose}){
   return html`<div class="slide-in" style=${{height:"100%",display:"flex",flexDirection:"column",background:"var(--bg)",overflow:"hidden"}}>
 
     <!-- Header -->
-    <div style=${{background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)",padding:"18px 20px",flexShrink:0,position:"relative"}}>
+    <div style=${{background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)",padding:"14px 16px",flexShrink:0,position:"relative"}}>
       <button class="btn btn-ghost btn-sm" onClick=${onClose}
-        style=${{position:"absolute",top:12,right:12,color:"rgba(255,255,255,.7)",background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.2)"}}>
+        style=${{position:"absolute",top:10,right:10,color:"rgba(255,255,255,.7)",background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.2)",minHeight:28,padding:"4px 10px",fontSize:11}}>
         ✕
       </button>
-      <div style=${{display:"flex",gap:14,alignItems:"center"}}>
-        <div style=${{width:52,height:52,borderRadius:14,background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:800,color:"#fff",flexShrink:0}}>
+      <div style=${{display:"flex",gap:12,alignItems:"center"}}>
+        <div style=${{width:44,height:44,borderRadius:12,background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:800,color:"#fff",flexShrink:0}}>
           ${cl.nombre.charAt(0).toUpperCase()}
         </div>
         <div style=${{flex:1,minWidth:0}}>
           <div style=${{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-            <div style=${{fontSize:18,fontWeight:800,color:"#fff"}}>${cl.nombre}</div>
-            ${esFrecuente&&html`<span style=${{background:"#fbbf24",color:"#78350f",fontSize:9,fontWeight:800,padding:"2px 8px",borderRadius:99,letterSpacing:.5}}>⭐ FRECUENTE</span>`}
+            <div style=${{fontSize:16,fontWeight:800,color:"#fff"}}>${cl.nombre}</div>
+            ${esFrecuente&&html`<span style=${{background:"#fbbf24",color:"#78350f",fontSize:9,fontWeight:800,padding:"2px 7px",borderRadius:99}}>⭐ FRECUENTE</span>`}
           </div>
-          ${cl.empresa&&html`<div style=${{fontSize:12,color:"rgba(255,255,255,.7)",marginTop:1}}>${cl.empresa}</div>`}
-          <div style=${{display:"flex",gap:12,marginTop:6,flexWrap:"wrap"}}>
+          ${cl.empresa&&html`<div style=${{fontSize:11,color:"rgba(255,255,255,.7)",marginTop:1}}>${cl.empresa}</div>`}
+          <div style=${{display:"flex",gap:10,marginTop:4,flexWrap:"wrap"}}>
             ${cl.tel&&html`<span style=${{fontSize:11,color:"rgba(255,255,255,.8)"}}>📱 ${cl.tel}</span>`}
             ${cl.email&&html`<span style=${{fontSize:11,color:"rgba(255,255,255,.8)"}}>✉️ ${cl.email}</span>`}
           </div>
@@ -2053,16 +2295,16 @@ function CliDetalle({cl,ords,pagos,gars,onEdit,onClose}){
       </div>
 
       <!-- KPIs rápidos -->
-      <div style=${{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:14}}>
+      <div style=${{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginTop:10}}>
         ${[
           ["Órdenes",clOrd.length,"#fff"],
           ["Activas",activas,"#fbbf24"],
           ["Total gastado",mxn(totalGastado),"#86efac"],
           ["Garantías",clGar.length,"#c4b5fd"],
         ].map(([l,v,col])=>html`
-          <div key=${l} style=${{background:"rgba(255,255,255,.1)",borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-            <div style=${{fontSize:9,color:"rgba(255,255,255,.55)",textTransform:"uppercase",letterSpacing:.8,marginBottom:3}}>${l}</div>
-            <div style=${{fontSize:15,fontWeight:800,color:col}}>${v}</div>
+          <div key=${l} style=${{background:"rgba(255,255,255,.1)",borderRadius:7,padding:"6px 8px",textAlign:"center"}}>
+            <div style=${{fontSize:8,color:"rgba(255,255,255,.55)",textTransform:"uppercase",letterSpacing:.8,marginBottom:2}}>${l}</div>
+            <div style=${{fontSize:13,fontWeight:800,color:col}}>${v}</div>
           </div>`)}
       </div>
     </div>
@@ -2193,16 +2435,10 @@ function ClientsSection({cls,ords,pagos,gars,onAdd,onEdit,onDel}){
 
   const isMob=window.innerWidth<=768;
 
-  return html`<div style=${{height:"100%",display:"flex",overflow:"hidden"}}>
+  return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
 
-    <!-- Lista izquierda -->
-    <div style=${{
-      width:(!isMob&&selId)?340:undefined,
-      flex:(!isMob&&selId)?undefined:1,
-      display:(isMob&&selId)?"none":"flex",
-      flexShrink:0,flexDirection:"column",
-      borderRight:"1px solid var(--border)",
-      background:"var(--bg)",overflow:"hidden",transition:"width .2s"}}>
+    <!-- Lista — siempre full width -->
+    <div style=${{height:"100%",display:"flex",flexDirection:"column",background:"var(--bg)",overflow:"hidden"}}>
 
       <!-- Toolbar -->
       <div style=${{padding:"12px 16px",borderBottom:"1px solid var(--border)",background:"var(--bg)",flexShrink:0}}>
@@ -2227,18 +2463,18 @@ function ClientsSection({cls,ords,pagos,gars,onAdd,onEdit,onDel}){
             const esFrecuente=n>=3;
             const isSelected=selId===cl.id;
             return html`<div key=${cl.id}
-              onClick=${()=>setSelId(isSelected?null:cl.id)}
               style=${{padding:"11px 14px",borderBottom:"1px solid var(--border)",cursor:"pointer",
                 background:isSelected?"#eff6ff":"var(--bg)",
                 borderLeft:isSelected?"3px solid #1d4ed8":"3px solid transparent",
-                transition:"all .12s"}}>
+                transition:"background .1s"}}>
               <div style=${{display:"flex",gap:10,alignItems:"center"}}>
                 <div style=${{width:36,height:36,borderRadius:10,background:isSelected?"#1d4ed8":"var(--bg3)",
                   display:"flex",alignItems:"center",justifyContent:"center",
-                  fontSize:14,fontWeight:800,color:isSelected?"#fff":"var(--text4)",flexShrink:0}}>
+                  fontSize:14,fontWeight:800,color:isSelected?"#fff":"var(--text4)",flexShrink:0}}
+                  onClick=${()=>setSelId(isSelected?null:cl.id)}>
                   ${cl.nombre.charAt(0).toUpperCase()}
                 </div>
-                <div style=${{flex:1,minWidth:0}}>
+                <div style=${{flex:1,minWidth:0}} onClick=${()=>setSelId(isSelected?null:cl.id)}>
                   <div style=${{display:"flex",alignItems:"center",gap:5}}>
                     <div style=${{fontSize:13,fontWeight:600,color:isSelected?"#1d4ed8":"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${cl.nombre}</div>
                     ${esFrecuente&&html`<span style=${{fontSize:8,background:"#fef3c7",color:"#92400e",padding:"1px 5px",borderRadius:99,fontWeight:800,flexShrink:0}}>⭐</span>`}
@@ -2247,37 +2483,37 @@ function ClientsSection({cls,ords,pagos,gars,onAdd,onEdit,onDel}){
                     ${cl.empresa?cl.empresa+" · ":""}${cl.tel||cl.email||"Sin contacto"}
                   </div>
                 </div>
-                <div style=${{textAlign:"right",flexShrink:0}}>
-                  <div style=${{fontSize:12,fontWeight:700,color:isSelected?"#1d4ed8":"var(--text3)"}}>${n}</div>
-                  ${activas>0&&html`<div style=${{fontSize:9,color:"#d97706",fontWeight:700}}>${activas} act.</div>`}
+                <div style=${{display:"flex",gap:4,alignItems:"center",flexShrink:0}}>
+                  <div style=${{textAlign:"right",marginRight:4}}>
+                    <div style=${{fontSize:12,fontWeight:700,color:isSelected?"#1d4ed8":"var(--text3)"}}>${n}</div>
+                    ${activas>0&&html`<div style=${{fontSize:9,color:"#d97706",fontWeight:700}}>${activas} act.</div>`}
+                  </div>
+                  <button class="btn btn-ghost btn-sm" onClick=${e=>{e.stopPropagation();onEdit(cl);}} title="Editar"><${Ic} n="edit" z=${11}/></button>
+                  <button class="btn btn-danger btn-sm" onClick=${e=>{e.stopPropagation();setConfirm(cl);}} title="Eliminar"><${Ic} n="trash" z=${11} s="#dc2626"/></button>
                 </div>
               </div>
-              ${!selId&&html`<div style=${{display:"flex",gap:4,marginTop:8,justifyContent:"flex-end"}}>
-                <button class="btn btn-ghost btn-sm" onClick=${e=>{e.stopPropagation();onEdit(cl);}}><${Ic} n="edit" z=${11}/></button>
-                <button class="btn btn-danger btn-sm" onClick=${e=>{e.stopPropagation();setConfirm(cl);}}><${Ic} n="trash" z=${11} s="#dc2626"/></button>
-              </div>`}
             </div>`;
           })}
       </div>
     </div>
 
-    <!-- Ficha derecha -->
-    ${selCl
-      ?html`<div style=${{flex:1,overflow:"hidden",display:"flex",flexDirection:"column"}}>
-          ${isMob&&html`<div style=${{padding:"8px 12px",borderBottom:"1px solid var(--border)",background:"var(--bg2)",flexShrink:0}}>
-            <button class="btn btn-ghost btn-sm" onClick=${()=>setSelId(null)}>← Volver a clientes</button>
-          </div>`}
-          <div style=${{flex:1,overflow:"hidden"}}>
-            <${CliDetalle} cl=${selCl} ords=${ords} pagos=${pagos} gars=${gars}
-              onEdit=${onEdit}
-              onClose=${()=>setSelId(null)}/>
-          </div>
-        </div>`
-      :!isMob&&html`<div style=${{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"var(--bg2)",flexDirection:"column",gap:10}}>
-          <div style=${{fontSize:48}}>👤</div>
-          <div style=${{fontSize:14,fontWeight:600,color:"var(--text3)"}}>Selecciona un cliente</div>
-          <div style=${{fontSize:12,color:"var(--text4)"}}>Ver historial, pagos y garantías</div>
-        </div>`}
+    <!-- Drawer overlay — desliza desde la derecha sin encoger la lista -->
+    ${selCl&&html`
+      <!-- Sombra de fondo -->
+      <div onClick=${()=>setSelId(null)}
+        style=${{position:"absolute",inset:0,background:"rgba(15,23,42,.35)",zIndex:10,backdropFilter:"blur(1px)"}}/>
+      <!-- Panel -->
+      <div style=${{
+        position:"absolute",top:0,right:0,bottom:0,
+        width:"min(520px,85%)",
+        background:"var(--bg)",zIndex:11,
+        boxShadow:"-8px 0 32px rgba(0,0,0,.18)",
+        display:"flex",flexDirection:"column",
+        animation:"si .2s ease"}}>
+        <${CliDetalle} cl=${selCl} ords=${ords} pagos=${pagos} gars=${gars}
+          onEdit=${onEdit}
+          onClose=${()=>setSelId(null)}/>
+      </div>`}
 
     ${confirm&&html`<${Confirm}
       msg=${"¿Eliminar a <b>"+confirm.nombre+"</b>? Se perderán sus datos."}
@@ -2519,7 +2755,7 @@ function TecSection({tecs,ords,onAdd,onEdit,onDel,onToggle}){
   const filt=tecs.filter(t=>!q||[t.nombre,t.especialidad,t.rol].some(x=>x.toLowerCase().includes(q.toLowerCase())));
   const RCOLS={Administrador:["#eff6ff","#1d4ed8"],Técnico:["#f0fdf4","#059669"],Auxiliar:["#f5f3ff","#7c3aed"],Sistema:["#f1f5f9","#64748b"]};
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Técnicos</h2>
@@ -2609,7 +2845,7 @@ function DashKPIs({ords,pagos,notas,cls}){
 
   return html`<div style=${{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
     ${KPIS.map(k=>html`
-      <div key=${k.lbl} style=${{background:k.bg,border:"1px solid",borderColor:k.col+"33",borderRadius:12,padding:"12px",display:"flex",gap:8,alignItems:"flex-start"}}>
+      <div key=${k.lbl} class="glass-card" style=${{background:k.bg,border:"1px solid",borderColor:k.col+"33",borderRadius:12,padding:"12px",display:"flex",gap:8,alignItems:"flex-start"}}>
         <div style=${{fontSize:20,lineHeight:1,flexShrink:0}}>${k.icon}</div>
         <div style=${{flex:1,minWidth:0}}>
           <div style=${{fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,color:k.col,opacity:.7,marginBottom:2}}>${k.lbl}</div>
@@ -2621,52 +2857,107 @@ function DashKPIs({ords,pagos,notas,cls}){
 }
 
 function DashBarChart({pagos}){
-  // Last 30 days revenue bar chart — pure CSS
+  const [rango,setRango]=useState(30); // 7 o 30
   const days=[];
-  for(let i=29;i>=0;i--){
+  for(let i=rango-1;i>=0;i--){
     const d=new Date(Date.now()-i*86400000);
     const key=d.toISOString().slice(0,10);
-    const label=d.getDate()+"/"+(d.getMonth()+1);
+    const label=rango===7
+      ? ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][d.getDay()]
+      : d.getDate()+"/"+(d.getMonth()+1);
     const val=pagos.filter(p=>p.fecha===key).reduce((s,p)=>s+p.monto,0);
     days.push({key,label,val,isToday:i===0,isWeekend:d.getDay()===0||d.getDay()===6});
   }
   const maxVal=Math.max(...days.map(d=>d.val),1);
-  const total30=days.reduce((s,d)=>s+d.val,0);
-  const avg=total30/30;
+  const total=days.reduce((s,d)=>s+d.val,0);
+  const avg=total/rango;
 
-  return html`<div style=${{background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
+  return html`<div class="glass-card" style=${{border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
     <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
       <div>
-        <div style=${{fontSize:13,fontWeight:700,color:"var(--text)"}}>📊 Ingresos — últimos 30 días</div>
-        <div style=${{fontSize:11,color:"var(--text4)",marginTop:2}}>Total: ${mxn(total30)} · Promedio: ${mxn(avg)}/día</div>
+        <div style=${{fontSize:13,fontWeight:700,color:"var(--text)"}}>📊 Ingresos — últimos ${rango} días</div>
+        <div style=${{fontSize:11,color:"var(--text4)",marginTop:2}}>Total: ${mxn(total)} · Promedio: ${mxn(avg)}/día</div>
+      </div>
+      <div style=${{display:"flex",gap:4}}>
+        ${[7,30].map(r=>html`
+          <button key=${r} onClick=${()=>setRango(r)} style=${{
+            padding:"3px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"inherit",
+            fontSize:11,fontWeight:600,
+            background:rango===r?"#1d4ed8":"var(--bg3)",
+            color:rango===r?"#fff":"var(--text4)"}}>
+            ${r===7?"Semana":"30 días"}
+          </button>`)}
       </div>
     </div>
-    <div style=${{display:"flex",alignItems:"flex-end",gap:3,height:100,paddingBottom:20,position:"relative"}}>
-      <!-- Avg line -->
-      <div style=${{position:"absolute",left:0,right:0,bottom:20+((avg/maxVal)*100-0.5),height:1,borderTop:"1px dashed #94a3b8",pointerEvents:"none",zIndex:1}}/>
+    <div style=${{display:"flex",alignItems:"flex-end",gap:rango===7?8:3,height:110,paddingBottom:22,position:"relative"}}>
+      <div style=${{position:"absolute",left:0,right:0,bottom:22+((avg/maxVal)*88-0.5),height:1,borderTop:"1px dashed var(--text5)",pointerEvents:"none",zIndex:1}}/>
       ${days.map(d=>html`
         <div key=${d.key} title=${d.label+": "+mxn(d.val)}
-          style=${{flex:1,display:"flex",flexDirection:"column",alignItems:"center",height:"100%",justifyContent:"flex-end",cursor:"default",position:"relative"}}>
+          style=${{flex:1,display:"flex",flexDirection:"column",alignItems:"center",height:"100%",justifyContent:"flex-end",position:"relative"}}>
           <div style=${{
             width:"100%",
-            height:d.val>0?Math.max(3,(d.val/maxVal)*100)+"%":"3px",
+            height:d.val>0?Math.max(3,(d.val/maxVal)*88)+"%":"3px",
             background:d.isToday?"#1d4ed8":d.isWeekend?"#94a3b8":"#93c5fd",
-            borderRadius:"3px 3px 0 0",
-            transition:"opacity .15s",
-            opacity:.9}}
-            onMouseOver=${e=>e.currentTarget.style.opacity="1"}
-            onMouseOut=${e=>e.currentTarget.style.opacity=".9"}/>
-          ${(d.isToday||days.indexOf(d)%5===0)&&html`
-            <div style=${{position:"absolute",bottom:0,fontSize:8,color:"var(--text4)",whiteSpace:"nowrap",fontFamily:"monospace"}}>${d.label}</div>`}
+            borderRadius:"3px 3px 0 0",transition:"opacity .15s",opacity:.9}}
+            onMouseOver=${e=>{e.currentTarget.style.opacity="1";e.currentTarget.style.background="#1d4ed8";}}
+            onMouseOut=${e=>{e.currentTarget.style.opacity=".9";e.currentTarget.style.background=d.isToday?"#1d4ed8":d.isWeekend?"#94a3b8":"#93c5fd";}}/>
+          <div style=${{position:"absolute",bottom:0,fontSize:rango===7?9:8,color:d.isToday?"#1d4ed8":"var(--text4)",whiteSpace:"nowrap",fontWeight:d.isToday?700:400}}>
+            ${rango===7||d.isToday||days.indexOf(d)%5===0?d.label:""}
+          </div>
         </div>`)}
     </div>
-    <div style=${{display:"flex",gap:12,marginTop:6}}>
-      ${[["#1d4ed8","Hoy"],["#93c5fd","Días entre semana"],["#94a3b8","Fines de semana"],["-- #94a3b8","Promedio"]].map(([col,lbl])=>html`
-        <div key=${lbl} style=${{display:"flex",alignItems:"center",gap:4,fontSize:9,color:"var(--text4)"}}>
-          <div style=${{width:10,height:10,borderRadius:2,background:col.startsWith("--")?undefined:"var(--"+col.replace("var(--","").replace(")","")+")",background:col.startsWith("--")?"transparent":col,border:col.startsWith("--")?"1px dashed #94a3b8":"none"}}/>
-          ${lbl}
-        </div>`)}
-    </div>
+    ${rango===7&&html`
+      <div style=${{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,marginTop:4}}>
+        ${days.map(d=>html`
+          <div key=${d.key} style=${{textAlign:"center",fontSize:10,fontWeight:600,color:d.isToday?"#1d4ed8":d.val>0?"#059669":"var(--text4)"}}>
+            ${d.val>0?mxn(d.val):"—"}
+          </div>`)}
+      </div>`}
+  </div>`;
+}
+
+function DashTopServicios({buds,svcs}){
+  // Contar los servicios y refacciones más usados en presupuestos aceptados
+  const freq={};
+  Object.values(buds||{}).filter(b=>b.est==="Aceptado").forEach(b=>{
+    (b.items||[]).forEach(it=>{
+      const key=it.n||it.nombre||"—";
+      if(!freq[key]) freq[key]={nombre:key,tipo:it.t==="r"?"refacción":it.t==="s"?"servicio":"MO",qty:0,total:0};
+      const q=it.t==="m"?it.h:it.q;
+      const p=it.t==="m"?it.ph:it.p;
+      freq[key].qty+=q;
+      freq[key].total+=q*p;
+    });
+  });
+  const top=Object.values(freq).sort((a,b)=>b.qty-a.qty).slice(0,7);
+  const maxQ=Math.max(...top.map(t=>t.qty),1);
+  const TIPO_C={refacción:["#eff6ff","#1d4ed8"],servicio:["#f0fdf4","#059669"],MO:["#fdf4ff","#7c3aed"]};
+
+  return html`<div class="glass-card" style=${{border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
+    <div style=${{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🔩 Top servicios y refacciones</div>
+    ${top.length===0
+      ?html`<div style=${{fontSize:12,color:"var(--text4)",textAlign:"center",padding:"20px 0"}}>Acepta presupuestos para ver estadísticas</div>`
+      :html`<div style=${{display:"grid",gap:9}}>
+        ${top.map((s,i)=>{
+          const [bg,col]=TIPO_C[s.tipo]||TIPO_C["servicio"];
+          return html`<div key=${s.nombre} style=${{display:"flex",alignItems:"center",gap:10}}>
+            <div style=${{width:18,fontSize:11,fontWeight:800,color:i<3?"#f59e0b":"var(--text4)",textAlign:"center",flexShrink:0}}>${i+1}</div>
+            <div style=${{flex:1,minWidth:0}}>
+              <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3,gap:6}}>
+                <div style=${{fontSize:11,fontWeight:600,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1}}>${s.nombre}</div>
+                <div style=${{display:"flex",gap:5,flexShrink:0,alignItems:"center"}}>
+                  <span style=${{background:bg,color:col,fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:99}}>${s.tipo}</span>
+                  <span style=${{fontSize:11,fontWeight:700,color:"var(--text3)"}}>${s.qty}x</span>
+                </div>
+              </div>
+              <div style=${{height:5,background:"var(--bg3)",borderRadius:99,overflow:"hidden"}}>
+                <div style=${{height:"100%",width:Math.max(4,(s.qty/maxQ)*100)+"%",background:col,borderRadius:99,transition:"width .5s"}}/>
+              </div>
+            </div>
+            <div style=${{fontSize:10,color:"#059669",fontWeight:600,flexShrink:0,width:70,textAlign:"right"}}>${mxn(s.total)}</div>
+          </div>`;
+        })}
+      </div>`}
   </div>`;
 }
 
@@ -2685,7 +2976,7 @@ function DashDonut({ords}){
     return slice;
   });
 
-  return html`<div style=${{background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
+  return html`<div class="glass-card" style=${{border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
     <div style=${{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🍩 Órdenes por estado</div>
     <div style=${{display:"flex",gap:16,alignItems:"center"}}>
       <svg width="120" height="120" viewBox="0 0 120 120">
@@ -2727,7 +3018,7 @@ function DashTopTecs({ords,tecs,pagos}){
 
   const maxC=Math.max(...ranking.map(t=>t.cerradas),1);
 
-  return html`<div style=${{background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
+  return html`<div class="glass-card" style=${{border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
     <div style=${{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🏆 Top técnicos del mes</div>
     ${ranking.length===0
       ?html`<div style=${{fontSize:12,color:"var(--text4)",textAlign:"center",padding:"20px 0"}}>Sin técnicos activos</div>`
@@ -2769,7 +3060,7 @@ function DashActividad({ords,cls,pagos}){
   eventos.sort((a,b)=>b.fecha.localeCompare(a.fecha));
   const recientes=eventos.slice(0,8);
 
-  return html`<div style=${{background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
+  return html`<div class="glass-card" style=${{border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
     <div style=${{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>⚡ Actividad reciente</div>
     ${recientes.length===0
       ?html`<div style=${{fontSize:12,color:"var(--text4)",textAlign:"center",padding:"20px 0"}}>Sin actividad aún</div>`
@@ -2847,7 +3138,7 @@ function DashNVTab({notas,onDelNota,onPrintNota}){
 }
 
 /* ── Dashboard principal ─────────────────────────────────────────────── */
-function Dashboard({ords,buds,cls,tecs,notas,pagos,onDelNota,onPrintNota}){
+function Dashboard({ords,buds,cls,tecs,notas,pagos,svcs,onDelNota,onPrintNota}){
   const [tab,setTab]=useState("resumen");
   const TABS=[["resumen","📊","Resumen"],["notas","🧾","Notas de Venta"]];
 
@@ -2875,7 +3166,10 @@ function Dashboard({ords,buds,cls,tecs,notas,pagos,onDelNota,onPrintNota}){
         <div style=${{marginBottom:16}}>
           <${DashBarChart} pagos=${pagos}/>
         </div>
-        <${DashActividad} ords=${ords} cls=${cls} pagos=${pagos}/>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+          <${DashTopServicios} buds=${buds} svcs=${svcs}/>
+          <${DashActividad} ords=${ords} cls=${cls} pagos=${pagos}/>
+        </div>
       </div>`}
 
     ${tab==="notas"&&html`
@@ -3667,7 +3961,7 @@ function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
     <!-- Header -->
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Cotizaciones</h2>
@@ -3712,7 +4006,7 @@ function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit
               <div style=${{fontWeight:700,fontSize:13,color:"#1e293b"}}>${mxn(ct.tot)}</div>
               <div><span style=${{background:ec[0],color:ec[1],padding:"2px 10px",borderRadius:99,fontSize:11,fontWeight:700}}>${ct.est}</span></div>
               <div style=${{display:"flex",gap:3,padding:"9px 6px",justifyContent:"flex-end"}}>
-                <button class="btn btn-ghost btn-sm" title="Imprimir" onClick=${()=>onPrint(ct)}><${Ic} n="print" z=${12}/></button>
+<button class="btn btn-ghost btn-sm" title="Imprimir" onClick=${()=>onPrint(ct)}><${Ic} n="print" z=${12}/></button>
                 <button class="btn btn-ghost btn-sm" title="Editar" onClick=${()=>onEdit(ct)}><${Ic} n="edit" z=${12}/></button>
                 <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirm(ct)}><${Ic} n="trash" z=${12} s="#dc2626"/></button>
               </div>
@@ -4008,7 +4302,7 @@ function ProveedoresSection({provs,inv,onAdd,onEdit,onDel,onNewOC}){
   const CAT_C={"Videovigilancia IP":["#eff6ff","#1d4ed8"],"Videovigilancia Analógica":["#f5f3ff","#7c3aed"],"Cableado":["#f0fdf4","#059669"],"Redes":["#f0f9ff","#0891b2"],"Hardware":["#fff7ed","#ea580c"],"Almacenamiento":["#fdf4ff","#9333ea"],"Memoria":["#fffbeb","#d97706"],"Periféricos":["#f8fafc","#475569"],"Consumible":["#f0fdf4","#16a34a"],"Otro":["#f8fafc","#94a3b8"]};
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Proveedores</h2>
@@ -4130,7 +4424,7 @@ function OCSection({ocs,provs,inv,session,onAdd,onEdit,onDel,onPrint}){
   });
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Órdenes de Compra</h2>
@@ -4358,39 +4652,81 @@ function printOC(oc, pv){
 
 /* ══ CAJA POS — sub-componentes ════════════════════════════════════════ */
 
-function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago}){
+function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago,buds,cots}){
   const [monto,setMonto]   = useState("");
   const [metodo,setMetodo] = useState("efectivo");
   const [ordId,setOrdId]   = useState("");
+  const [cotId,setCotId]   = useState("");
   const [concepto,setConcepto] = useState("");
   const [nota,setNota]     = useState("");
   const [ordSearch,setOrdSearch] = useState("");
+  const [modoVinculo,setModoVinculo] = useState("ord");
 
   const hoy   = new Date().toISOString().slice(0,10);
   const ahora = new Date().toTimeString().slice(0,5);
 
   const ordsPend = ords.filter(o=>
-    (o.est==="Listo"||o.est==="Diagnóstico"||o.est==="En reparación")
+    ["Listo","Diagnóstico","En reparación","Ingreso"].includes(o.est)
     && !pagos.some(p=>p.ordId===o.id && p.fecha===hoy)
   );
+
   const ordsFiltered = ordSearch.trim()
-    ? ordsPend.filter(o=>{
+    ? ords.filter(o=>{
         const cl=cls.find(x=>x.id===o.cid);
         return o.id.toLowerCase().includes(ordSearch.toLowerCase())
-          || cl?.nombre?.toLowerCase().includes(ordSearch.toLowerCase())
+          || (cl?.nombre||"").toLowerCase().includes(ordSearch.toLowerCase())
           || o.equipo.toLowerCase().includes(ordSearch.toLowerCase());
       })
     : ordsPend;
 
   const selOrd = ords.find(o=>o.id===ordId);
   const selCli = cls.find(x=>x.id===selOrd?.cid);
+  const selBud = selOrd?.pid ? (buds||{})[selOrd.pid] : null;
+  const selCot = !selBud && selCli
+    ? (cots||[]).filter(ct=>ct.cid===selCli.id && ct.est==="Aceptada")
+        .sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""))[0]
+    : null;
+  const fuenteCobro = selBud || selCot || null;
+  const montoTotal = selBud ? calc(selBud.items).tot : (selCot?.tot||0);
+
+  const pagosOrden = ordId ? pagos.filter(p=>p.ordId===ordId) : [];
+  const totalPagado = pagosOrden.reduce((s,p)=>s+p.monto,0);
+  const saldoPendiente = Math.max(0, montoTotal - totalPagado);
+
+  const selCotDir = (cots||[]).find(ct=>ct.id===cotId);
 
   function selectOrd(id){
-    setOrdId(id);
+    setOrdId(id); setCotId("");
     const o=ords.find(x=>x.id===id);
     const cl=cls.find(x=>x.id===o?.cid);
     if(o) setConcepto("Reparación "+o.equipo+" — "+(cl?.nombre||""));
-    if(o?.total) setMonto(String(o.total));
+    const bud=o?.pid?(buds||{})[o.pid]:null;
+    const cot=!bud&&cl?(cots||[]).filter(ct=>ct.cid===cl.id&&ct.est==="Aceptada")
+      .sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""))[0]:null;
+    const tot=bud?calc(bud.items).tot:(cot?.tot||0);
+    const pagOrd=pagos.filter(p=>p.ordId===id);
+    const pagado=pagOrd.reduce((s,p)=>s+p.monto,0);
+    const saldo=Math.max(0,tot-pagado);
+    if(pagOrd.length>0 && saldo>0){
+      // Ya tiene pagos previos — mostrar saldo pendiente
+      setTipoPago("abono");
+      setMonto(String(saldo));
+    } else if(pagOrd.length===0 && tot>0){
+      // Primer cobro — anticipo al 50%
+      setTipoPago("anticipo");
+      setMonto(String(+(tot*0.5).toFixed(0)));
+    } else {
+     
+      if(tot>0) setMonto(String(tot));
+    }
+  }
+
+  function selectCot(ct){
+    setCotId(ct.id); setOrdId("");
+    const cl=cls.find(x=>x.id===ct.cid);
+    setConcepto((ct.descripcion||ct.ref||"Cotización")+" — "+(cl?.nombre||""));
+    setMonto(String(ct.tot||0));
+   
   }
 
   function pad(v){
@@ -4408,13 +4744,23 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago}){
       id:"PAG"+String(++PAGOQ).padStart(4,"0"),
       concepto:concepto.trim()||"Cobro "+metodo,
       metodo, monto:Number(monto),
-      ordId, nota, fecha:hoy, hora:ahora, user:session?.nombre||""
+      ordId:ordId||cotId||"", nota, fecha:hoy, hora:ahora,
+      user:session?.nombre||""
     };
     onAddPago(nuevoPago);
     const ordRel=ords.find(o=>o.id===ordId);
-    const cliRel=cls.find(x=>x.id===ordRel?.cid);
-    printTicketCobro(nuevoPago, ordRel||null, cliRel||null, config||{});
-    setMonto(""); setConcepto(""); setOrdId(""); setNota(""); setOrdSearch("");
+    const cliRel=ordRel?cls.find(x=>x.id===ordRel.cid)
+      :selCotDir?cls.find(x=>x.id===selCotDir.cid):null;
+    const budRel=ordRel?.pid?(buds||{})[ordRel.pid]:null;
+    const cotRel=selCotDir||((!budRel&&cliRel)
+      ?(cots||[]).filter(ct=>ct.cid===cliRel.id&&ct.est==="Aceptada")
+          .sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""))[0]:null);
+    const fuenteTicket=budRel||(cotRel?{
+      id:cotRel.id,
+      items:(cotRel.items||[]).map(it=>({t:"r",n:it.nombre,q:it.qty||1,p:it.precio||0}))
+    }:null);
+    printTicketCobro(nuevoPago,ordRel||null,cliRel||null,config||{},fuenteTicket||null);
+    setMonto(""); setConcepto(""); setOrdId(""); setCotId(""); setNota(""); setOrdSearch("");
   }
 
   const METODOS=[
@@ -4423,63 +4769,135 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago}){
     ["tarjeta","💳","Tarjeta","#9333ea","#fdf4ff","#e9d5ff"],
   ];
 
-  const montoDisplay = monto
-    ? "$"+Number(monto).toLocaleString("es-MX",{minimumFractionDigits:monto.includes(".")?2:0})
-    : "$0";
-  const cobrarLabel = monto
-    ? "💰 COBRAR $"+Number(monto||0).toLocaleString("es-MX",{minimumFractionDigits:0})
-    : "Ingresa monto";
+  const montoN=Number(monto)||0;
+  const montoDisplay=monto?"$"+montoN.toLocaleString("es-MX",{minimumFractionDigits:monto.includes(".")?2:0}):"$0";
+  const cobrarLabel=monto?"💰 COBRAR "+montoDisplay:"Ingresa monto";
 
-  return html`<div style=${{flex:1,display:"flex",overflow:"hidden"}}>
-
-    <!-- LEFT -->
+  return html`<div style=${{flex:1,display:"flex",minHeight:0}}>
     <div style=${{flex:1,overflowY:"auto",padding:"16px 12px 16px 20px",display:"flex",flexDirection:"column",gap:12}}>
 
-      <!-- Buscar orden -->
+      <!-- Vincular -->
       <div style=${{background:"var(--bg)",borderRadius:12,border:"1px solid var(--border)",padding:14}}>
-        <div style=${{fontSize:12,fontWeight:700,color:"var(--text)",marginBottom:8}}>🔍 Vincular orden</div>
+        <div style=${{fontSize:12,fontWeight:700,color:"var(--text)",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          🔍 Vincular orden o cotización
+          <div style=${{display:"flex",gap:4}}>
+            <button onClick=${()=>setModoVinculo("ord")} style=${{padding:"3px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:600,background:modoVinculo==="ord"?"#1d4ed8":"var(--bg3)",color:modoVinculo==="ord"?"#fff":"var(--text3)"}}>Órdenes</button>
+            <button onClick=${()=>setModoVinculo("cot")} style=${{padding:"3px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:600,background:modoVinculo==="cot"?"#059669":"var(--bg3)",color:modoVinculo==="cot"?"#fff":"var(--text3)"}}>Cotizaciones</button>
+          </div>
+        </div>
         <input value=${ordSearch} onChange=${e=>setOrdSearch(e.target.value)}
-          placeholder="Buscar por ID, cliente o equipo…" style=${{marginBottom:8}}/>
+          placeholder=${modoVinculo==="ord"?"Buscar por folio, cliente o equipo…":"Buscar cotización por folio o cliente…"}
+          style=${{marginBottom:8}}/>
+
         ${ordId&&selOrd&&html`
-          <div style=${{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-            <div>
-              <div style=${{fontSize:12,fontWeight:700,color:"#1d4ed8"}}>${selOrd.id} — ${selOrd.equipo}</div>
-              <div style=${{fontSize:11,color:"#3b82f6"}}>${selCli?.nombre||"?"} · ${selOrd.est}</div>
+          <div style=${{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:"10px 12px",marginBottom:8}}>
+            <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+              <div>
+                <div style=${{fontSize:12,fontWeight:700,color:"#1d4ed8"}}>${selOrd.id} — ${selOrd.equipo}</div>
+                <div style=${{fontSize:11,color:"#3b82f6",marginTop:2}}>${selCli?.nombre||"?"} · ${selOrd.est}</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onClick=${()=>{setOrdId("");setCotId("");setConcepto("");setMonto("");}}>✕</button>
             </div>
-            <button class="btn btn-ghost btn-sm" onClick=${()=>{setOrdId("");setConcepto("");setMonto("");}}>✕</button>
+            ${montoTotal>0&&html`
+              <div style=${{marginTop:8,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,borderTop:"1px solid #bfdbfe",paddingTop:8}}>
+                ${[["Total",montoTotal,"#1e293b"],["Pagado",totalPagado,totalPagado>0?"#059669":"#94a3b8"],["Pendiente",saldoPendiente,saldoPendiente>0?"#d97706":"#059669"]].map(([lbl,val,col])=>html`
+                  <div key=${lbl} style=${{textAlign:"center",background:"#fff",borderRadius:6,padding:"5px 4px"}}>
+                    <div style=${{fontSize:9,color:"#64748b",textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>${lbl}</div>
+                    <div style=${{fontSize:12,fontWeight:700,color:col}}>${mxn(val)}</div>
+                  </div>`)}
+              </div>`}
+            ${pagosOrden.length>0&&html`
+              <div style=${{marginTop:8,background:"#f8fafc",borderRadius:6,padding:"6px 8px",fontSize:10}}>
+                <div style=${{fontWeight:700,color:"#475569",marginBottom:4}}>Historial de pagos</div>
+                ${pagosOrden.map(p=>html`
+                  <div key=${p.id} style=${{display:"flex",justifyContent:"space-between",color:"#64748b",marginBottom:2}}>
+                    <span>${p.fecha} · ${p.tipoPagoLabel||p.tipoPago||"Pago"}</span>
+                    <span style=${{fontWeight:600,color:"#059669"}}>${mxn(p.monto)}</span>
+                  </div>`)}
+              </div>`}
+            ${!fuenteCobro&&html`<div style=${{marginTop:4,fontSize:10,color:"#94a3b8",fontStyle:"italic"}}>Sin presupuesto/cotización vinculada</div>`}
           </div>`}
-        ${!ordId&&ordsFiltered.length>0&&html`
-          <div style=${{maxHeight:150,overflowY:"auto",border:"1px solid var(--border)",borderRadius:8}}>
+
+        ${cotId&&selCotDir&&html`
+          <div style=${{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:"8px 12px",marginBottom:8}}>
+            <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+              <div>
+                <div style=${{fontSize:12,fontWeight:700,color:"#059669"}}>${selCotDir.id} — ${selCotDir.descripcion||selCotDir.ref||"Cotización"}</div>
+                <div style=${{fontSize:11,color:"#16a34a",marginTop:2}}>${cls.find(x=>x.id===selCotDir.cid)?.nombre||"?"}</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onClick=${()=>{setCotId("");setConcepto("");setMonto("");}}>✕</button>
+            </div>
+            <div style=${{marginTop:6,paddingTop:6,borderTop:"1px solid #bbf7d0",display:"flex",justifyContent:"space-between"}}>
+              <span style=${{fontSize:11,color:"#059669",fontWeight:600}}>📄 Cotización aceptada</span>
+              <span style=${{fontSize:12,fontWeight:800,color:"#059669"}}>${mxn(selCotDir.tot||0)}</span>
+            </div>
+          </div>`}
+
+        ${modoVinculo==="ord"&&!ordId&&ordsFiltered.length>0&&html`
+          <div style=${{maxHeight:180,overflowY:"auto",border:"1px solid var(--border)",borderRadius:8}}>
             ${ordsFiltered.map(o=>{
               const cl=cls.find(x=>x.id===o.cid);
+              const bud=o.pid?(buds||{})[o.pid]:null;
+              const cot=!bud?(cots||[]).find(ct=>ct.cid===o.cid&&ct.est==="Aceptada"):null;
+              const montoRef=bud?calc(bud.items).tot:(cot?.tot||0);
+              const pagOrd=pagos.filter(p=>p.ordId===o.id);
+              const pagado=pagOrd.reduce((s,p)=>s+p.monto,0);
+              const saldo=Math.max(0,montoRef-pagado);
               return html`<div key=${o.id} onClick=${()=>selectOrd(o.id)}
                 style=${{padding:"8px 12px",cursor:"pointer",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}
                 onMouseOver=${e=>e.currentTarget.style.background="var(--bg2)"}
                 onMouseOut=${e=>e.currentTarget.style.background="transparent"}>
-                <div>
+                <div style=${{flex:1}}>
                   <div style=${{fontSize:12,fontWeight:700,color:"var(--text)"}}>${o.id} · ${o.equipo}</div>
-                  <div style=${{fontSize:11,color:"var(--text3)"}}>${cl?.nombre||"?"}</div>
+                  <div style=${{fontSize:11,color:"var(--text3)",display:"flex",gap:5,alignItems:"center",marginTop:2,flexWrap:"wrap"}}>
+                    ${cl?.nombre||"?"}
+                    ${(bud||cot)&&html`<span style=${{background:bud?"#eff6ff":"#f0fdf4",color:bud?"#1d4ed8":"#059669",fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:99}}>${bud?"✓ Presupuesto":"✓ Cotización"}</span>`}
+                    ${pagOrd.length>0&&html`<span style=${{background:"#fffbeb",color:"#d97706",fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:99}}>${pagOrd.length} abono${pagOrd.length!==1?"s":""}</span>`}
+                  </div>
                 </div>
-                <div style=${{fontSize:12,fontWeight:700,color:"#059669"}}>${o.total?mxn(o.total):""}</div>
+                <div style=${{textAlign:"right",flexShrink:0}}>
+                  ${saldo>0&&html`<div style=${{fontSize:12,fontWeight:800,color:"#d97706"}}>${mxn(saldo)} <span style=${{fontSize:9,color:"#94a3b8"}}>pend.</span></div>`}
+                  ${saldo===0&&montoRef>0&&html`<div style=${{fontSize:11,fontWeight:700,color:"#059669"}}>✓ Saldado</div>`}
+                  <div style=${{fontSize:10,color:"var(--text4)"}}>${o.est}</div>
+                </div>
               </div>`;
             })}
           </div>`}
-        ${!ordId&&ordsFiltered.length===0&&html`
+        ${modoVinculo==="ord"&&!ordId&&ordsFiltered.length===0&&html`
           <div style=${{fontSize:11,color:"var(--text4)",padding:"4px 0"}}>
             ${ordsPend.length===0?"✓ Sin órdenes pendientes":ordSearch?"Sin resultados":"Escribe para buscar"}
           </div>`}
+
+        ${modoVinculo==="cot"&&!cotId&&(()=>{
+          const cotsAcep=(cots||[]).filter(ct=>ct.est==="Aceptada"&&(!ordSearch.trim()||
+            ct.id.toLowerCase().includes(ordSearch.toLowerCase())||
+            (cls.find(x=>x.id===ct.cid)?.nombre||"").toLowerCase().includes(ordSearch.toLowerCase())||
+            (ct.descripcion||"").toLowerCase().includes(ordSearch.toLowerCase())));
+          if(cotsAcep.length===0) return html`<div style=${{fontSize:11,color:"var(--text4)",padding:"4px 0"}}>${ordSearch?"Sin resultados":"No hay cotizaciones aceptadas pendientes"}</div>`;
+          return html`<div style=${{maxHeight:180,overflowY:"auto",border:"1px solid var(--border)",borderRadius:8}}>
+            ${cotsAcep.map(ct=>{
+              const cl=cls.find(x=>x.id===ct.cid);
+              return html`<div key=${ct.id} onClick=${()=>selectCot(ct)}
+                style=${{padding:"8px 12px",cursor:"pointer",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}
+                onMouseOver=${e=>e.currentTarget.style.background="var(--bg2)"}
+                onMouseOut=${e=>e.currentTarget.style.background="transparent"}>
+                <div>
+                  <div style=${{fontSize:12,fontWeight:700,color:"var(--text)"}}>${ct.id}</div>
+                  <div style=${{fontSize:11,color:"var(--text3)",marginTop:2}}>${cl?.nombre||"?"} · ${ct.descripcion||ct.ref||"—"}</div>
+                </div>
+                <div style=${{fontSize:13,fontWeight:800,color:"#059669"}}>${mxn(ct.tot||0)}</div>
+              </div>`;
+            })}
+          </div>`;
+        })()}
       </div>
 
       <!-- Concepto -->
       <div style=${{background:"var(--bg)",borderRadius:12,border:"1px solid var(--border)",padding:14}}>
         <div style=${{fontSize:12,fontWeight:700,color:"var(--text)",marginBottom:8}}>📝 Concepto</div>
-        <input value=${concepto} onChange=${e=>setConcepto(e.target.value)}
-          placeholder="ej. Reparación pantalla iPhone 12" style=${{marginBottom:8}}/>
-        <textarea value=${nota} onChange=${e=>setNota(e.target.value)}
-          placeholder="Nota interna (opcional)…" rows=${2}
-          style=${{resize:"none",fontSize:12,width:"100%",boxSizing:"border-box",fontFamily:"inherit",
-            border:"1px solid var(--border)",borderRadius:8,padding:"8px 10px",
-            background:"var(--input-bg)",color:"var(--text)",outline:"none"}}/>
+        <input value=${concepto} onChange=${e=>setConcepto(e.target.value)} placeholder="ej. Reparación pantalla" style=${{marginBottom:8}}/>
+        <textarea value=${nota} onChange=${e=>setNota(e.target.value)} placeholder="Nota interna (opcional)…" rows=${2}
+          style=${{resize:"none",fontSize:12,width:"100%",boxSizing:"border-box",fontFamily:"inherit",border:"1px solid var(--border)",borderRadius:8,padding:"8px 10px",background:"var(--input-bg)",color:"var(--text)",outline:"none"}}/>
       </div>
 
       <!-- Método -->
@@ -4487,10 +4905,7 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago}){
         <div style=${{fontSize:12,fontWeight:700,color:"var(--text)",marginBottom:10}}>💳 Método de pago</div>
         <div style=${{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
           ${METODOS.map(([k,ic,lbl,col,bg,brd])=>html`
-            <div key=${k} onClick=${()=>setMetodo(k)} style=${{
-              padding:"12px 8px",borderRadius:10,cursor:"pointer",textAlign:"center",
-              border:"2px solid",transition:"all .15s",
-              borderColor:metodo===k?col:brd,background:metodo===k?bg:"var(--bg2)"}}>
+            <div key=${k} onClick=${()=>setMetodo(k)} style=${{padding:"12px 8px",borderRadius:10,cursor:"pointer",textAlign:"center",border:"2px solid",transition:"all .15s",borderColor:metodo===k?col:brd,background:metodo===k?bg:"var(--bg2)"}}>
               <div style=${{fontSize:22,marginBottom:4}}>${ic}</div>
               <div style=${{fontSize:11,fontWeight:700,color:metodo===k?col:"var(--text3)"}}>${lbl}</div>
             </div>`)}
@@ -4499,44 +4914,58 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago}){
     </div>
 
     <!-- RIGHT: numpad -->
-    <div style=${{width:252,flexShrink:0,background:"var(--bg)",borderLeft:"1px solid var(--border)",display:"flex",flexDirection:"column",padding:12,gap:10}}>
+    <div style=${{width:260,flexShrink:0,background:"var(--bg)",borderLeft:"1px solid var(--border)",display:"flex",flexDirection:"column",padding:14,gap:10}}>
 
-      <div style=${{background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)",borderRadius:12,padding:"16px 14px",textAlign:"center"}}>
-        <div style=${{fontSize:10,color:"rgba(255,255,255,.6)",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Monto a cobrar</div>
-        <div style=${{fontSize:monto?28:22,fontWeight:800,color:"#fff",minHeight:36,lineHeight:1}}>${montoDisplay}</div>
-        <div style=${{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:4,textTransform:"capitalize"}}>
+      <!-- Display / input directo -->
+      <div style=${{background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)",borderRadius:12,padding:"14px",textAlign:"center"}}>
+        <div style=${{fontSize:9,color:"rgba(255,255,255,.55)",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Monto a cobrar</div>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value=${monto}
+          onChange=${e=>setMonto(e.target.value)}
+          onFocus=${e=>e.target.select()}
+          placeholder="0.00"
+          style=${{
+            width:"100%",textAlign:"center",fontSize:26,fontWeight:800,
+            background:"rgba(255,255,255,.15)",border:"1px solid rgba(255,255,255,.25)",
+            borderRadius:8,padding:"6px 8px",color:"#fff",fontFamily:"inherit",
+            outline:"none",boxShadow:"none"
+          }}/>
+        <div style=${{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:6,textTransform:"capitalize"}}>
           ${METODOS.find(m=>m[0]===metodo)?.[2]||""}
         </div>
       </div>
 
-      <div style=${{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
-        ${["7","8","9","4","5","6","1","2","3",".","0","⌫"].map(v=>html`
-          <button key=${v} onClick=${()=>pad(v)} style=${{
-            padding:"11px 0",borderRadius:8,border:"1px solid var(--border)",
-            background:v==="⌫"?"#fef2f2":"var(--bg2)",
-            color:v==="⌫"?"#dc2626":"var(--text)",
-            fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}
-            onMouseOver=${e=>e.currentTarget.style.background=v==="⌫"?"#fee2e2":"var(--bg3)"}
-            onMouseOut=${e=>e.currentTarget.style.background=v==="⌫"?"#fef2f2":"var(--bg2)"}>
-            ${v}
-          </button>`)}
-      </div>
-
+      <!-- Atajos rápidos -->
       <div style=${{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:4}}>
-        ${[50,100,200,500,1000,2000].map(v=>html`
-          <button key=${v} onClick=${()=>setMonto(String(v))} style=${{
-            padding:"5px 2px",border:"1px solid var(--border)",borderRadius:6,
-            background:"var(--bg3)",color:"var(--text3)",fontSize:10,fontWeight:700,
-            cursor:"pointer",fontFamily:"inherit"}}>
-            $${v}
-          </button>`)}
+        ${montoTotal>0
+          ? [
+              ["50%", +(montoTotal*0.5).toFixed(0), "#d97706"],
+              ["Saldo", saldoPendiente>0 ? saldoPendiente : montoTotal, "#7c3aed"],
+              ["Total", montoTotal, "#059669"]
+            ].map(([lbl,v,col])=>html`
+              <button type="button" key=${lbl} onClick=${()=>setMonto(String(v))}
+                style=${{padding:"7px 4px",border:"1.5px solid "+col+"44",borderRadius:7,background:col+"10",color:col,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"inherit",lineHeight:1.4}}>
+                ${lbl}<div style=${{fontSize:9,color:col,opacity:.7,fontWeight:400}}>${mxn(v)}</div>
+              </button>`)
+          : [50,100,200,500,1000,2000].map(v=>html`
+              <button type="button" key=${v} onClick=${()=>setMonto(String(v))}
+                style=${{padding:"7px 2px",border:"1px solid var(--border)",borderRadius:7,background:"var(--bg3)",color:"var(--text3)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+                $${v}
+              </button>`)}
       </div>
 
-      <button onClick=${registrar} style=${{
-        padding:"13px",borderRadius:10,border:"none",cursor:"pointer",
-        background:monto?"linear-gradient(135deg,#059669,#10b981)":"#e2e8f0",
-        color:monto?"#fff":"#94a3b8",fontSize:13,fontWeight:800,fontFamily:"inherit"}}>
-        ${cobrarLabel}
+      <!-- Botón cobrar -->
+      <button type="button" onClick=${registrar} style=${{
+        padding:"15px",borderRadius:10,border:"none",cursor:monto&&Number(monto)>0?"pointer":"default",
+        background:monto&&Number(monto)>0?"linear-gradient(135deg,#059669,#10b981)":"#e2e8f0",
+        color:monto&&Number(monto)>0?"#fff":"#94a3b8",
+        fontSize:14,fontWeight:800,fontFamily:"inherit",
+        boxShadow:monto&&Number(monto)>0?"0 4px 14px rgba(5,150,105,.35)":"none",
+        transition:"all .15s"}}>
+        ${monto&&Number(monto)>0?"💰 COBRAR "+montoDisplay:"Ingresa el monto"}
       </button>
     </div>
   </div>`;
@@ -4578,6 +5007,44 @@ function CajaMovimientosTab({pagosHoy,ords,cls,totHoy,onDel}){
       <div style=${{fontWeight:700,fontSize:11,color:"var(--text2)"}}>TOTAL (${pagosHoy.length} mov.)</div>
       <div/>
       <div style=${{fontWeight:800,fontSize:15,color:"#1d4ed8"}}>${mxn(totHoy.total)}</div>
+    </div>
+  </div>`;
+}
+
+function CorteModal({totHoy,hoy,session,onCorte,onClose}){
+  const [nota,setNota]=useState("");
+  const efectivo=totHoy?.efectivo||0;
+  const transferencia=totHoy?.transferencia||0;
+  const tarjeta=totHoy?.tarjeta||0;
+  const total=totHoy?.total||0;
+  function hacer(){
+    onCorte({efectivo,transferencia,tarjeta,total,nota,cajero:session?.nombre||"—"},hoy);
+    onClose();
+  }
+  return html`<div class="modal-bg" onClick=${onClose}>
+    <div class="modal fade-in" style=${{maxWidth:420}} onClick=${e=>e.stopPropagation()}>
+      <div style=${{padding:"18px 24px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <h2 style=${{fontSize:16,fontWeight:700,display:"flex",alignItems:"center",gap:8}}>✂️ Corte de Caja — ${hoy}</h2>
+        <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
+      </div>
+      <div style=${{padding:"20px 24px",display:"grid",gap:12}}>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          ${[["💵 Efectivo",efectivo,"#059669","#f0fdf4"],["🏦 Transferencia",transferencia,"#1d4ed8","#eff6ff"],["💳 Tarjeta",tarjeta,"#9333ea","#fdf4ff"],["TOTAL",total,"#0f172a","#f8fafc"]].map(([lbl,val,col,bg])=>html`
+            <div key=${lbl} style=${{background:bg,borderRadius:10,padding:"12px 14px",border:"1px solid",borderColor:col+"22"}}>
+              <div style=${{fontSize:10,color:col,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,marginBottom:4}}>${lbl}</div>
+              <div style=${{fontSize:20,fontWeight:800,color:col}}>${mxn(val)}</div>
+            </div>`)}
+        </div>
+        <div>
+          <label>Nota del corte (opcional)</label>
+          <input value=${nota} onChange=${e=>setNota(e.target.value)} placeholder="ej. Todo cuadra, sin novedad"/>
+        </div>
+        <div style=${{fontSize:11,color:"#94a3b8"}}>Cajero: <b>${session?.nombre||"—"}</b></div>
+      </div>
+      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
+        <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
+        <button class="btn btn-primary" onClick=${hacer}><${Ic} n="ok" z=${14} s="#fff"/> Registrar corte</button>
+      </div>
     </div>
   </div>`;
 }
@@ -4716,7 +5183,7 @@ function CajaPOSTab({inv, session, config, onAddPago}){
     ["tarjeta","💳","Tarjeta","#9333ea","#fdf4ff"],
   ];
 
-  return html`<div style=${{flex:1,display:"flex",overflow:"hidden"}}>
+  return html`<div style=${{flex:1,display:"flex",minHeight:0}}>
 
     <!-- LEFT: buscador + carrito -->
     <div style=${{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",borderRight:"1px solid var(--border)"}}>
@@ -4856,7 +5323,116 @@ function CajaPOSTab({inv, session, config, onAddPago}){
   </div>`;
 }
 
-function CajaSection({pagos,cortes,ords,cls,inv,session,config,onAddPago,onCorte,onDelPago}){
+let GASTOSEQ=(()=>{try{return parseInt(localStorage.getItem("redcom_gastoseq")||"0",10);}catch(e){return 0;}})();
+
+const GASTO_CATS=["Compra de materiales","Compra de refacciones","Gasolina / transporte","Renta / local","Servicios (luz, agua, internet)","Sueldos / pagos técnicos","Publicidad","Herramientas / equipo","Otro"];
+
+function CajaGastosTab({gastos,session,onAddGasto,onDelGasto}){
+  const [concepto,setConcepto]=useState("");
+  const [monto,setMonto]=useState("");
+  const [cat,setCat]=useState(GASTO_CATS[0]);
+  const [metodo,setMetodo]=useState("efectivo");
+  const [nota,setNota]=useState("");
+  const [confirm,setConfirm]=useState(null);
+  const hoy=new Date().toISOString().slice(0,10);
+  const gastosHoy=gastos.filter(g=>g.fecha===hoy);
+  const totalHoy=gastosHoy.reduce((s,g)=>s+g.monto,0);
+  const METODOS=[["efectivo","💵"],["transferencia","🏦"],["tarjeta","💳"]];
+
+  function registrar(){
+    if(!concepto.trim()||!monto||isNaN(Number(monto))||Number(monto)<=0){alert("Concepto y monto válido son obligatorios.");return;}
+    const g={
+      id:"GAS"+String(++GASTOSEQ).padStart(4,"0"),
+      concepto:concepto.trim(),cat,monto:Number(monto),metodo,
+      nota,fecha:hoy,hora:new Date().toTimeString().slice(0,5),
+      user:session?.nombre||""
+    };
+    try{localStorage.setItem("redcom_gastoseq",GASTOSEQ);}catch(e){}
+    onAddGasto(g);
+    setConcepto("");setMonto("");setNota("");
+  }
+
+  const CAT_C={"Compra de materiales":"#d97706","Compra de refacciones":"#7c3aed","Gasolina / transporte":"#0891b2","Renta / local":"#64748b","Servicios (luz, agua, internet)":"#059669","Sueldos / pagos técnicos":"#dc2626","Publicidad":"#ec4899","Herramientas / equipo":"#1d4ed8","Otro":"#64748b"};
+
+  return html`<div style=${{flex:1,display:"flex",minHeight:0}}>
+    <!-- LEFT: formulario -->
+    <div style=${{width:320,flexShrink:0,borderRight:"1px solid var(--border)",overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:12,background:"var(--bg)"}}>
+      <div style=${{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+        <div style=${{fontSize:9,color:"#dc2626",textTransform:"uppercase",letterSpacing:1,fontWeight:700,marginBottom:4}}>Total gastos hoy</div>
+        <div style=${{fontSize:24,fontWeight:800,color:"#dc2626"}}>${mxn(totalHoy)}</div>
+      </div>
+      <div>
+        <label>Categoría</label>
+        <select value=${cat} onChange=${e=>setCat(e.target.value)}>
+          ${GASTO_CATS.map(c=>html`<option key=${c} value=${c}>${c}</option>`)}
+        </select>
+      </div>
+      <div>
+        <label>Concepto *</label>
+        <input value=${concepto} onChange=${e=>setConcepto(e.target.value)} placeholder="ej. Cable UTP ctonline, gasolina visita"/>
+      </div>
+      <div>
+        <label>Monto $MXN *</label>
+        <input type="number" min="0" step="0.01" value=${monto} onChange=${e=>setMonto(e.target.value)} placeholder="0.00"/>
+      </div>
+      <div>
+        <label>Método de pago</label>
+        <div style=${{display:"flex",gap:6}}>
+          ${METODOS.map(([k,ic])=>html`
+            <button key=${k} onClick=${()=>setMetodo(k)} style=${{
+              flex:1,padding:"7px 4px",borderRadius:8,border:"1.5px solid",cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:600,textAlign:"center",
+              borderColor:metodo===k?"#dc2626":"#e2e8f0",background:metodo===k?"#fef2f2":"var(--bg2)",color:metodo===k?"#dc2626":"var(--text3)"}}>
+              ${ic} ${k.charAt(0).toUpperCase()+k.slice(1,4)}.
+            </button>`)}
+        </div>
+      </div>
+      <div>
+        <label>Nota (opcional)</label>
+        <input value=${nota} onChange=${e=>setNota(e.target.value)} placeholder="ej. Factura #1234"/>
+      </div>
+      <button onClick=${registrar} style=${{padding:"12px",borderRadius:10,border:"none",cursor:"pointer",background:concepto&&monto?"#dc2626":"#e2e8f0",color:concepto&&monto?"#fff":"#94a3b8",fontSize:13,fontWeight:800,fontFamily:"inherit"}}>
+        💸 Registrar gasto
+      </button>
+    </div>
+
+    <!-- RIGHT: lista de gastos de hoy -->
+    <div style=${{flex:1,overflowY:"auto"}}>
+      ${gastosHoy.length===0
+        ?html`<div class="empty-state"><div style=${{fontSize:32,marginBottom:10}}>💸</div><div style=${{fontWeight:600,color:"var(--text2)"}}>Sin gastos registrados hoy</div></div>`
+        :html`
+          <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"70px 80px 1fr 120px 100px 90px 36px",padding:"10px 16px"}}>
+            ${["Hora","ID","Concepto / Categoría","Método","Monto","Registró",""].map(h=>html`<div key=${h}>${h}</div>`)}
+          </div>
+          ${[...gastosHoy].sort((a,b)=>(b.hora||"").localeCompare(a.hora||"")).map(g=>html`
+            <div key=${g.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"70px 80px 1fr 120px 100px 90px 36px",alignItems:"center"}}>
+              <div style=${{fontSize:11,color:"var(--text4)",fontFamily:"monospace"}}>${g.hora||"—"}</div>
+              <div style=${{fontSize:11,fontFamily:"monospace",color:"#dc2626",fontWeight:600}}>${g.id}</div>
+              <div>
+                <div style=${{fontWeight:600,fontSize:12,color:"var(--text)"}}>${g.concepto}</div>
+                <div style=${{fontSize:10,marginTop:2}}>
+                  <span style=${{background:"#fef2f2",color:CAT_C[g.cat]||"#64748b",padding:"1px 7px",borderRadius:99,fontWeight:600,fontSize:9}}>${g.cat}</span>
+                  ${g.nota&&html`<span style=${{color:"var(--text4)",marginLeft:6}}>${g.nota}</span>`}
+                </div>
+              </div>
+              <div style=${{fontSize:11,color:"var(--text3)"}}>${g.metodo==="efectivo"?"💵 Efectivo":g.metodo==="transferencia"?"🏦 Transf.":"💳 Tarjeta"}</div>
+              <div style=${{fontWeight:700,fontSize:13,color:"#dc2626"}}>${mxn(g.monto)}</div>
+              <div style=${{fontSize:11,color:"var(--text4)"}}>${g.user||"—"}</div>
+              <div style=${{padding:"0 4px"}}>
+                <button onClick=${()=>setConfirm(g)} style=${{background:"transparent",border:"none",cursor:"pointer",padding:3,borderRadius:4}}>
+                  <${Ic} n="trash" z=${13} s="#dc2626"/>
+                </button>
+              </div>
+            </div>`)}
+        `}
+    </div>
+    ${confirm&&html`<${Confirm}
+      msg=${"¿Eliminar gasto <b>"+mxn(confirm.monto)+"</b> — "+confirm.concepto+"?"}
+      onOk=${()=>{onDelGasto(confirm.id);setConfirm(null);}}
+      onCancel=${()=>setConfirm(null)}/>`}
+  </div>`;
+}
+
+function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,onAddPago,onCorte,onDelPago,onAddGasto,onDelGasto}){
   const [tab,setTab]   = useState("cobrar");
   const [confirm,setConfirm] = useState(null);
   const [showCorteModal,setShowCorteModal] = useState(false);
@@ -4876,21 +5452,26 @@ function CajaSection({pagos,cortes,ords,cls,inv,session,config,onAddPago,onCorte
   const delta     = totHoy.total - tot(pagos.filter(p=>p.fecha===ayer)).total;
   const ordsPend  = ords.filter(o=>(o.est==="Listo"||o.est==="Diagnóstico"||o.est==="En reparación")&&!pagos.some(p=>p.ordId===o.id&&p.fecha===hoy));
 
-  const TABS=[["cobrar","💰","Cobrar"],["pos","🛒","Venta"],["movimientos","📋","Movimientos"],["historial","🗓️","Historial"],["cortes","✂️","Cortes"]];
+  const gastosHoy = (gastos||[]).filter(g=>g.fecha===hoy);
+  const totalGastosHoy = gastosHoy.reduce((s,g)=>s+g.monto,0);
+  const utilidadHoy = totHoy.total - totalGastosHoy;
+
+  const TABS=[["cobrar","💰","Cobrar"],["pos","🛒","Venta"],["gastos","💸","Gastos"],["movimientos","📋","Movimientos"],["historial","🗓️","Historial"],["cortes","✂️","Cortes"]];
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",background:"var(--bg2)"}}>
 
     <!-- Stat bar -->
-    <div style=${{background:"var(--bg)",borderBottom:"1px solid var(--border)",padding:"12px 20px",display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,flexShrink:0}}>
+    <div style=${{background:"var(--bg)",borderBottom:"1px solid var(--border)",padding:"12px 20px",display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10,flexShrink:0}}>
       ${[
-        ["TOTAL HOY",totHoy.total,"#1d4ed8","#eff6ff",delta],
+        ["INGRESOS HOY",totHoy.total,"#1d4ed8","#eff6ff",delta],
         ["💵 EFECTIVO",totHoy.efectivo,"#059669","#f0fdf4",null],
-        ["🏦 TRANSFERENCIA",totHoy.transferencia,"#1d4ed8","#eff6ff",null],
-        ["💳 TARJETA",totHoy.tarjeta,"#9333ea","#fdf4ff",null],
+        ["🏦 TRANSF.",totHoy.transferencia,"#1d4ed8","#eff6ff",null],
+        ["💸 GASTOS",totalGastosHoy,"#dc2626","#fef2f2",null],
+        ["✓ UTILIDAD",utilidadHoy,utilidadHoy>=0?"#059669":"#dc2626",utilidadHoy>=0?"#f0fdf4":"#fef2f2",null],
       ].map(([lbl,val,col,bg,dlt])=>html`
-        <div key=${lbl} style=${{background:bg,border:"1px solid",borderColor:col+"33",borderRadius:10,padding:"10px 14px"}}>
+        <div key=${lbl} class="glass-card" style=${{background:bg,border:"1px solid",borderColor:col+"33",borderRadius:10,padding:"10px 14px"}}>
           <div style=${{fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:col,opacity:.7,marginBottom:4}}>${lbl}</div>
-          <div style=${{fontSize:20,fontWeight:800,color:col}}>${mxn(val)}</div>
+          <div style=${{fontSize:18,fontWeight:800,color:col}}>${mxn(val)}</div>
           ${dlt!==null&&html`<div style=${{fontSize:10,marginTop:3,color:dlt>=0?"#059669":"#dc2626",fontWeight:600}}>${dlt>=0?"▲":"▼"} ${mxn(Math.abs(dlt))} vs ayer</div>`}
         </div>`)}
     </div>
@@ -4906,6 +5487,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,session,config,onAddPago,onCorte
           ${ic} ${lbl}
           ${k==="cobrar"&&ordsPend.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${ordsPend.length}</span>`}
           ${k==="movimientos"&&pagosHoy.length>0&&html`<span style=${{background:"#1d4ed8",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${pagosHoy.length}</span>`}
+          ${k==="gastos"&&gastosHoy.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${gastosHoy.length}</span>`}
         </button>`)}
       <div style=${{marginLeft:"auto",display:"flex",alignItems:"center"}}>
         <button class="btn btn-primary btn-sm" onClick=${()=>setShowCorteModal(true)} style=${{fontSize:11}}>
@@ -4915,9 +5497,10 @@ function CajaSection({pagos,cortes,ords,cls,inv,session,config,onAddPago,onCorte
     </div>
 
     <!-- Content -->
-    <div style=${{flex:1,overflow:"hidden",display:"flex"}}>
-      ${tab==="cobrar"     &&html`<${CajaCobrarTab} ords=${ords} cls=${cls} pagos=${pagos} session=${session} config=${config} onAddPago=${onAddPago}/>`}
+    <div style=${{flex:1,overflow:"auto",display:"flex",minHeight:0}}>
+      ${tab==="cobrar"     &&html`<${CajaCobrarTab} ords=${ords} cls=${cls} pagos=${pagos} buds=${buds} cots=${cots} session=${session} config=${config} onAddPago=${onAddPago}/>`}
       ${tab==="pos"        &&html`<${CajaPOSTab} inv=${inv} session=${session} config=${config} onAddPago=${onAddPago}/>`}
+      ${tab==="gastos"     &&html`<${CajaGastosTab} gastos=${gastos||[]} session=${session} onAddGasto=${onAddGasto} onDelGasto=${onDelGasto}/>`}
       ${tab==="movimientos"&&html`<${CajaMovimientosTab} pagosHoy=${pagosHoy} ords=${ords} cls=${cls} totHoy=${totHoy} onDel=${setConfirm}/>`}
       ${tab==="historial"  &&html`<${CajaHistorialTab} pagos=${pagos}/>`}
       ${tab==="cortes"     &&html`<${CajaCortesTab} cortes=${cortes}/>`}
@@ -4933,7 +5516,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,session,config,onAddPago,onCorte
 
 
 /* ══ REPORTES EXCEL ══════════════════════════════════════════════════════ */
-function ReportesSection({ords,cls,inv,tecs,svcs,pagos,cots,gars,onImportInv}){
+function ReportesSection({ords,cls,inv,tecs,svcs,pagos,cots,gars,gastos,onImportInv}){
   const [rango,setRango]=useState("mes");
   const [fechaD,setFD]=useState(new Date(new Date().getFullYear(),new Date().getMonth(),1).toISOString().slice(0,10));
   const [fechaH,setFH]=useState(new Date().toISOString().slice(0,10));
@@ -5090,23 +5673,97 @@ function ReportesSection({ords,cls,inv,tecs,svcs,pagos,cots,gars,onImportInv}){
     setTimeout(()=>setGenerando(""),800);
   }
 
+  function descargarPlantilla(){
+    const bom="\uFEFF";
+    const headers=["SKU","Nombre","Categoría","Stock","Precio Costo","Precio Venta","Margen %","Unidad","Notas"];
+    const ejemplos=[
+      ["P100","Cable UTP Cat6 100% Cobre (metro)","Cableado Estructurado","500","10","18","80","Metro","Panduit / Plus"],
+      ["P101","Jack Keystone Cat6 Panduit NK688MWH","Cableado Estructurado","80","38","65","71","Pieza",""],
+      ["P102","Tapa ejecutiva 1 puerto Panduit NK1FGWH","Cableado Estructurado","50","25","45","80","Pieza",""],
+      ["P103","Patch cord Cat6 1m","Cableado Estructurado","40","38","65","71","Pieza",""],
+      ["P104","Cámara AHD domo 2MP IP66","Videovigilancia Analógica","10","370","580","56","Pieza",""],
+      ["P105","DVR 4 canales 1080p TVI/AHD","Videovigilancia Analógica","4","780","1200","54","Pieza",""],
+      ["","(deja SKU vacío para autogenerar)","Otro","0","0","0","0","Pieza",""],
+    ];
+    const esc=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+    const csv=[headers.map(esc).join(","),...ejemplos.map(r=>r.map(esc).join(","))].join("\n");
+    const blob=new Blob([bom+csv],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download="Redcom_Plantilla_Inventario.csv";a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportGastos(){
+    setGenerando("gastos");
+    const [d,h]=getRango();
+    const rows=(gastos||[]).filter(g=>g.fecha>=d&&g.fecha<=h).map(g=>[
+      g.id,g.fecha,g.hora||"",g.cat,g.concepto,g.metodo,g.monto,g.nota||"",g.user||""
+    ]);
+    download(`Redcom_Gastos_${d}_${h}.csv`,
+      toCSV(["ID","Fecha","Hora","Categoría","Concepto","Método","Monto","Nota","Registró"],rows));
+    setTimeout(()=>setGenerando(""),800);
+  }
+
+  function exportResumenFinanciero(){
+    setGenerando("resumen");
+    const [d,h]=getRango();
+    const pagF=pagos.filter(p=>p.fecha>=d&&p.fecha<=h);
+    const gasF=(gastos||[]).filter(g=>g.fecha>=d&&g.fecha<=h);
+    const ingresos=pagF.reduce((s,p)=>s+p.monto,0);
+    const totalGastos=gasF.reduce((s,g)=>s+g.monto,0);
+    const utilidad=ingresos-totalGastos;
+    const efectivo=pagF.filter(p=>p.metodo==="efectivo").reduce((s,p)=>s+p.monto,0);
+    const transf=pagF.filter(p=>p.metodo==="transferencia").reduce((s,p)=>s+p.monto,0);
+    const tarjeta=pagF.filter(p=>p.metodo==="tarjeta").reduce((s,p)=>s+p.monto,0);
+    // By category
+    const catMap={};
+    gasF.forEach(g=>{catMap[g.cat]=(catMap[g.cat]||0)+g.monto;});
+    const rows=[
+      ["RESUMEN FINANCIERO","","",""],
+      ["Período",d+" al "+h,"",""],
+      ["","","",""],
+      ["INGRESOS","","",""],
+      ["Total ingresos",ingresos,"",""],
+      ["  Efectivo",efectivo,"",""],
+      ["  Transferencia",transf,"",""],
+      ["  Tarjeta",tarjeta,"",""],
+      ["  Número de cobros",pagF.length,"",""],
+      ["","","",""],
+      ["GASTOS","","",""],
+      ["Total gastos",totalGastos,"",""],
+      ...Object.entries(catMap).map(([cat,monto])=>["  "+cat,monto,"",""]),
+      ["  Número de gastos",gasF.length,"",""],
+      ["","","",""],
+      ["UTILIDAD NETA",utilidad,"",""],
+      ["Margen",ingresos>0?((utilidad/ingresos)*100).toFixed(1)+"%":"0%","",""],
+    ];
+    download(`Redcom_ResumenFinanciero_${d}_${h}.csv`,
+      toCSV(["Concepto","Monto","",""],rows));
+    setTimeout(()=>setGenerando(""),800);
+  }
+
   // Stats for preview cards
   const [d,h]=getRango();
   const ordsF=ords.filter(o=>o.fecha>=d&&o.fecha<=h);
   const pagosF=pagos.filter(p=>p.fecha>=d&&p.fecha<=h);
+  const gastosF=(gastos||[]).filter(g=>g.fecha>=d&&g.fecha<=h);
   const totalVentas=pagosF.reduce((a,p)=>a+p.monto,0);
+  const totalGastosF=gastosF.reduce((a,g)=>a+g.monto,0);
+  const utilidadF=totalVentas-totalGastosF;
 
   const REPORTS=[
     {key:"ordenes",  icon:"orders",  color:"#1d4ed8",bg:"#eff6ff",  title:"Órdenes de Trabajo", desc:"Folio, cliente, equipo, técnico, estado",   count:ordsF.length+" órdenes",         fn:exportOrdenes},
     {key:"ventas",   icon:"cash",    color:"#059669",bg:"#f0fdf4",  title:"Ventas / Cobros",     desc:"Cobros con método de pago y cajero",        count:mxn(totalVentas)+" en el período",fn:exportVentas},
-    {key:"tecnicos", icon:"techs",   color:"#7c3aed",bg:"#f5f3ff",  title:"Productividad Técnicos",desc:"Órdenes por técnico, entregadas, urgentes",count:tecs.filter(t=>t.rol!=="Sistema").length+" técnicos",fn:exportTecnicos},
+    {key:"gastos",   icon:"cash",    color:"#dc2626",bg:"#fef2f2",  title:"Gastos / Egresos",    desc:"Categoría, concepto, método y monto",       count:gastosF.length+" gastos · "+mxn(totalGastosF),fn:exportGastos},
+    {key:"resumen",  icon:"reports", color:"#7c3aed",bg:"#f5f3ff",  title:"Resumen Financiero",  desc:"Ingresos, gastos y utilidad neta del período",count:"Utilidad: "+mxn(utilidadF),   fn:exportResumenFinanciero},
+    {key:"tecnicos", icon:"techs",   color:"#0891b2",bg:"#f0f9ff",  title:"Productividad Técnicos",desc:"Órdenes por técnico, entregadas, urgentes",count:tecs.filter(t=>t.rol!=="Sistema").length+" técnicos",fn:exportTecnicos},
     {key:"inventario",icon:"inv",    color:"#ea580c",bg:"#fff7ed",  title:"Inventario",           desc:"Stock, costos, precios y valor en almacén", count:inv.length+" artículos",         fn:exportInventario, canImport:true},
     {key:"cotizaciones",icon:"tag",  color:"#0891b2",bg:"#f0f9ff",  title:"Cotizaciones",         desc:"Cotizaciones emitidas con totales",          count:cots.filter(ct=>ct.fecha>=d&&ct.fecha<=h).length+" cotizaciones",fn:exportCotizaciones},
     {key:"garantias",icon:"warranty",color:"#d97706",bg:"#fffbeb",  title:"Garantías",            desc:"Vigentes, expiradas y reclamos",             count:gars.length+" garantías",        fn:exportGarantias},
   ];
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:14}}>
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Reportes y Exportación</h2>
@@ -5130,6 +5787,28 @@ function ReportesSection({ords,cls,inv,tecs,svcs,pagos,cots,gars,onImportInv}){
     </div>
 
     <div style=${{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+
+      <!-- Resumen financiero visual del período -->
+      <div class="glass-card" style=${{marginBottom:18,padding:"16px 20px",borderRadius:12}}>
+        <div style=${{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:.8,marginBottom:12}}>
+          📊 Resumen del período seleccionado
+        </div>
+        <div style=${{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10}}>
+          ${[
+            ["Ingresos",totalVentas,"#059669","#f0fdf4",pagosF.length+" cobros"],
+            ["Gastos",totalGastosF,"#dc2626","#fef2f2",gastosF.length+" egresos"],
+            ["Utilidad neta",utilidadF,utilidadF>=0?"#7c3aed":"#dc2626",utilidadF>=0?"#f5f3ff":"#fef2f2",
+              utilidadF>=0?(totalVentas>0?((utilidadF/totalVentas)*100).toFixed(0)+"% margen":"—"):"Pérdida"],
+            ["Órdenes",ordsF.length,"#1d4ed8","#eff6ff",ordsF.filter(o=>o.est==="Entregado").length+" entregadas"],
+          ].map(([lbl,val,col,bg,sub])=>html`
+            <div key=${lbl} style=${{background:bg,borderRadius:10,padding:"12px 14px",border:"1px solid",borderColor:col+"25"}}>
+              <div style=${{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,color:col,opacity:.75,marginBottom:4}}>${lbl}</div>
+              <div style=${{fontSize:typeof val==="number"&&val>999?18:22,fontWeight:800,color:col,lineHeight:1.1}}>${typeof val==="number"?mxn(val):val}</div>
+              <div style=${{fontSize:10,color:col,opacity:.7,marginTop:3,fontWeight:600}}>${sub}</div>
+            </div>`)}
+        </div>
+      </div>
+
       <div style=${{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:14}}>
         ${REPORTS.map(r=>html`
           <div key=${r.key} style=${{background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,padding:"18px 20px",boxShadow:"0 1px 4px rgba(0,0,0,.04)",display:"flex",flexDirection:"column",gap:12}}>
@@ -5145,10 +5824,15 @@ function ReportesSection({ords,cls,inv,tecs,svcs,pagos,cots,gars,onImportInv}){
             <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
               <div style=${{fontSize:12,fontWeight:600,color:r.color,background:r.bg,padding:"3px 10px",borderRadius:99}}>${r.count}</div>
               <div style=${{display:"flex",gap:6}}>
-                ${r.canImport&&html`<button class="btn btn-sm" onClick=${()=>fileRef.current?.click()}
-                  style=${{background:"#fff",color:"#059669",border:"1.5px solid #059669",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
-                  <${Ic} n="ok" z=${13} s="#059669"/> Importar CSV
-                </button>`}
+                ${r.canImport&&html`
+                  <button class="btn btn-sm" onClick=${descargarPlantilla}
+                    style=${{background:"#fff",color:"#7c3aed",border:"1.5px solid #e9d5ff",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
+                    <${Ic} n="download" z=${13} s="#7c3aed"/> Plantilla
+                  </button>
+                  <button class="btn btn-sm" onClick=${()=>fileRef.current?.click()}
+                    style=${{background:"#fff",color:"#059669",border:"1.5px solid #059669",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
+                    <${Ic} n="ok" z=${13} s="#059669"/> Importar CSV
+                  </button>`}
                 <button class="btn btn-sm" onClick=${r.fn}
                   style=${{background:generando===r.key?r.bg:"#fff",color:r.color,border:`1.5px solid ${r.color}`,fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
                   ${generando===r.key
@@ -5160,7 +5844,106 @@ function ReportesSection({ords,cls,inv,tecs,svcs,pagos,cots,gars,onImportInv}){
             </div>
           </div>`)}
       </div>
+
+      <!-- Guía de importación inventario -->
+      <div style=${{marginTop:18,background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}}>
+        <div style=${{background:"#f8fafc",padding:"12px 18px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style=${{fontWeight:700,fontSize:13,color:"#475569",display:"flex",alignItems:"center",gap:8}}>
+            📋 Cómo importar tu inventario en 3 pasos
+          </div>
+          <button class="btn btn-sm" onClick=${descargarPlantilla}
+            style=${{background:"#7c3aed",color:"#fff",border:"none",fontWeight:700,display:"flex",alignItems:"center",gap:6}}>
+            <${Ic} n="download" z=${13} s="#fff"/> Descargar plantilla Excel (.csv)
+          </button>
+        </div>
+        <div style=${{padding:"16px 18px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+          <div style=${{display:"flex",gap:10,alignItems:"flex-start"}}>
+            <div style=${{width:28,height:28,borderRadius:99,background:"#eff6ff",color:"#1d4ed8",fontWeight:800,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>1</div>
+            <div>
+              <div style=${{fontWeight:600,fontSize:12,marginBottom:3}}>Descarga la plantilla</div>
+              <div style=${{fontSize:11,color:"#64748b",lineHeight:1.5}}>Haz clic en "Descargar plantilla". Se abre en Excel o Google Sheets con las columnas correctas y filas de ejemplo.</div>
+            </div>
+          </div>
+          <div style=${{display:"flex",gap:10,alignItems:"flex-start"}}>
+            <div style=${{width:28,height:28,borderRadius:99,background:"#eff6ff",color:"#1d4ed8",fontWeight:800,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>2</div>
+            <div>
+              <div style=${{fontWeight:600,fontSize:12,marginBottom:3}}>Llena tus productos</div>
+              <div style=${{fontSize:11,color:"#64748b",lineHeight:1.5}}>Borra los ejemplos y agrega tus artículos. Solo <b>Nombre</b> es obligatorio. Deja SKU vacío si no tienes — se genera solo.</div>
+            </div>
+          </div>
+          <div style=${{display:"flex",gap:10,alignItems:"flex-start"}}>
+            <div style=${{width:28,height:28,borderRadius:99,background:"#eff6ff",color:"#1d4ed8",fontWeight:800,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>3</div>
+            <div>
+              <div style=${{fontWeight:600,fontSize:12,marginBottom:3}}>Importa el archivo</div>
+              <div style=${{fontSize:11,color:"#64748b",lineHeight:1.5}}>Guarda como .csv en Excel (Archivo → Guardar como → CSV). Luego clic en "Importar CSV" arriba.</div>
+            </div>
+          </div>
+        </div>
+        <div style=${{background:"#f8fafc",borderTop:"1px solid #e2e8f0",padding:"10px 18px",display:"flex",gap:20,flexWrap:"wrap"}}>
+          ${[["SKU","Opcional — se autogenera"],["Nombre ✱","Obligatorio"],["Categoría","ej. Cableado Estructurado"],["Stock","Número entero"],["Precio Costo","En pesos MXN"],["Precio Venta","En pesos MXN"],["Margen %","Opcional — se calcula solo"],["Unidad","Pieza, Metro, Bote…"]].map(([col,desc])=>html`
+            <div key=${col} style=${{fontSize:11}}>
+              <span style=${{fontFamily:"monospace",fontWeight:700,color:"#1d4ed8"}}>${col}</span>
+              <span style=${{color:"#94a3b8",marginLeft:4}}>${desc}</span>
+            </div>`)}
+        </div>
+      </div>
     </div>
+
+    <!-- INPUT FILE oculto -->
+    <input ref=${fileRef} type="file" accept=".csv,.txt" style=${{display:"none"}} onChange=${handleFile}/>
+
+    <!-- MODAL PREVIEW IMPORTACIÓN -->
+    ${importPreview&&html`
+      <div class="modal-bg" onClick=${()=>setImportPreview(null)}>
+        <div class="modal fade-in" style=${{maxWidth:680}} onClick=${e=>e.stopPropagation()}>
+          <div style=${{padding:"16px 22px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <h2 style=${{fontSize:16,fontWeight:700}}>Vista previa — Importar inventario</h2>
+              <div style=${{fontSize:12,color:"#94a3b8",marginTop:1}}>${importPreview.rows.length} artículos encontrados · Revisa antes de confirmar</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onClick=${()=>setImportPreview(null)}><${Ic} n="x" z=${14}/></button>
+          </div>
+
+          ${importPreview.errors.length>0&&html`
+            <div style=${{margin:"12px 20px 0",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:8,padding:"10px 14px"}}>
+              <div style=${{fontWeight:700,fontSize:12,color:"#92400e",marginBottom:4}}>⚠️ Advertencias (${importPreview.errors.length})</div>
+              ${importPreview.errors.map((e,i)=>html`<div key=${i} style=${{fontSize:11,color:"#92400e"}}>${e}</div>`)}
+            </div>`}
+
+          ${importPreview.rows.length===0&&html`
+            <div style=${{padding:"32px",textAlign:"center",color:"#94a3b8"}}>
+              <div style=${{fontSize:15,fontWeight:600,marginBottom:6}}>No se encontraron artículos válidos</div>
+              <div style=${{fontSize:12}}>Verifica que el CSV tenga al menos una columna llamada "Nombre"</div>
+            </div>`}
+
+          ${importPreview.rows.length>0&&html`
+            <div style=${{maxHeight:"50vh",overflowY:"auto"}}>
+              <div style=${{display:"grid",gridTemplateColumns:"80px 1fr 120px 60px 90px 90px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",position:"sticky",top:0}}>
+                ${["SKU","Nombre","Categoría","Stock","Costo","Venta"].map((h,i)=>html`
+                  <div key=${i} style=${{padding:"8px 12px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:.6}}>${h}</div>`)}
+              </div>
+              ${importPreview.rows.map((r,i)=>html`
+                <div key=${i} style=${{display:"grid",gridTemplateColumns:"80px 1fr 120px 60px 90px 90px",borderBottom:"1px solid #f1f5f9"}}>
+                  <div style=${{padding:"9px 12px",fontSize:11,fontFamily:"monospace",color:"#94a3b8"}}>${r.id}</div>
+                  <div style=${{padding:"9px 12px",fontSize:12,fontWeight:500}}>${r.nombre}</div>
+                  <div style=${{padding:"9px 12px",fontSize:11,color:"#64748b"}}>${r.cat}</div>
+                  <div style=${{padding:"9px 12px",fontSize:12,textAlign:"right"}}>${r.stock}</div>
+                  <div style=${{padding:"9px 12px",fontSize:12,textAlign:"right",color:"#64748b"}}>${r.costo>0?mxn(r.costo):"—"}</div>
+                  <div style=${{padding:"9px 12px",fontSize:12,fontWeight:600,textAlign:"right",color:"#1d4ed8"}}>${r.precio>0?mxn(r.precio):"—"}</div>
+                </div>`)}
+            </div>
+
+            <div style=${{padding:"14px 22px",borderTop:"1px solid #e2e8f0",background:"#f8fafc",display:"flex",justifyContent:"space-between",alignItems:"center",borderRadius:"0 0 16px 16px"}}>
+              <div style=${{fontSize:12,color:"#64748b"}}>${importPreview.rows.length} artículos listos para importar</div>
+              <div style=${{display:"flex",gap:8}}>
+                <button class="btn btn-ghost" onClick=${()=>setImportPreview(null)}>Cancelar</button>
+                <button class="btn btn-primary" onClick=${()=>{onImportInv(importPreview.rows);setImportPreview(null);}}>
+                  <${Ic} n="ok" z=${14} s="#fff"/> Confirmar importación
+                </button>
+              </div>
+            </div>`}
+        </div>
+      </div>`}
   </div>`;
 }
 
@@ -5188,7 +5971,7 @@ function GarantiasSection({gars,ords,cls,tecs,onAdd,onReclamo,onDel}){
   const EST_C={Vigente:["#f0fdf4","#059669"],Expirada:["#f8fafc","#94a3b8"],"Por vencer":["#fffbeb","#d97706"],Reclamada:["#fef2f2","#dc2626"]};
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Garantías</h2>
@@ -5792,7 +6575,7 @@ function UsersSection({users,tecs,session,onAdd,onEdit,onDel}){
   const [confirm,setConfirm]=useState(null);
   const RCOLS={admin:["#eff6ff","#1d4ed8"],tecnico:["#f0fdf4","#059669"]};
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",background:"#fff",flexShrink:0}}>
+    <div style=${{padding:"16px 24px",borderBottom:"1px solid rgba(0,0,0,.06)",backdropFilter:"blur(20px) saturate(180%)",WebkitBackdropFilter:"blur(20px) saturate(180%)",background:"rgba(255,255,255,.75)",flexShrink:0,position:"relative",zIndex:1}}>
       <div class="section-header">
         <div>
           <h2 style=${{fontSize:18,fontWeight:700}}>Usuarios del sistema</h2>
@@ -5856,7 +6639,7 @@ function GlobalSearch({ords,cls,inv,cots,onNav,onClose}){
     // Órdenes
     ords.forEach(o=>{
       const cl=cls.find(x=>x.id===o.cid);
-      const hay=[o.id,o.equipo,o.serie,o.falla,cl?.nombre,cl?.tel,cl?.email].filter(Boolean).join(" ").toLowerCase();
+      const hay=[o.id,o.equipo,o.serie,o.prob,cl?.nombre,cl?.tel,cl?.email].filter(Boolean).join(" ").toLowerCase();
       if(hay.includes(t)) out.push({
         tipo:"orden", icon:"🔧", color:"#7c3aed",
         titulo:o.id+" — "+o.equipo,
@@ -5878,23 +6661,23 @@ function GlobalSearch({ords,cls,inv,cots,onNav,onClose}){
 
     // Inventario
     inv.forEach(i=>{
-      const hay=[i.nombre,i.sku,i.marca,i.categoria].filter(Boolean).join(" ").toLowerCase();
+      const hay=[i.nombre,i.id,i.cat,i.notas].filter(Boolean).join(" ").toLowerCase();
       if(hay.includes(t)) out.push({
         tipo:"inventario", icon:"📦", color:"#d97706",
         titulo:i.nombre,
-        sub:(i.marca?i.marca+" · ":"")+"Stock: "+i.stock+(i.stock<=3?" ⚠️":""),
+        sub:(i.cat?i.cat+" · ":"")+"Stock: "+i.stock+(i.stock<=3?" ⚠️":""),
         nav:"inv", id:i.id
       });
     });
 
     // Cotizaciones
     cots.forEach(ct=>{
-      const cl=cls.find(x=>x.id===ct.cliId);
-      const hay=[ct.id,cl?.nombre,ct.equipo].filter(Boolean).join(" ").toLowerCase();
+      const cl=cls.find(x=>x.id===ct.cid);
+      const hay=[ct.id,cl?.nombre,ct.descripcion,ct.ref].filter(Boolean).join(" ").toLowerCase();
       if(hay.includes(t)) out.push({
         tipo:"cotización", icon:"📋", color:"#059669",
         titulo:ct.id+" — "+(cl?.nombre||"?"),
-        sub:(ct.equipo||"")+" · "+mxn(ct.total||0),
+        sub:(ct.descripcion||ct.ref||"")+" · "+mxn(ct.tot||0),
         nav:"cots", id:ct.id
       });
     });
@@ -6399,6 +7182,653 @@ function CalendarioSection({ords,cls,tecs,citas,recs,session,config,onSaveCita,o
   </div>`;
 }
 
+/* ══ CALC INSTALACIONES ════════════════════════════════════════════════ */
+let CALCSEQ=(()=>{try{return parseInt(localStorage.getItem("redcom_calcseq")||"0",10);}catch(e){return 0;}})();
+function newCalcId(){CALCSEQ++;try{localStorage.setItem("redcom_calcseq",CALCSEQ);}catch(e){}return`INS-${String(CALCSEQ).padStart(4,"0")}`;}
+
+const CALC_PRESETS=[
+  {nombre:"1 Nodo red Cat6 entuber 17m",items:[
+    {nombre:"Cable UTP Cat6 100% Cobre (metro)",cat:"Cableado Estructurado",qty:22,costo:10,precio:18,unidad:"m"},
+    {nombre:"Jack Keystone Cat6 Panduit NK688MWH",cat:"Cableado Estructurado",qty:2,costo:38,precio:65,unidad:"pza"},
+    {nombre:"Tapa ejecutiva 1 puerto Panduit NK1FGWH",cat:"Cableado Estructurado",qty:2,costo:25,precio:45,unidad:"pza"},
+    {nombre:"Caja montaje superficie 1 puerto",cat:"Cableado Estructurado",qty:2,costo:50,precio:85,unidad:"pza"},
+    {nombre:"Patch cord Cat6 1m",cat:"Cableado Estructurado",qty:2,costo:38,precio:65,unidad:"pza"},
+    {nombre:"Tubería conduit galv. 3/4\" pared delgada (3m)",cat:"Ferretería",qty:7,costo:100,precio:165,unidad:"pza"},
+    {nombre:"Accesorios conduit (coples, abrazaderas)",cat:"Ferretería",qty:1,costo:180,precio:290,unidad:"lote"},
+    {nombre:"Mano de obra — retiro cable viejo + entubar + terminar + probar",cat:"Mano de Obra",qty:1,costo:0,precio:750,unidad:"serv"},
+  ]},
+  {nombre:"Kit CCTV Analógico 4 cámaras básico",items:[
+    {nombre:"Cámara AHD domo 2MP IP66",cat:"Videovigilancia Analógica",qty:4,costo:370,precio:580,unidad:"pza"},
+    {nombre:"DVR 4 canales 1080p TVI/AHD",cat:"Videovigilancia Analógica",qty:1,costo:780,precio:1200,unidad:"pza"},
+    {nombre:"Fuente 12V 5A CCTV (4 salidas)",cat:"Videovigilancia Analógica",qty:1,costo:195,precio:320,unidad:"pza"},
+    {nombre:"Conectores BNC macho RG59 (bolsa 10)",cat:"Videovigilancia Analógica",qty:2,costo:48,precio:85,unidad:"bolsa"},
+    {nombre:"Disco Duro 2TB WD Purple (CCTV)",cat:"Almacenamiento",qty:1,costo:950,precio:1450,unidad:"pza"},
+    {nombre:"Cable coaxial RG59 (por metro)",cat:"Cableado",qty:40,costo:4,precio:8,unidad:"m"},
+    {nombre:"Mano de obra — instalación 4 cámaras + DVR + configuración",cat:"Mano de Obra",qty:1,costo:0,precio:1200,unidad:"serv"},
+  ]},
+  {nombre:"Red WiFi domicilio (router + 1 AP)",items:[
+    {nombre:"Router WiFi TP-Link AC1200 dual band",cat:"Redes",qty:1,costo:510,precio:780,unidad:"pza"},
+    {nombre:"Repetidor WiFi TP-Link RE305 AC1200",cat:"Redes",qty:1,costo:300,precio:480,unidad:"pza"},
+    {nombre:"Mano de obra — configuración y prueba de red",cat:"Mano de Obra",qty:1,costo:0,precio:400,unidad:"serv"},
+  ]},
+  {nombre:"Punto de red Cat6 (canaleta PVC)",items:[
+    {nombre:"Cable UTP Cat6 100% Cobre (metro)",cat:"Cableado Estructurado",qty:15,costo:10,precio:18,unidad:"m"},
+    {nombre:"Jack Keystone Cat6 Panduit NK688MWH",cat:"Cableado Estructurado",qty:1,costo:38,precio:65,unidad:"pza"},
+    {nombre:"Tapa ejecutiva 1 puerto Panduit NK1FGWH",cat:"Cableado Estructurado",qty:1,costo:25,precio:45,unidad:"pza"},
+    {nombre:"Caja montaje superficie 1 puerto",cat:"Cableado Estructurado",qty:1,costo:50,precio:85,unidad:"pza"},
+    {nombre:"Patch cord Cat6 1m",cat:"Cableado Estructurado",qty:1,costo:38,precio:65,unidad:"pza"},
+    {nombre:"Canaleta PVC 40x25mm (tira 2m)",cat:"Cableado",qty:4,costo:55,precio:95,unidad:"tira"},
+    {nombre:"Mano de obra — punto de red Cat6",cat:"Mano de Obra",qty:1,costo:0,precio:450,unidad:"serv"},
+  ]},
+];
+
+const CAT_COLOR_CALC={
+  "Cableado Estructurado":["#f0fdf4","#059669"],
+  "Videovigilancia IP":["#eff6ff","#1d4ed8"],
+  "Videovigilancia Analógica":["#f5f3ff","#7c3aed"],
+  "Almacenamiento":["#fff7ed","#ea580c"],
+  "Redes":["#f0f9ff","#0891b2"],
+  "Ferretería":["#f8fafc","#64748b"],
+  "Cableado":["#f0fdf4","#16a34a"],
+  "Mano de Obra":["#fdf4ff","#9333ea"],
+};
+function catColorCalc(cat){return CAT_COLOR_CALC[cat]||["#f8fafc","#475569"];}
+
+function printCalcInstalacion(calc,cfg){
+  cfg=cfg||{};
+  const empresa=cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
+  const tel=cfg.tel||""; const email=cfg.email||""; const dir=cfg.calle?(cfg.calle+", "+(cfg.ciudad||"Los Mochis")+", "+cfg.estado):"Los Mochis, Sinaloa";
+  const logo=cfg.logo||"";
+  const mats=calc.items.filter(i=>i.cat!=="Mano de Obra");
+  const mos=calc.items.filter(i=>i.cat==="Mano de Obra");
+  const subtotalMat=mats.reduce((a,i)=>a+(i.qty*i.precio),0);
+  const subtotalMO=mos.reduce((a,i)=>a+(i.qty*i.precio),0);
+  const sub=subtotalMat+subtotalMO;
+  const iva=calc.conIva?+(sub*0.16).toFixed(2):0;
+  const tot=+(sub+iva).toFixed(2);
+  const costoTotal=calc.items.reduce((a,i)=>a+(i.qty*i.costo),0);
+  const utilidad=tot-costoTotal;
+  const now=new Date();
+  const fecha=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
+  const w=window.open("","_blank","width=660,height=860");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <title>${calc.id}</title>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f1f5f9;font-family:'IBM Plex Sans',sans-serif;padding:24px;display:flex;justify-content:center}
+  .doc{background:#fff;border-radius:12px;width:100%;max-width:620px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.10)}
+  .hdr{background:linear-gradient(135deg,#0f2158,#1d4ed8);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-size:20px;font-weight:800;letter-spacing:2px}.logo span{color:#93c5fd}
+  .hdr-sub{font-size:9px;opacity:.65;letter-spacing:.5px;margin-top:2px}
+  .meta-strip{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0}
+  .meta-cell{padding:10px 16px;border-right:1px solid #e2e8f0}
+  .meta-cell:nth-child(even){border-right:none}
+  .ml{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:2px}
+  .mv{font-size:12px;font-weight:600;color:#1e293b}
+  .sec-title{background:#f8fafc;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:7px 16px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8}
+  .tbl-hdr{display:grid;grid-template-columns:2.5fr .5fr .7fr .7fr .65fr;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+  .tbl-hdr>div{padding:7px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#94a3b8}
+  .tbl-hdr>div:not(:first-child){text-align:right}
+  .tbl-row{display:grid;grid-template-columns:2.5fr .5fr .7fr .7fr .65fr;border-bottom:1px solid #f1f5f9}
+  .tbl-row>div{padding:8px 12px;font-size:11px;color:#1e293b}
+  .tbl-row>div:not(:first-child){text-align:right}
+  .cat-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:700;margin-top:2px}
+  .totals{padding:12px 16px;background:#f8fafc;border-top:2px solid #e2e8f0}
+  .tot-r{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px}
+  .tot-final{display:flex;justify-content:space-between;font-size:17px;font-weight:800;color:#1d4ed8;padding-top:8px;margin-top:4px;border-top:1px solid #e2e8f0}
+  .util-bar{background:#f0fdf4;border-top:1px solid #dcfce7;padding:8px 16px;display:flex;justify-content:space-between;font-size:11px;color:#059669;font-weight:600}
+  .footer{padding:10px 16px;text-align:center;font-size:9px;color:#94a3b8;line-height:1.6;border-top:1px solid #f1f5f9}
+  .mo-row{background:#fdf4ff}
+  @media print{body{background:#fff;padding:0}.doc{box-shadow:none;max-width:100%;border-radius:0}@page{margin:8mm}}
+  </style></head><body><div class="doc">
+  <div class="hdr">
+    <div>
+      ${logo?`<img src="${logo}" style="height:44px;max-width:110px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,.15);padding:3px"/>`:`<div class="logo">RED<span>COM</span></div>`}
+      <div class="hdr-sub">${empresa}</div>
+      ${tel?`<div class="hdr-sub">${tel}</div>`:""}
+      ${dir?`<div class="hdr-sub">📍 ${dir}</div>`:""}
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:9px;opacity:.6;text-transform:uppercase;letter-spacing:1px">Propuesta de instalación</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;margin-top:4px;color:#93c5fd">${calc.id}</div>
+      <div style="font-size:10px;opacity:.7;margin-top:2px">${fecha}</div>
+    </div>
+  </div>
+  <div class="meta-strip">
+    <div class="meta-cell"><div class="ml">Descripción del trabajo</div><div class="mv">${calc.descripcion||"Instalación"}</div></div>
+    <div class="meta-cell"><div class="ml">Cliente</div><div class="mv">${calc.cliente||"—"}</div></div>
+    <div class="meta-cell"><div class="ml">Elaboró</div><div class="mv">${calc.elaboro||"Redcom"}</div></div>
+    <div class="meta-cell"><div class="ml">Validez</div><div class="mv">${calc.validez||15} días</div></div>
+  </div>
+
+  ${mats.length>0?`
+  <div class="sec-title">Materiales</div>
+  <div class="tbl-hdr"><div>Descripción</div><div>Cant.</div><div>P. unit.</div><div>Importe</div><div>Margen</div></div>
+  ${mats.map(i=>{
+    const [bg,c]=catColorCalc(i.cat);
+    const margen=i.costo>0?+(((i.precio/i.costo)-1)*100).toFixed(0):0;
+    return`<div class="tbl-row">
+      <div><div style="font-weight:500">${i.nombre}</div><span class="cat-badge" style="background:${bg};color:${c}">${i.cat}</span></div>
+      <div>${i.qty} ${i.unidad}</div>
+      <div>${mxn(i.precio)}</div>
+      <div style="font-weight:600">${mxn(i.qty*i.precio)}</div>
+      <div style="color:#059669;font-weight:600">${margen}%</div>
+    </div>`;}).join("")}`:""}
+
+  ${mos.length>0?`
+  <div class="sec-title">Mano de obra</div>
+  <div class="tbl-hdr"><div>Concepto</div><div>Cant.</div><div>Precio</div><div>Importe</div><div></div></div>
+  ${mos.map(i=>`<div class="tbl-row mo-row">
+    <div><div style="font-weight:500">${i.nombre}</div><span class="cat-badge" style="background:#fdf4ff;color:#9333ea">Mano de Obra</span></div>
+    <div>${i.qty}</div>
+    <div>${mxn(i.precio)}</div>
+    <div style="font-weight:600">${mxn(i.qty*i.precio)}</div>
+    <div></div>
+  </div>`).join("")}`:""}
+
+  <div class="totals">
+    ${mats.length>0?`<div class="tot-r"><span>Subtotal materiales</span><span>${mxn(subtotalMat)}</span></div>`:""}
+    ${mos.length>0?`<div class="tot-r"><span>Subtotal mano de obra</span><span>${mxn(subtotalMO)}</span></div>`:""}
+    ${calc.conIva?`<div class="tot-r"><span>Subtotal</span><span>${mxn(sub)}</span></div><div class="tot-r"><span>IVA (16%)</span><span>${mxn(iva)}</span></div>`:""}
+    <div class="tot-final"><span>TOTAL ${calc.conIva?"CON IVA":""}</span><span>${mxn(tot)}</span></div>
+  </div>
+  <div class="util-bar">
+    <span>✓ Utilidad estimada: ${mxn(utilidad)}</span>
+    <span>Margen sobre costo: ${costoTotal>0?Math.round(((tot-costoTotal)/costoTotal)*100):100}%</span>
+  </div>
+  ${calc.notas?`<div style="padding:10px 16px;font-size:11px;color:#475569;border-top:1px solid #e2e8f0"><b>Notas:</b> ${calc.notas}</div>`:""}
+  <div class="footer">
+    ${empresa} · Los Mochis, Sinaloa<br/>
+    Esta cotización es válida por ${calc.validez||15} días · Los precios incluyen materiales y ${mos.length>0?"mano de obra especificada":"materiales solamente"}<br/>
+    Se requiere 50% de anticipo para iniciar el trabajo
+  </div>
+  </div>
+  <div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
+    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  </div>
+  </body></html>`);
+  w.document.close();
+}
+
+function CalcInstalacionSection({inv,svcs,cls,tecs,session,config,onSaveCot}){
+  const blank={
+    id:null,descripcion:"",cliente:"",elaboro:session?.nombre||"Redcom",validez:15,
+    notas:"",conIva:false,items:[]
+  };
+  const [calc,setCalc]=useState(blank);
+  const [addTab,setAddTab]=useState("inv"); // inv | custom | mo | ia
+  const [selInv,setSelInv]=useState("");
+  const [qty,setQty]=useState(1);
+  const [custNombre,setCN]=useState("");
+  const [custCat,setCC]=useState("Cableado Estructurado");
+  const [custCosto,setCosto]=useState(0);
+  const [custPrecio,setCPr]=useState(0);
+  const [custUnidad,setCU]=useState("pza");
+  const [moNombre,setMON]=useState("");
+  const [moPrecio,setMOP]=useState(0);
+  const [showPresets,setShowPresets]=useState(false);
+  const [savedList,setSavedList]=useState(()=>{try{return JSON.parse(localStorage.getItem("redcom_calcs")||"[]");}catch(e){return [];}});
+  const [viewSaved,setViewSaved]=useState(null);
+  const [customPresets,setCustomPresets]=useState(()=>{try{return JSON.parse(localStorage.getItem("redcom_calc_templates")||"[]");}catch(e){return [];}});
+  const [aiInput,setAiInput]=useState("");
+  const [aiLoading,setAiLoading]=useState(false);
+  const [aiMsg,setAiMsg]=useState("");
+
+  const mats=calc.items.filter(i=>i.cat!=="Mano de Obra");
+  const mos=calc.items.filter(i=>i.cat==="Mano de Obra");
+  const subtotalMat=mats.reduce((a,i)=>a+(i.qty*i.precio),0);
+  const subtotalMO=mos.reduce((a,i)=>a+(i.qty*i.precio),0);
+  const sub=subtotalMat+subtotalMO;
+  const iva=calc.conIva?+(sub*0.16).toFixed(2):0;
+  const tot=+(sub+iva).toFixed(2);
+  const costoTotal=calc.items.reduce((a,i)=>a+(i.qty*(i.costo||0)),0);
+  const utilidad=+(tot-costoTotal).toFixed(2);
+
+  function sf(k){return e=>setCalc(p=>({...p,[k]:e.target.type==="checkbox"?e.target.checked:e.target.type==="number"?Number(e.target.value):e.target.value}));}
+
+  function addFromInv(){
+    const p=inv.find(x=>x.id===selInv); if(!p) return;
+    const item={id:Date.now()+"",nombre:p.nombre,cat:p.cat||"Inventario",qty:Number(qty),costo:p.costo||0,precio:p.precio,unidad:p.unidad||"pza"};
+    setCalc(p=>({...p,items:[...p.items,item]}));
+    setSelInv("");setQty(1);
+  }
+  function addCustom(){
+    if(!custNombre.trim()||custPrecio<=0) return;
+    const item={id:Date.now()+"",nombre:custNombre,cat:custCat,qty:Number(qty),costo:Number(custCosto)||0,precio:Number(custPrecio),unidad:custUnidad};
+    setCalc(p=>({...p,items:[...p.items,item]}));
+    setCN("");setCosto(0);setCPr(0);setQty(1);
+  }
+  function addMO(){
+    if(!moNombre.trim()||moPrecio<=0) return;
+    const item={id:Date.now()+"",nombre:moNombre,cat:"Mano de Obra",qty:1,costo:0,precio:Number(moPrecio),unidad:"serv"};
+    setCalc(p=>({...p,items:[...p.items,item]}));
+    setMON("");setMOP(0);
+  }
+  function updQty(id,v){setCalc(p=>({...p,items:p.items.map(i=>i.id===id?{...i,qty:Math.max(0.01,Number(v))}:i)}));}
+  function updPrecio(id,v){setCalc(p=>({...p,items:p.items.map(i=>i.id===id?{...i,precio:Math.max(0,Number(v))}:i)}));}
+  function rmItem(id){setCalc(p=>({...p,items:p.items.filter(i=>i.id!==id)}));}
+  function applyPreset(preset){
+    setCalc(p=>({...p,descripcion:preset.nombre,items:preset.items.map((i,idx)=>({...i,id:Date.now()+"_"+idx}))}));
+    setShowPresets(false);
+  }
+  function saveCalc(){
+    if(calc.items.length===0){alert("Agrega al menos un artículo.");return;}
+    const id=calc.id||newCalcId();
+    const saved={...calc,id,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad,fecha:new Date().toISOString().slice(0,10)};
+    setSavedList(prev=>{
+      const n=prev.find(x=>x.id===id)?prev.map(x=>x.id===id?saved:x):[saved,...prev];
+      try{localStorage.setItem("redcom_calcs",JSON.stringify(n));}catch(e){}
+      return n;
+    });
+    setCalc({...saved});
+    alert(`Guardado como ${id}`);
+  }
+  function loadCalc(c){setCalc(c);setViewSaved(null);}
+  function delCalc(id){setSavedList(prev=>{const n=prev.filter(x=>x.id!==id);try{localStorage.setItem("redcom_calcs",JSON.stringify(n));}catch(e){}return n;});}
+  function convertirCot(){
+    if(calc.items.length===0){alert("Agrega artículos primero.");return;}
+    const cliMatch=cls.find(c=>c.nombre.toLowerCase().includes((calc.cliente||"").toLowerCase()));
+    const cotItems=calc.items.map(i=>({id:i.id,nombre:i.nombre,cat:i.cat==="Mano de Obra"?"Servicio":i.cat,desc:"",precio:i.precio,qty:i.qty,src:"custom"}));
+    const cot={id:null,cid:cliMatch?.id||"",tec:session?.tecId||"",ref:calc.id||"",notas:calc.notas||"",validez:calc.validez||15,iva:calc.conIva,est:"Borrador",items:cotItems,fecha:new Date().toISOString().slice(0,10),descripcion:calc.descripcion};
+    onSaveCot(cot);
+    alert("Convertido a cotización. Revísala en la sección Cotizaciones.");
+  }
+
+  const CAT_OPTS=["Cableado Estructurado","Videovigilancia IP","Videovigilancia Analógica","Redes","Almacenamiento","Hardware","Ferretería","Consumible","Otro"];
+  const UNIDADES_OPTS=["pza","m","tira","bote","caja","rollo","lote","serv"];
+
+  function saveAsTemplate(){
+    if(calc.items.length===0){alert("Agrega artículos primero.");return;}
+    const nombre=prompt("Nombre para la plantilla:",calc.descripcion||"Mi plantilla");
+    if(!nombre) return;
+    const tpl={nombre,items:calc.items.map(i=>({...i}))};
+    setCustomPresets(prev=>{const n=[tpl,...prev];try{localStorage.setItem("redcom_calc_templates",JSON.stringify(n));}catch(e){}return n;});
+    alert(`Plantilla "${nombre}" guardada. Ya aparece en el menú de Plantillas.`);
+  }
+  function delCustomPreset(idx){
+    setCustomPresets(prev=>{const n=prev.filter((_,i)=>i!==idx);try{localStorage.setItem("redcom_calc_templates",JSON.stringify(n));}catch(e){}return n;});
+  }
+
+  async function sendToAI(){
+    const txt=aiInput.trim(); if(!txt||aiLoading) return;
+    if(!gasUrl){
+      setAiMsg("⚠️ Primero conecta el Asistente IA en la esquina inferior del menú (botón Conectar Drive / IA). Es el mismo canal que usa el Asistente IA.");
+      return;
+    }
+    setAiLoading(true); setAiMsg("");
+    const invResumen=inv.slice(0,30).map(i=>`${i.nombre}: costo $${i.costo||0}, precio $${i.precio}, unidad ${i.unidad||"pza"}`).join("; ");
+    const sysPrompt=`Eres un asistente de cotización para Redcom, empresa de redes y cómputo en Los Mochis, Sinaloa, México.
+El usuario dice en lenguaje natural qué materiales o trabajos agregar a una cotización de instalación.
+Responde ÚNICAMENTE con un JSON array válido (sin texto extra, sin markdown, sin bloques de código):
+[{"nombre":"...","cat":"...","qty":1,"costo":0,"precio":0,"unidad":"pza"}]
+Categorías válidas: "Cableado Estructurado","Videovigilancia IP","Videovigilancia Analógica","Redes","Almacenamiento","Hardware","Ferretería","Consumible","Mano de Obra","Otro"
+Unidades válidas: "pza","m","tira","bote","caja","rollo","lote","serv"
+Regla mano de obra: cat="Mano de Obra", unidad="serv", costo=0.
+Inventario real del taller (usa estos precios primero): ${invResumen}
+Precios de referencia mercado Los Mochis (si no está en inventario):
+Cable UTP Cat6/m: costo 10, precio 18. Jack Panduit NK688MWH: costo 38, precio 65. Tapa 1 puerto Panduit: costo 25, precio 45.
+Tubería conduit galv 3/4" 3m: costo 100, precio 165. Coples+abrazaderas lote: costo 180, precio 290.
+Caja superficie 1 puerto: costo 50, precio 85. Patch cord 1m: costo 38, precio 65. Patch cord 2m: costo 50, precio 85.
+Canaleta PVC 40x25mm 2m: costo 55, precio 95. Canaleta PVC 60x40mm 2m: costo 85, precio 145.
+Cámara AHD domo 2MP: costo 370, precio 580. DVR 4ch 1080p: costo 780, precio 1200. Fuente 12V 5A CCTV: costo 195, precio 320.
+Router TP-Link AC1200: costo 510, precio 780. Switch 8p Gigabit: costo 350, precio 550.
+MO media jornada: precio 500. MO jornada completa: precio 850. MO instalación CCTV 4 cam: precio 1200. MO punto red Cat6: precio 450.
+Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
+    try{
+      const res=await fetch(gasUrl,{
+        method:"POST",
+        headers:{"Content-Type":"text/plain"},
+        body:JSON.stringify({
+          action:"ai",
+          system:sysPrompt,
+          messages:[{role:"user",content:`Agrega estos artículos a la cotización (responde solo JSON array): ${txt}`}]
+        })
+      });
+      const data=await res.json();
+      if(!data.ok){setAiMsg("❌ Error del servidor IA: "+(data.error||"Sin respuesta"));setAiLoading(false);return;}
+      const raw=(data.reply||"").replace(/```json|```/g,"").trim();
+      // Extraer el array JSON aunque venga con texto alrededor
+      const match=raw.match(/\[[\s\S]*\]/);
+      if(!match){setAiMsg("⚠️ La IA no devolvió una lista válida. Intenta de nuevo siendo más específico.");setAiLoading(false);return;}
+      const items=JSON.parse(match[0]);
+      if(!Array.isArray(items)||items.length===0){setAiMsg("⚠️ No se encontraron artículos. Intenta: 'agrega 20 metros de cable cat6 y 2 jacks panduit'");setAiLoading(false);return;}
+      setCalc(p=>({...p,items:[...p.items,...items.map((it,idx)=>({...it,id:Date.now()+"_ai_"+idx,costo:Number(it.costo)||0,precio:Number(it.precio)||0,qty:Number(it.qty)||1}))]}));
+      setAiMsg(`✓ Se agregaron ${items.length} artículo(s): ${items.map(i=>i.nombre).join(", ")}`);
+      setAiInput("");
+    }catch(e){
+      setAiMsg("❌ Error: "+(e.message||"Verifica que el Asistente IA esté conectado."));
+    }
+    setAiLoading(false);
+  }
+
+  return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",background:"#f1f5f9"}}>
+    <!-- Header -->
+    <div style=${{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"14px 24px",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+      <div style=${{display:"flex",alignItems:"center",gap:12}}>
+        <div style=${{width:38,height:38,borderRadius:10,background:"linear-gradient(135deg,#0f2158,#1d4ed8)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <${Ic} n="calc" z=${20} s="#fff"/>
+        </div>
+        <div>
+          <div style=${{fontSize:16,fontWeight:700}}>Calculadora de Instalaciones</div>
+          <div style=${{fontSize:11,color:"#64748b"}}>Arma cotizaciones de redes, CCTV y cableado</div>
+        </div>
+      </div>
+      <div style=${{display:"flex",gap:6,flexWrap:"wrap"}}>
+        <button class="btn btn-ghost btn-sm" onClick=${()=>setShowPresets(true)}><${Ic} n="box" z=${13}/> Plantillas</button>
+        <button class="btn btn-ghost btn-sm" onClick=${()=>setViewSaved(true)}><${Ic} n="list" z=${13}/> Guardadas (${savedList.length})</button>
+        <button class="btn btn-ghost btn-sm" onClick=${()=>{setCalc(blank);}}><${Ic} n="x" z=${13}/> Nueva</button>
+      </div>
+    </div>
+
+    <div style=${{flex:1,overflowY:"auto",padding:"18px 24px",display:"grid",gridTemplateColumns:"1fr 360px",gap:18,alignItems:"start"}}>
+
+      <!-- LEFT: form + items -->
+      <div style=${{display:"flex",flexDirection:"column",gap:14}}>
+
+        <!-- Info básica -->
+        <div class="card" style=${{padding:"16px 18px",display:"grid",gap:12}}>
+          <div style=${{display:"grid",gridTemplateColumns:"1fr 120px",gap:12}}>
+            <div>
+              <label>Descripción del trabajo *</label>
+              <input value=${calc.descripcion} onChange=${sf("descripcion")} placeholder="ej. Instalación 1 nodo red + entubar 17m cocina"/>
+            </div>
+            <div>
+              <label>Validez (días)</label>
+              <input type="number" min="1" value=${calc.validez} onChange=${sf("validez")}/>
+            </div>
+          </div>
+          <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div><label>Cliente (opcional)</label><input value=${calc.cliente} onChange=${sf("cliente")} placeholder="Nombre del cliente"/></div>
+            <div><label>Elaboró</label><input value=${calc.elaboro} onChange=${sf("elaboro")} placeholder="Tu nombre o empresa"/></div>
+          </div>
+          <div>
+            <label>Notas / condiciones</label>
+            <textarea value=${calc.notas} onChange=${sf("notas")} rows=${2}
+              placeholder="ej. 50% anticipo requerido, instalación en horario de oficina"
+              style=${{resize:"none",fontSize:13,width:"100%",boxSizing:"border-box",fontFamily:"inherit",border:"1.5px solid #e2e8f0",borderRadius:8,padding:"9px 12px",background:"#fff",color:"#1e293b",outline:"none"}}/>
+          </div>
+        </div>
+
+        <!-- Agregar artículo -->
+        <div class="card" style=${{padding:"16px 18px"}}>
+          <div style=${{fontWeight:700,fontSize:13,marginBottom:12,display:"flex",alignItems:"center",gap:6}}>
+            <${Ic} n="plus" z=${14} s="#1d4ed8"/> Agregar artículo
+          </div>
+          <!-- Tabs -->
+          <div style=${{display:"flex",gap:4,marginBottom:12,background:"#f1f5f9",borderRadius:9,padding:3}}>
+            ${[["inv","Del inventario"],["custom","Personalizado"],["mo","Mano de obra"],["ia","🤖 IA"]].map(([k,lbl])=>html`
+              <button key=${k} onClick=${()=>setAddTab(k)} style=${{
+                flex:1,padding:"6px 0",borderRadius:7,border:"none",cursor:"pointer",fontFamily:"inherit",
+                fontSize:12,fontWeight:600,transition:"all .15s",
+                background:addTab===k?"#fff":"transparent",
+                color:addTab===k?(k==="ia"?"#7c3aed":"#1d4ed8"):"#64748b",
+                boxShadow:addTab===k?"0 1px 3px rgba(0,0,0,.08)":"none"}}>${lbl}</button>`)}
+          </div>
+
+          ${addTab==="inv"&&html`
+            <div style=${{display:"grid",gridTemplateColumns:"1fr 80px",gap:10}}>
+              <div>
+                <label>Artículo del inventario</label>
+                <select value=${selInv} onChange=${e=>setSelInv(e.target.value)}>
+                  <option value="">— Selecciona —</option>
+                  ${inv.map(p=>html`<option key=${p.id} value=${p.id}>${p.nombre} · ${mxn(p.precio)}${p.unidad&&p.unidad!=="Pieza"?` / ${p.unidad}`:""}</option>`)}
+                </select>
+              </div>
+              <div><label>Cantidad</label><input type="number" min="0.01" step="any" value=${qty} onChange=${e=>setQty(e.target.value)}/></div>
+            </div>
+            ${selInv&&(()=>{const p=inv.find(x=>x.id===selInv);const[bg,c]=catColorCalc(p?.cat||"");const mar=p?.costo>0?+(((p.precio/p.costo)-1)*100).toFixed(0):0;return html`
+              <div style=${{marginTop:8,padding:"8px 10px",background:"#f8fafc",borderRadius:8,fontSize:11,display:"flex",gap:16,flexWrap:"wrap"}}>
+                <span>Costo: <b>${mxn(p?.costo||0)}</b></span>
+                <span>Venta: <b>${mxn(p?.precio||0)}</b></span>
+                <span style=${{background:bg,color:c,padding:"1px 7px",borderRadius:99,fontWeight:700}}>Margen ${mar}%</span>
+                <span>Stock: <b>${p?.stock||0} ${p?.unidad||"pzas"}</b></span>
+              </div>`})()}
+            <button class="btn btn-primary btn-sm" style=${{marginTop:10}} onClick=${addFromInv} disabled=${!selInv}>
+              <${Ic} n="plus" z=${13} s="#fff"/> Agregar al presupuesto
+            </button>`}
+
+          ${addTab==="custom"&&html`
+            <div style=${{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:10}}>
+              <div style=${{gridColumn:"span 2"}}><label>Nombre / descripción *</label><input value=${custNombre} onChange=${e=>setCN(e.target.value)} placeholder="ej. Tuberia conduit galv. 3/4 pulgada"/></div>
+              <div><label>Categoría</label>
+                <select value=${custCat} onChange=${e=>setCC(e.target.value)}>
+                  ${CAT_OPTS.map(c=>html`<option key=${c} value=${c}>${c}</option>`)}
+                </select>
+              </div>
+              <div><label>Unidad</label>
+                <select value=${custUnidad} onChange=${e=>setCU(e.target.value)}>
+                  ${UNIDADES_OPTS.map(u=>html`<option key=${u} value=${u}>${u}</option>`)}
+                </select>
+              </div>
+            </div>
+            <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginTop:8}}>
+              <div><label>Costo unitario</label><input type="number" min="0" step="0.01" value=${custCosto} onChange=${e=>{setCosto(e.target.value);}}/></div>
+              <div><label>Precio venta *</label><input type="number" min="0" step="0.01" value=${custPrecio} onChange=${e=>setCPr(e.target.value)}/></div>
+              <div><label>Cantidad</label><input type="number" min="0.01" step="any" value=${qty} onChange=${e=>setQty(e.target.value)}/></div>
+            </div>
+            ${Number(custCosto)>0&&Number(custPrecio)>0&&html`
+              <div style=${{marginTop:6,padding:"6px 10px",background:"#f0fdf4",borderRadius:7,fontSize:11,color:"#059669",fontWeight:600}}>
+                Margen: ${+(((Number(custPrecio)/Number(custCosto))-1)*100).toFixed(0)}% · Utilidad: ${mxn((Number(custPrecio)-Number(custCosto))*Number(qty))}
+              </div>`}
+            <button class="btn btn-primary btn-sm" style=${{marginTop:10}} onClick=${addCustom} disabled=${!custNombre.trim()||custPrecio<=0}>
+              <${Ic} n="plus" z=${13} s="#fff"/> Agregar
+            </button>`}
+
+          ${addTab==="mo"&&html`
+            <div style=${{display:"grid",gridTemplateColumns:"2fr 1fr",gap:10}}>
+              <div><label>Concepto de mano de obra *</label><input value=${moNombre} onChange=${e=>setMON(e.target.value)} placeholder="ej. Instalación + cableado + terminaciones"/></div>
+              <div><label>Precio $MXN *</label><input type="number" min="0" step="50" value=${moPrecio} onChange=${e=>setMOP(e.target.value)}/></div>
+            </div>
+            <div style=${{marginTop:8,background:"#f0f9ff",borderRadius:7,padding:"7px 10px",fontSize:11,color:"#0891b2"}}>
+              💡 Referencia Los Mochis: ½ día = $400–$500 · 1 día = $700–$900 · Instalación CCTV completa = $1,200–$2,500
+            </div>
+            <button class="btn btn-primary btn-sm" style=${{marginTop:10}} onClick=${addMO} disabled=${!moNombre.trim()||moPrecio<=0}>
+              <${Ic} n="plus" z=${13} s="#fff"/> Agregar mano de obra
+            </button>`}
+
+          ${addTab==="ia"&&html`
+            <div style=${{background:"linear-gradient(135deg,#fdf4ff,#eff6ff)",border:"1px solid #e9d5ff",borderRadius:10,padding:"12px 14px",marginBottom:10}}>
+              <div style=${{fontSize:11,fontWeight:700,color:"#7c3aed",marginBottom:4}}>🤖 IA Cotizadora — dile qué necesitas en español</div>
+              <div style=${{fontSize:11,color:"#64748b",lineHeight:1.5}}>
+                Ejemplos: <i>"agrega 25 metros de cable cat6 panduit y 2 jacks"</i> · <i>"necesito kit CCTV 4 cámaras analógicas con DVR y fuente"</i> · <i>"agrega mano de obra de un día completo"</i>
+              </div>
+            </div>
+            <textarea
+              value=${aiInput}
+              onChange=${e=>setAiInput(e.target.value)}
+              onKeyDown=${e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();sendToAI();}}}
+              placeholder="Describe los materiales o trabajos que quieres agregar..."
+              rows=${3}
+              disabled=${aiLoading}
+              style=${{width:"100%",borderRadius:8,padding:"10px 12px",fontSize:13,border:"1px solid #e2e8f0",fontFamily:"inherit",resize:"vertical"}}
+            />
+            <div style=${{display:"flex",gap:8,marginTop:8,alignItems:"center"}}>
+              <button class="btn btn-primary btn-sm" onClick=${sendToAI} disabled=${!aiInput.trim()||aiLoading} style=${{background:"#7c3aed",flex:1,justifyContent:"center"}}>
+                ${aiLoading?html`<span style=${{animation:"spin 1s linear infinite",display:"inline-block"}}>⟳</span>  Pensando...`:"🤖 Agregar con IA"}
+              </button>
+              <span style=${{fontSize:10,color:"#94a3b8"}}>Ctrl+Enter</span>
+            </div>
+            ${aiMsg&&html`
+              <div style=${{marginTop:8,padding:"8px 12px",borderRadius:8,fontSize:12,fontWeight:500,
+                background:aiMsg.startsWith("✓")?"#f0fdf4":aiMsg.startsWith("❌")?"#fef2f2":"#fffbeb",
+                color:aiMsg.startsWith("✓")?"#059669":aiMsg.startsWith("❌")?"#dc2626":"#92400e",
+                border:"1px solid",borderColor:aiMsg.startsWith("✓")?"#bbf7d0":aiMsg.startsWith("❌")?"#fca5a5":"#fde68a"}}>
+                ${aiMsg}
+              </div>`}
+            <div style=${{marginTop:8,fontSize:10,color:"#94a3b8",textAlign:"center"}}>
+              La IA usa precios de mercado de Los Mochis · Siempre revisa y ajusta antes de imprimir
+            </div>`}
+        </div>
+
+        <!-- Tabla de artículos -->
+        ${calc.items.length>0&&html`
+          <div class="card" style=${{overflow:"hidden"}}>
+            <div style=${{background:"#f8fafc",padding:"10px 16px",borderBottom:"1px solid #e2e8f0",fontWeight:700,fontSize:12}}>
+              Artículos del presupuesto (${calc.items.length})
+            </div>
+            <!-- Header -->
+            <div style=${{display:"grid",gridTemplateColumns:"2.5fr 70px 90px 90px 36px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0"}}>
+              ${["Descripción","Cant.","P. unit.","Importe",""].map((h,i)=>html`<div key=${i} style=${{padding:"8px 12px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:.7,textAlign:i>0?"right":"left"}}>${h}</div>`)}
+            </div>
+            ${calc.items.map(item=>{
+              const [bg,c]=catColorCalc(item.cat);
+              return html`<div key=${item.id} style=${{display:"grid",gridTemplateColumns:"2.5fr 70px 90px 90px 36px",borderBottom:"1px solid #f1f5f9",alignItems:"center"}}>
+                <div style=${{padding:"9px 12px"}}>
+                  <div style=${{fontSize:12,fontWeight:500}}>${item.nombre}</div>
+                  <span style=${{fontSize:9,fontWeight:700,background:bg,color:c,padding:"1px 6px",borderRadius:4,display:"inline-block",marginTop:2}}>${item.cat}</span>
+                </div>
+                <div style=${{padding:"4px 12px",textAlign:"right"}}>
+                  <input type="number" min="0.01" step="any" value=${item.qty} onChange=${e=>updQty(item.id,e.target.value)} style=${{width:52,textAlign:"right",padding:"4px 6px",fontSize:12,border:"1px solid #e2e8f0",borderRadius:6}}/>
+                </div>
+                <div style=${{padding:"4px 12px",textAlign:"right"}}>
+                  <input type="number" min="0" step="0.01" value=${item.precio} onChange=${e=>updPrecio(item.id,e.target.value)} style=${{width:78,textAlign:"right",padding:"4px 6px",fontSize:12,border:"1px solid #e2e8f0",borderRadius:6}}/>
+                </div>
+                <div style=${{padding:"9px 12px",textAlign:"right",fontWeight:600,fontSize:13}}>${mxn(item.qty*item.precio)}</div>
+                <div style=${{padding:"9px 6px",textAlign:"center"}}>
+                  <button onClick=${()=>rmItem(item.id)} style=${{background:"transparent",border:"none",cursor:"pointer",padding:3,borderRadius:6,display:"flex",alignItems:"center"}}><${Ic} n="trash" z=${13} s="#dc2626"/></button>
+                </div>
+              </div>`;
+            })}
+          </div>`}
+      </div>
+
+      <!-- RIGHT: totales + acciones -->
+      <div style=${{display:"flex",flexDirection:"column",gap:12,position:"sticky",top:0}}>
+        <!-- Totales -->
+        <div class="card" style=${{padding:"16px 18px"}}>
+          <div style=${{fontWeight:700,fontSize:13,marginBottom:12,borderBottom:"1px solid #f1f5f9",paddingBottom:8}}>Resumen del presupuesto</div>
+          ${mats.length>0&&html`
+            <div style=${{display:"flex",justifyContent:"space-between",fontSize:12,color:"#64748b",marginBottom:4}}>
+              <span>Materiales (${mats.length} items)</span><span>${mxn(subtotalMat)}</span>
+            </div>`}
+          ${mos.length>0&&html`
+            <div style=${{display:"flex",justifyContent:"space-between",fontSize:12,color:"#9333ea",marginBottom:4,fontWeight:500}}>
+              <span>Mano de obra</span><span>${mxn(subtotalMO)}</span>
+            </div>`}
+          <div style=${{display:"flex",justifyContent:"space-between",fontSize:12,color:"#64748b",marginBottom:4,paddingTop:6,borderTop:"1px solid #f1f5f9"}}>
+            <span>Subtotal</span><span>${mxn(sub)}</span>
+          </div>
+          <!-- IVA toggle -->
+          <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,fontSize:12}}>
+            <label style=${{display:"flex",alignItems:"center",gap:8,cursor:"pointer",marginBottom:0}}>
+              <input type="checkbox" checked=${calc.conIva} onChange=${sf("conIva")} style=${{cursor:"pointer"}}/>
+              <span style=${{color:"#64748b"}}>Incluir IVA (16%)</span>
+            </label>
+            ${calc.conIva&&html`<span style=${{color:"#64748b"}}>${mxn(iva)}</span>`}
+          </div>
+          <div style=${{display:"flex",justifyContent:"space-between",fontSize:17,fontWeight:800,color:"#1d4ed8",borderTop:"2px solid #e2e8f0",paddingTop:10}}>
+            <span>TOTAL</span><span>${mxn(tot)}</span>
+          </div>
+          ${costoTotal>0&&html`
+            <div style=${{marginTop:10,background:"#f0fdf4",borderRadius:8,padding:"8px 12px",fontSize:11}}>
+              <div style=${{display:"flex",justifyContent:"space-between",color:"#065f46",marginBottom:2}}>
+                <span>Costo materiales</span><span>${mxn(costoTotal)}</span>
+              </div>
+              <div style=${{display:"flex",justifyContent:"space-between",color:"#059669",fontWeight:700}}>
+                <span>✓ Utilidad bruta</span><span>${mxn(utilidad)} (${costoTotal>0?Math.round((utilidad/costoTotal)*100):100}%)</span>
+              </div>
+            </div>`}
+        </div>
+
+        <!-- Acciones -->
+        <div class="card" style=${{padding:"14px 16px",display:"flex",flexDirection:"column",gap:8}}>
+          <button class="btn btn-primary" style=${{justifyContent:"center"}} onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config)} disabled=${calc.items.length===0}>
+            <${Ic} n="print" z=${14} s="#fff"/> Imprimir / Vista previa
+          </button>
+          <button class="btn btn-success" style=${{justifyContent:"center"}} onClick=${saveCalc} disabled=${calc.items.length===0}>
+            <${Ic} n="ok" z=${14} s="#059669"/> Guardar presupuesto
+          </button>
+          <button class="btn btn-ghost" style=${{justifyContent:"center",fontSize:12,color:"#7c3aed",borderColor:"#e9d5ff",background:"#fdf4ff"}} onClick=${saveAsTemplate} disabled=${calc.items.length===0}>
+            📌 Guardar como plantilla reutilizable
+          </button>
+          <button class="btn btn-ghost" style=${{justifyContent:"center",fontSize:12}} onClick=${convertirCot} disabled=${calc.items.length===0}>
+            <${Ic} n="tag" z=${13}/> Convertir a Cotización formal
+          </button>
+        </div>
+
+        <!-- ID y estado guardado -->
+        ${calc.id&&html`
+          <div style=${{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:"8px 12px",fontSize:11,color:"#059669",textAlign:"center",fontWeight:600}}>
+            ✓ Guardado como <span style=${{fontFamily:"monospace"}}>${calc.id}</span>
+          </div>`}
+
+        <!-- Tip -->
+        <div style=${{background:"#fdf4ff",border:"1px solid #e9d5ff",borderRadius:8,padding:"10px 12px",fontSize:11,color:"#7c3aed",lineHeight:1.5}}>
+          💡 <b>Tip:</b> Usa <b>Plantillas</b> para cargar una instalación típica en un click, luego ajusta cantidades y precios.
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL PLANTILLAS -->
+    ${showPresets&&html`<div class="modal-bg" onClick=${()=>setShowPresets(false)}>
+      <div class="modal fade-in" style=${{maxWidth:540}} onClick=${e=>e.stopPropagation()}>
+        <div style=${{padding:"16px 20px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <h2 style=${{fontSize:16,fontWeight:700}}>Plantillas de instalación</h2>
+          <button class="btn btn-ghost btn-sm" onClick=${()=>setShowPresets(false)}><${Ic} n="x" z=${14}/></button>
+        </div>
+        <div style=${{padding:"14px 20px",display:"flex",flexDirection:"column",gap:10,maxHeight:"65vh",overflowY:"auto"}}>
+          ${customPresets.length>0&&html`
+            <div style=${{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,color:"#7c3aed",marginBottom:2}}>📌 Mis plantillas</div>
+            ${customPresets.map((p,i)=>html`
+              <div key=${i} style=${{border:"1.5px solid #e9d5ff",borderRadius:10,padding:"11px 13px",display:"flex",gap:10,alignItems:"center",background:"#fdf4ff"}}>
+                <div style=${{flex:1,cursor:"pointer"}} onClick=${()=>applyPreset(p)}>
+                  <div style=${{fontWeight:600,fontSize:13,color:"#7c3aed"}}>${p.nombre}</div>
+                  <div style=${{fontSize:11,color:"#64748b",marginTop:2}}>${p.items.length} artículos · ${mxn(p.items.reduce((a,x)=>a+(x.qty*x.precio),0))}</div>
+                </div>
+                <button class="btn btn-danger btn-sm" onClick=${e=>{e.stopPropagation();if(confirm("¿Eliminar plantilla?"))delCustomPreset(i);}} title="Eliminar">
+                  <${Ic} n="trash" z=${12} s="#dc2626"/>
+                </button>
+              </div>`)}
+            <div style=${{borderBottom:"1px solid #e2e8f0",margin:"4px 0"}}/>
+          `}
+          <div style=${{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,color:"#64748b",marginBottom:2}}>📦 Plantillas prediseñadas</div>
+          ${CALC_PRESETS.map((p,i)=>html`
+            <div key=${i} onClick=${()=>applyPreset(p)} style=${{
+              border:"1px solid #e2e8f0",borderRadius:10,padding:"12px 14px",cursor:"pointer",
+              transition:"all .15s",background:"#fff"}}
+              onMouseOver=${e=>{e.currentTarget.style.borderColor="#3b82f6";e.currentTarget.style.background="#eff6ff";}}
+              onMouseOut=${e=>{e.currentTarget.style.borderColor="#e2e8f0";e.currentTarget.style.background="#fff";}}>
+              <div style=${{fontWeight:600,fontSize:13,marginBottom:4}}>${p.nombre}</div>
+              <div style=${{fontSize:11,color:"#64748b"}}>${p.items.length} artículos · Estimado: ${mxn(p.items.reduce((a,x)=>a+(x.qty*x.precio),0))}</div>
+            </div>`)}
+          <div style=${{padding:"10px",background:"#f8fafc",borderRadius:8,fontSize:11,color:"#64748b",textAlign:"center"}}>
+            ℹ️ Seleccionar una plantilla reemplaza los artículos actuales · Guarda el tuyo con 📌 Guardar como plantilla
+          </div>
+        </div>
+      </div>
+    </div>`}
+
+    <!-- MODAL GUARDADAS -->
+    ${viewSaved&&html`<div class="modal-bg" onClick=${()=>setViewSaved(null)}>
+      <div class="modal fade-in" style=${{maxWidth:580}} onClick=${e=>e.stopPropagation()}>
+        <div style=${{padding:"16px 20px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <h2 style=${{fontSize:16,fontWeight:700}}>Presupuestos guardados (${savedList.length})</h2>
+          <button class="btn btn-ghost btn-sm" onClick=${()=>setViewSaved(null)}><${Ic} n="x" z=${14}/></button>
+        </div>
+        <div style=${{padding:"14px 20px",display:"flex",flexDirection:"column",gap:8,maxHeight:"60vh",overflowY:"auto"}}>
+          ${savedList.length===0&&html`<div class="empty-state"><${Ic} n="box" z=${36} s="#cbd5e1"/><div style=${{marginTop:10}}>Aún no has guardado presupuestos</div></div>`}
+          ${savedList.map(s=>html`
+            <div key=${s.id} style=${{border:"1px solid #e2e8f0",borderRadius:10,padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,background:"#fff"}}>
+              <div style=${{flex:1}}>
+                <div style=${{fontFamily:"monospace",fontSize:11,color:"#1d4ed8",fontWeight:700}}>${s.id}</div>
+                <div style=${{fontWeight:600,fontSize:13}}>${s.descripcion||"Sin descripción"}</div>
+                <div style=${{fontSize:11,color:"#64748b"}}>${s.cliente||"Sin cliente"} · ${s.fecha||""} · ${s.items?.length||0} artículos</div>
+              </div>
+              <div style=${{fontSize:14,fontWeight:700,color:"#1d4ed8",whiteSpace:"nowrap"}}>${mxn(s.tot||0)}</div>
+              <div style=${{display:"flex",gap:4}}>
+                <button class="btn btn-ghost btn-sm" onClick=${()=>loadCalc(s)} title="Cargar"><${Ic} n="edit" z=${13}/></button>
+                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
+                <button class="btn btn-danger btn-sm" onClick=${()=>delCalc(s.id)} title="Eliminar"><${Ic} n="trash" z=${13} s="#dc2626"/></button>
+              </div>
+            </div>`)}
+        </div>
+      </div>
+    </div>`}
+  </div>`;
+}
+
 function App(){
   const [ords,setOrds]=useState(()=>lsGet("redcom_ords",ORDERS0));
   const [cls,setCls]=useState(()=>lsGet("redcom_cls",CLIENTS0));
@@ -6419,6 +7849,7 @@ function App(){
   const [editOC,setEditOC]=useState(null);
   const [pagos,setPagos]=useState(()=>lsGet("redcom_pagos",PAGOS0));
   const [cortes,setCortes]=useState(()=>lsGet("redcom_cortes",CORTES0));
+  const [gastos,setGastos]=useState(()=>lsGet("redcom_gastos",[]));
   const [gars,setGars]=useState(()=>lsGet("redcom_gars",GARS0));
   const [showNotif,setShowNotif]=useState(false);
   const [cots,setCots]=useState(()=>lsGet("redcom_cots",COTS0));
@@ -6600,7 +8031,11 @@ function App(){
 
   function saveOrd(o){
     if(!o.token) o={...o,token:genToken()};
-    setOrds(p=>{const n=p.find(x=>x.id===o.id)?p.map(x=>x.id===o.id?o:x):[o,...p];lsSet("redcom_ords",n);saveSeqs();return n;});
+    const now=new Date();
+    const isNew=!ords.find(x=>x.id===o.id);
+    const entry={fecha:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),estado:isNew?"Orden creada":"Orden editada",user:session?.nombre||"—",nota:isNew?o.equipo:""};
+    const oConLog={...o,log:[entry,...(o.log||[])]};
+    setOrds(p=>{const n=p.find(x=>x.id===oConLog.id)?p.map(x=>x.id===oConLog.id?oConLog:x):[oConLog,...p];lsSet("redcom_ords",n);saveSeqs();return n;});
     // Auto-create garantía when marking as Entregado
     if(o.est==="Entregado"){
       setGars(prev=>{
@@ -6640,6 +8075,21 @@ function App(){
   }
   function delOrd(id){setOrds(p=>{const n=p.filter(o=>o.id!==id);lsSet("redcom_ords",n);return n;});setSel(null);}
   function saveBud(b){
+    // Descuento de stock: solo cuando cambia a Aceptado y no lo era antes
+    const prevBud=buds[b.id];
+    if(b.est==="Aceptado" && prevBud?.est!=="Aceptado"){
+      setInv(prevInv=>{
+        const next=prevInv.map(p=>{
+          const usados=b.items.filter(it=>it.t==="r"&&it.ref===p.id);
+          if(usados.length===0) return p;
+          const qty=usados.reduce((s,it)=>s+(it.q||1),0);
+          const newStock=Math.max(0,(p.stock||0)-qty);
+          return {...p,stock:newStock};
+        });
+        lsSet("redcom_inv",next);
+        return next;
+      });
+    }
     setBuds(p=>{const n={...p,[b.id]:b};lsSet("redcom_buds",n);saveSeqs();return n;});
     setOrds(p=>{const n=p.map(o=>o.id===b.oid?{...o,pid:b.id}:o);lsSet("redcom_ords",n);return n;});
     setBudOrd(null);
@@ -6689,6 +8139,8 @@ function App(){
   function delOC(id){setOcs(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_ocs",n);return n;});}
   function addPago(p){setPagos(prev=>{const n=[p,...prev];lsSet("redcom_pagos",n);saveSeqs();return n;});}
   function delPago(id){setPagos(prev=>{const n=prev.filter(p=>p.id!==id);lsSet("redcom_pagos",n);return n;});}
+  function addGasto(g){setGastos(prev=>{const n=[g,...prev];lsSet("redcom_gastos",n);return n;});}
+  function delGasto(id){setGastos(prev=>{const n=prev.filter(g=>g.id!==id);lsSet("redcom_gastos",n);return n;});}
   function addCorte(totales,fecha){
     const ct={id:`CRT${String(++CORTEQ).padStart(3,"0")}`,fecha,...totales,user:session?.nombre||""};
     setCortes(prev=>{const n=[ct,...prev];lsSet("redcom_cortes",n);saveSeqs();return n;});
@@ -6707,7 +8159,24 @@ function App(){
     else document.documentElement.classList.remove("dark-mode");
     setDarkTick(t=>t+1); // trigger re-render so dm() calls update
   }
-  function saveCot(ct){setCots(p=>{const n=p.find(x=>x.id===ct.id)?p.map(x=>x.id===ct.id?ct:x):[ct,...p];lsSet("redcom_cots",n);saveSeqs();return n;});setNewCot(false);setEditCot(null);}
+  function saveCot(ct){
+    // Descuento de stock al aceptar cotización
+    const prevCot=cots.find(x=>x.id===ct.id);
+    if(ct.est==="Aceptada" && prevCot?.est!=="Aceptada"){
+      setInv(prevInv=>{
+        const next=prevInv.map(p=>{
+          const usados=(ct.items||[]).filter(it=>it.src==="inv" && it.ref===p.id);
+          if(usados.length===0) return p;
+          const qty=usados.reduce((s,it)=>s+(it.qty||1),0);
+          return {...p,stock:Math.max(0,(p.stock||0)-qty)};
+        });
+        lsSet("redcom_inv",next);
+        return next;
+      });
+    }
+    setCots(p=>{const n=p.find(x=>x.id===ct.id)?p.map(x=>x.id===ct.id?ct:x):[ct,...p];lsSet("redcom_cots",n);saveSeqs();return n;});
+    setNewCot(false);setEditCot(null);
+  }
   function delCot(id){setCots(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_cots",n);return n;});}
   function login(u){setSession(u);try{sessionStorage.setItem("redcom_session",JSON.stringify(u));}catch(e){}}
   function logout(){setSession(null);try{sessionStorage.removeItem("redcom_session");}catch(e){}}
@@ -6776,13 +8245,14 @@ function App(){
   if(!session) return html`<${LoginScreen} users=${users} onLogin=${login} config=${config}/>`;
 
   const NAV=[
-    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],...(canCotizar?[["cots","Cotizaciones","tag"]]:[]),...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
+    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],["calc","Calc. Instalaciones","calc"],...(canCotizar?[["cots","Cotizaciones","tag"]]:[]),...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
     ...(isAdmin?[{g:"CATÁLOGOS",items:[["clients","Clientes","clients"],["inv","Inventario","inv"],["techs","Técnicos","techs"],["servicios","Servicios","tag"],["users","Usuarios","shield"]]},{g:"COMPRAS",items:[["provs","Proveedores","truck"],["ocs","Órdenes de Compra","truck"],["reportes","Reportes","xls"]]}]:[]),
   ];
 
   const NAV_ITEMS=[
     {key:"orders",lbl:"Órdenes",icon:"orders"},
     {key:"ia",lbl:"IA",icon:"shield"},
+    {key:"calc",lbl:"Instalar",icon:"calc"},
     ...(canCotizar?[{key:"cots",lbl:"Cotizar",icon:"tag"}]:[]),
     ...(isAdmin?[
       {key:"clients",lbl:"Clientes",icon:"clients"},
@@ -6794,7 +8264,7 @@ function App(){
 
   return html`<div style=${{display:"flex",height:"100vh",overflow:"hidden"}}>
     <!-- SIDEBAR (desktop only) -->
-    <aside style=${{width:240,background:"linear-gradient(175deg,#0f2158 0%,#1d4ed8 65%,#2563eb 100%)",display:"flex",flexDirection:"column",flexShrink:0,position:"relative",boxShadow:"2px 0 12px rgba(0,0,0,.15)"}}>
+    <aside style=${{width:"clamp(180px,18vw,240px)",background:"linear-gradient(175deg,#0f2158 0%,#1d4ed8 65%,#2563eb 100%)",display:"flex",flexDirection:"column",flexShrink:0,position:"relative",boxShadow:"2px 0 12px rgba(0,0,0,.15)"}}>
       <div style=${{padding:"20px 16px 16px",borderBottom:"1px solid rgba(255,255,255,.1)"}}>
         <div style=${{display:"flex",alignItems:"center",gap:12}}>
           <div style=${{width:38,height:38,borderRadius:10,background:"rgba(255,255,255,.18)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><${Ic} n="pc" z=${19} s="#fff"/></div>
@@ -6831,10 +8301,10 @@ function App(){
     <!-- MAIN -->
     <main style=${{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
       <!-- GLOBAL TOPBAR -->
-      <div style=${{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"0 24px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,gap:12,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+      <div class="glass-topbar" style=${{padding:"0 24px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,gap:12,position:"relative",zIndex:2}}>
         <div style=${{display:"flex",alignItems:"center",gap:14}}>
           <div style=${{fontWeight:700,fontSize:15,color:"#0f172a",letterSpacing:-.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"clamp(80px,25vw,220px)"}}>
-            ${{"orders":"Órdenes","clients":"Clientes","inv":"Inventario","techs":"Técnicos","cots":"Cotizaciones","caja":"Caja","garantias":"Garantías","dash":"Dashboard","ia":"Asistente IA","servicios":"Servicios","users":"Usuarios","provs":"Proveedores","ocs":"Órd. Compra","reportes":"Reportes"}[sec]||""}
+            ${{"orders":"Órdenes","clients":"Clientes","inv":"Inventario","techs":"Técnicos","cots":"Cotizaciones","caja":"Caja","garantias":"Garantías","dash":"Dashboard","ia":"Asistente IA","servicios":"Servicios","users":"Usuarios","provs":"Proveedores","ocs":"Órd. Compra","reportes":"Reportes","calc":"Calculadora de Instalaciones"}[sec]||""}
           </div>
 
         </div>
@@ -6860,6 +8330,12 @@ function App(){
           <button onClick=${()=>setShowNotif(p=>!p)} style=${{position:"relative",background:"transparent",border:"1px solid #e2e8f0",borderRadius:8,padding:"6px 9px",cursor:"pointer",display:"flex",alignItems:"center"}}>
             <${Ic} n="bell" z=${18} s=${notifCount>0?"#dc2626":"#94a3b8"}/>
             ${notifCount>0&&React.createElement("span",{style:{position:"absolute",top:-4,right:-4,background:"#dc2626",color:"#fff",fontSize:9,fontWeight:800,width:16,height:16,borderRadius:99,display:"flex",alignItems:"center",justifyContent:"center"}},notifCount>9?"9+":notifCount)}
+          </button>
+          <!-- Búsqueda global -->
+          <button onClick=${()=>setShowSearch(true)} title="Búsqueda global (Ctrl+K)"
+            style=${{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderRadius:8,border:"1px solid #e2e8f0",background:"#f8fafc",cursor:"pointer",color:"#94a3b8"}}>
+            <${Ic} n="search" z=${15} s="#94a3b8"/>
+            <kbd style=${{fontSize:9,padding:"1px 5px",borderRadius:4,background:"#e2e8f0",border:"1px solid #cbd5e1",color:"#64748b",fontFamily:"monospace",lineHeight:1.5}}>Ctrl+K</kbd>
           </button>
           <div style=${{width:1,height:24,background:"#e2e8f0"}}/>
           <!-- User dropdown -->
@@ -6968,8 +8444,16 @@ function App(){
                 addNota(nv);
                 printNotaVenta(nv,config);
               }}
-              onSt=${(id,st)=>setOrds(p=>{const n=p.map(o=>o.id===id?{...o,est:st}:o);lsSet("redcom_ords",n);return n;})}
-              onSaveDiag=${(id,diag,diagCosto)=>setOrds(p=>{const n=p.map(o=>o.id===id?{...o,diag,diagCosto}:o);lsSet("redcom_ords",n);return n;})}
+              onSt=${(id,st)=>{
+                const now=new Date();
+                const entry={fecha:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),estado:st,user:session?.nombre||"—",nota:""};
+                setOrds(p=>{const n=p.map(o=>o.id===id?{...o,est:st,log:[entry,...(o.log||[])]}:o);lsSet("redcom_ords",n);return n;});
+              }}
+              onSaveDiag=${(id,diag,diagCosto)=>{
+                const now=new Date();
+                const entry={fecha:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),estado:"Diagnóstico guardado",user:session?.nombre||"—",nota:diag?.slice(0,60)||""};
+                setOrds(p=>{const n=p.map(o=>o.id===id?{...o,diag,diagCosto,log:[entry,...(o.log||[])]}:o);lsSet("redcom_ords",n);return n;});
+              }}
               onPrint=${printTicket}
               onFotos=${id=>setShowFotos(id)}
               onFirma=${id=>setShowFirma(id)}
@@ -7005,17 +8489,18 @@ function App(){
         onPrint=${(oc,pv)=>printOC(oc,pv)}/>`}
       ${sec==="reportes"&&isAdmin&&html`<${ReportesSection}
         ords=${ords} cls=${cls} inv=${inv} tecs=${tecs} svcs=${svcs}
-        pagos=${pagos} cots=${cots} gars=${gars} onImportInv=${importInv}/>`}
+        pagos=${pagos} cots=${cots} gars=${gars} gastos=${gastos} onImportInv=${importInv}/>`}
       ${sec==="caja"&&isAdmin&&html`<${CajaSection}
-        pagos=${pagos} cortes=${cortes} ords=${ords} cls=${cls} inv=${inv} session=${session} config=${config}
-        onAddPago=${addPago} onCorte=${addCorte} onDelPago=${delPago}/>`}
+        pagos=${pagos} cortes=${cortes} ords=${ords} cls=${cls} inv=${inv} buds=${buds} cots=${cots} gastos=${gastos} session=${session} config=${config}
+        onAddPago=${addPago} onCorte=${addCorte} onDelPago=${delPago} onAddGasto=${addGasto} onDelGasto=${delGasto}/>`}
       ${sec==="garantias"&&isAdmin&&html`<${GarantiasSection}
         gars=${gars} ords=${ords} cls=${cls} tecs=${tecs}
         onAdd=${addGar} onReclamo=${reclamoGar} onDel=${delGar}/>`}
       ${sec==="ia"&&html`<${IASection} inv=${inv} svcs=${svcs} tecs=${tecs}/>`}
+      ${sec==="calc"&&html`<${CalcInstalacionSection} inv=${inv} svcs=${svcs} cls=${cls} tecs=${tecs} session=${session} config=${config} onSaveCot=${ct=>{saveCot({...ct,id:`COT-${String(++COTSEQ).padStart(4,"0")}`});setSec("cots");}}/>`}
       ${sec==="servicios"&&isAdmin&&html`<${ServiciosSection} svcs=${svcs} onAdd=${()=>setNewSvc(true)} onEdit=${s=>setEditSvc(s)} onDel=${delSvc}/>`}
       ${sec==="users"&&isAdmin&&html`<${UsersSection} users=${users} tecs=${tecs} session=${session} onAdd=${()=>setNewUser(true)} onEdit=${u=>setEditUser(u)} onDel=${delUser}/>`}
-      ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} notas=${notas} pagos=${pagos} onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
+      ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} notas=${notas} pagos=${pagos} svcs=${svcs} onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
       ${false&&html`<${CalendarioSection} ords=${ords} cls=${cls} tecs=${tecs} citas=${citas} recs=${recs} session=${session} config=${config} onSaveCita=${saveCita} onDelCita=${delCita} onSaveRec=${saveRec} onDelRec=${delRec} onSyncGCal=${syncGCal}/>`}
     </main>
 
@@ -7074,10 +8559,115 @@ function App(){
     ${showConfig&&html`<${PreferenciasModal} config=${config} session=${session} users=${users} setUsers=${setUsers} onSave=${saveConfig} onClose=${()=>setShowConfig(false)}/>`}
     <!-- MODALS TÉCNICOS -->
     ${(showNewTec||editTec)&&html`<${TecModal} edit=${editTec} onSave=${saveTec} onClose=${()=>{setNewTec(false);setEditTec(null);}}/>`}
+    <!-- BÚSQUEDA GLOBAL Ctrl+K -->
+    ${showSearch&&html`<${GlobalSearch}
+      ords=${ords} cls=${cls} inv=${inv} cots=${cots}
+      onNav=${k=>{setSec(k);setSel(null);setShowSearch(false);}}
+      onClose=${()=>setShowSearch(false)}/>`}
   </div>`;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+
+/* ══ PWA — Manifest + Service Worker ══════════════════════════════════ */
+(function(){
+  // Generar ícono SVG en canvas para el manifest
+  function makeIcon(size){
+    const c=document.createElement("canvas");
+    c.width=c.height=size;
+    const ctx=c.getContext("2d");
+    // Fondo azul redondeado
+    const r=size*0.18;
+    ctx.beginPath();
+    ctx.moveTo(r,0);ctx.lineTo(size-r,0);ctx.quadraticCurveTo(size,0,size,r);
+    ctx.lineTo(size,size-r);ctx.quadraticCurveTo(size,size,size-r,size);
+    ctx.lineTo(r,size);ctx.quadraticCurveTo(0,size,0,size-r);
+    ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath();
+    ctx.fillStyle="#1d4ed8";ctx.fill();
+    // Texto RC
+    ctx.fillStyle="#ffffff";
+    ctx.font=`bold ${size*0.38}px 'IBM Plex Sans',Arial,sans-serif`;
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText("RC",size/2,size/2);
+    return c.toDataURL("image/png");
+  }
+
+  const icon192=makeIcon(192);
+  const icon512=makeIcon(512);
+
+  // Inyectar apple-touch-icon
+  document.getElementById("pwa-icon").href=icon192;
+
+  // Generar manifest
+  const manifest={
+    name:"Redcom — Sistema de Reparaciones",
+    short_name:"Redcom",
+    description:"Sistema de reparaciones, redes y cómputo",
+    start_url:"./",
+    display:"standalone",
+    background_color:"#1d4ed8",
+    theme_color:"#1d4ed8",
+    orientation:"any",
+    icons:[
+      {src:icon192,sizes:"192x192",type:"image/png",purpose:"any maskable"},
+      {src:icon512,sizes:"512x512",type:"image/png",purpose:"any maskable"}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
+  document.getElementById("pwa-manifest").href=URL.createObjectURL(blob);
+
+  // Service Worker inline — cache básico para offline
+  if("serviceWorker" in navigator){
+    const swCode=`
+const CACHE="redcom-v1";
+self.addEventListener("install",e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(["/"])).catch(()=>{}));
+  self.skipWaiting();
+});
+self.addEventListener("activate",e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener("fetch",e=>{
+  if(e.request.method!=="GET") return;
+  e.respondWith(
+    fetch(e.request).then(r=>{
+      if(r&&r.status===200){
+        const rc=r.clone();
+        caches.open(CACHE).then(c=>c.put(e.request,rc));
+      }
+      return r;
+    }).catch(()=>caches.match(e.request))
+  );
+});`;
+    const swBlob=new Blob([swCode],{type:"application/javascript"});
+    const swUrl=URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl,{scope:"./"}).catch(()=>{});
+  }
+
+  // Botón "Instalar app" cuando el navegador lo permite
+  let deferredPrompt=null;
+  window.addEventListener("beforeinstallprompt",e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    // Mostrar botón flotante de instalación
+    const btn=document.createElement("button");
+    btn.id="pwa-install-btn";
+    btn.innerHTML="📲 Instalar app";
+    btn.style.cssText="position:fixed;bottom:72px;right:16px;z-index:9999;padding:10px 18px;border-radius:99px;border:none;background:#1d4ed8;color:#fff;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(29,78,216,.4);display:flex;align-items:center;gap:6px;";
+    btn.onclick=()=>{
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(()=>{deferredPrompt=null;btn.remove();});
+    };
+    document.body.appendChild(btn);
+  });
+
+  window.addEventListener("appinstalled",()=>{
+    const b=document.getElementById("pwa-install-btn");
+    if(b) b.remove();
+  });
+})();
 </script>
 </body>
 </html>
