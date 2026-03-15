@@ -2144,7 +2144,7 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
 
 /* ══ KANBAN ═════════════════════════════════════════════════════════════ */
 // Touch drag state (global para el componente)
-let _touchDragId=null, _touchDragEl=null, _touchClone=null;
+let _touchDragId=null, _touchDragEl=null, _touchClone=null, _touchDestSt=null;
 
 function Kanban({ords,cls,tecs,buds,sel,onSel,onMv}){
   const EMPTY={
@@ -2155,131 +2155,101 @@ function Kanban({ords,cls,tecs,buds,sel,onSel,onMv}){
     "Entregado":     {icon:"🎉", msg:"Todo entregado hoy"},
   };
 
-  // Helpers para touch drag
-  function onTouchStart(e,ordId){
-    _touchDragId=ordId;
-    _touchDragEl=e.currentTarget;
-    // Crear clon flotante
-    const rect=e.currentTarget.getBoundingClientRect();
-    const clone=e.currentTarget.cloneNode(true);
-    clone.style.cssText="position:fixed;left:"+rect.left+"px;top:"+rect.top+"px;width:"+rect.width+"px;opacity:.85;z-index:9999;pointer-events:none;transform:scale(1.04);box-shadow:0 8px 32px rgba(0,0,0,.25);transition:none;border-radius:9px;";
+  function touchStart(e, ordId){
+    e.stopPropagation();
+    _touchDragId = ordId;
+    _touchDragEl = e.currentTarget;
+    _touchDestSt = null;
+    const t = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clone = e.currentTarget.cloneNode(true);
+    clone.style.cssText = "position:fixed;width:"+rect.width+"px;opacity:.88;z-index:9999;pointer-events:none;transform:scale(1.05) rotate(1deg);box-shadow:0 12px 40px rgba(0,0,0,.28);border-radius:9px;transition:none;";
+    clone.style.left = (t.clientX - rect.width/2) + "px";
+    clone.style.top  = (t.clientY - rect.height/2) + "px";
     document.body.appendChild(clone);
-    _touchClone=clone;
-    e.currentTarget.style.opacity=".3";
+    _touchClone = clone;
+    e.currentTarget.style.opacity = ".25";
   }
 
-  function onTouchMove(e){
+  function touchMove(e){
     if(!_touchClone) return;
     e.preventDefault();
-    const t=e.touches[0];
-    const rect=_touchClone.getBoundingClientRect();
-    _touchClone.style.left=(t.clientX - rect.width/2)+"px";
-    _touchClone.style.top=(t.clientY - rect.height/2)+"px";
-    // Highlight columna debajo
-    _touchClone.style.display="none";
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    _touchClone.style.display="";
-    const col=el?.closest(".kcol");
-    document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("touch-over"));
-    if(col) col.classList.add("touch-over");
-  }
-
-  function onTouchEnd(e){
-    if(!_touchClone||!_touchDragId) return;
-    const t=e.changedTouches[0];
-    _touchClone.style.display="none";
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    _touchClone.style.display="";
-    const col=el?.closest(".kcol");
-    const destState=col?.dataset?.state;
-    if(destState && destState!==ords.find(o=>o.id===_touchDragId)?.est){
-      onMv(_touchDragId, destState);
+    const t = e.touches[0];
+    const w = parseFloat(_touchClone.style.width)||180;
+    const h = _touchClone.getBoundingClientRect().height||80;
+    _touchClone.style.left = (t.clientX - w/2)+"px";
+    _touchClone.style.top  = (t.clientY - h/2)+"px";
+    // Detectar columna debajo
+    _touchClone.style.visibility="hidden";
+    const under = document.elementFromPoint(t.clientX, t.clientY);
+    _touchClone.style.visibility="";
+    const kcol = under?.closest?.("[data-kcol]");
+    document.querySelectorAll("[data-kcol]").forEach(el=>{
+      el.style.border="1.5px solid "+el.getAttribute("data-border");
+      el.style.background=el.getAttribute("data-bg");
+    });
+    if(kcol){
+      _touchDestSt = kcol.getAttribute("data-kcol");
+      kcol.style.border = "2px dashed "+kcol.getAttribute("data-color");
+      kcol.style.background = kcol.getAttribute("data-color")+"30";
+    } else {
+      _touchDestSt = null;
     }
-    // Limpiar
-    _touchClone.remove(); _touchClone=null;
-    if(_touchDragEl) _touchDragEl.style.opacity="1";
-    _touchDragEl=null; _touchDragId=null;
-    document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("touch-over"));
   }
 
-  return html`<div style=${{display:"flex",gap:10,height:"100%",overflowX:"auto",padding:"12px 16px 16px"}}>
+  function touchEnd(e){
+    if(!_touchDragId) return;
+    if(_touchClone){ _touchClone.remove(); _touchClone=null; }
+    if(_touchDragEl){ _touchDragEl.style.opacity="1"; _touchDragEl=null; }
+    document.querySelectorAll("[data-kcol]").forEach(el=>{
+      el.style.border="1.5px solid "+el.getAttribute("data-border");
+      el.style.background=el.getAttribute("data-bg");
+    });
+    const curEst = ords.find(o=>o.id===_touchDragId)?.est;
+    if(_touchDestSt && _touchDestSt !== curEst){
+      onMv(_touchDragId, _touchDestSt);
+    }
+    _touchDragId=null; _touchDestSt=null;
+  }
+
+  return html`<div style=${{display:"flex",gap:10,height:"100%",overflowX:"auto",padding:"12px 16px 16px"}}
+    onTouchMove=${touchMove} onTouchEnd=${touchEnd} onTouchCancel=${touchEnd}>
     ${STS.map(st=>{
       const col=ords.filter(o=>o.est===st.k);
       const colBg=st.c+"12";
       const colBorder=st.c+"30";
       const headerBg=st.c+"20";
       const emp=EMPTY[st.k]||{icon:"📭",msg:"Sin órdenes"};
-      return html`<div key=${st.k} class="kcol" style=${{
-        minWidth:210,flex:"1 1 0",
-        background:colBg,
-        borderRadius:12,
-        border:"1.5px solid "+colBorder,
-        display:"flex",flexDirection:"column",
-        backdropFilter:"blur(8px)",
-        WebkitBackdropFilter:"blur(8px)",
-        transition:"border .15s,background .15s"}}
-        onDragOver=${e=>{
-          e.preventDefault();
-          e.currentTarget.classList.add("over");
-          e.currentTarget.style.border="2px dashed "+st.c;
-          e.currentTarget.style.background=st.c+"20";
-        }}
-        onDragLeave=${e=>{
-          e.currentTarget.classList.remove("over");
-          e.currentTarget.style.border="1.5px solid "+colBorder;
-          e.currentTarget.style.background=colBg;
-        }}
-        onDrop=${e=>{
-          e.preventDefault();
-          e.currentTarget.classList.remove("over");
-          e.currentTarget.style.border="1.5px solid "+colBorder;
-          e.currentTarget.style.background=colBg;
-          const id=e.dataTransfer.getData("oid");
-          if(id) onMv(id,st.k);
-        }}>
-
-        <!-- Column header -->
-        <div style=${{
-          padding:"10px 14px",
-          borderBottom:"1.5px solid "+colBorder,
-          background:headerBg,
-          borderRadius:"10px 10px 0 0",
-          display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      return html`<div key=${st.k} class="kcol"
+        data-kcol=${st.k} data-color=${st.c} data-border=${colBorder} data-bg=${colBg}
+        style=${{minWidth:210,flex:"1 1 0",background:colBg,borderRadius:12,border:"1.5px solid "+colBorder,display:"flex",flexDirection:"column",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",transition:"border .15s,background .15s"}}
+        onDragOver=${e=>{e.preventDefault();e.currentTarget.style.border="2px dashed "+st.c;e.currentTarget.style.background=st.c+"20";}}
+        onDragLeave=${e=>{e.currentTarget.style.border="1.5px solid "+colBorder;e.currentTarget.style.background=colBg;}}
+        onDrop=${e=>{e.preventDefault();e.currentTarget.style.border="1.5px solid "+colBorder;e.currentTarget.style.background=colBg;const id=e.dataTransfer.getData("oid");if(id)onMv(id,st.k);}}>
+        <!-- Header -->
+        <div style=${{padding:"10px 14px",borderBottom:"1.5px solid "+colBorder,background:headerBg,borderRadius:"10px 10px 0 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style=${{display:"flex",alignItems:"center",gap:7}}>
             <div style=${{width:8,height:8,borderRadius:"50%",background:st.c,boxShadow:"0 0 6px "+st.c+"88"}}/>
             <span style=${{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:.9,color:st.c}}>${st.k}</span>
           </div>
           <span style=${{fontSize:11,fontWeight:700,color:st.c,background:st.bg,borderRadius:99,padding:"1px 9px",border:"1px solid "+st.c+"30"}}>${col.length}</span>
         </div>
-
         <!-- Cards -->
         <div style=${{flex:1,overflow:"auto",padding:"8px",display:"flex",flexDirection:"column",gap:7}}>
           ${col.length===0&&html`
-            <div style=${{
-              flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-              padding:"32px 12px",color:st.c,opacity:.45,
-              border:"1.5px dashed "+st.c+"50",borderRadius:8,margin:"4px 0",
-              minHeight:120}}>
-              <div style=${{fontSize:32,marginBottom:8,filter:"grayscale(.2)"}}>${emp.icon}</div>
+            <div style=${{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 12px",color:st.c,opacity:.45,border:"1.5px dashed "+st.c+"50",borderRadius:8,margin:"4px 0",minHeight:120}}>
+              <div style=${{fontSize:32,marginBottom:8}}>${emp.icon}</div>
               <div style=${{fontSize:11,fontWeight:600,textAlign:"center",lineHeight:1.4}}>${emp.msg}</div>
             </div>`}
           ${col.map(o=>{
             const c=gcl(cls,o.cid),t=gtec(tecs,o.tec),bud=Object.values(buds).find(b=>b.oid===o.id),cv=bud?calc(bud.items):null;
-            const isSelected=sel===o.id;
+            const isSel=sel===o.id;
             return html`<div key=${o.id} draggable
               onDragStart=${e=>{e.dataTransfer.setData("oid",o.id);e.currentTarget.style.opacity=".4";}}
               onDragEnd=${e=>{e.currentTarget.style.opacity="1";}}
+              onTouchStart=${e=>touchStart(e,o.id)}
               onClick=${()=>onSel(o.id)}
-              style=${{
-                background:isSelected?"#fff":"rgba(255,255,255,.82)",
-                border:"1.5px solid "+(isSelected?st.c:st.c+"35"),
-                borderRadius:9,padding:"10px 12px",cursor:"grab",
-                boxShadow:isSelected
-                  ?"0 0 0 3px "+st.c+"40,0 4px 16px rgba(0,0,0,.1)"
-                  :"0 1px 4px rgba(0,0,0,.06)",
-                transition:"all .15s",
-                backdropFilter:"blur(8px)",
-                WebkitBackdropFilter:"blur(8px)"}}>
+              style=${{background:isSel?"#fff":"rgba(255,255,255,.88)",border:"1.5px solid "+(isSel?st.c:st.c+"35"),borderRadius:9,padding:"10px 12px",cursor:"grab",boxShadow:isSel?"0 0 0 3px "+st.c+"40,0 4px 16px rgba(0,0,0,.1)":"0 1px 4px rgba(0,0,0,.06)",transition:"all .15s",touchAction:"none",userSelect:"none"}}>
               <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
                 <span style=${{fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:st.c,fontWeight:600,background:st.c+"12",padding:"1px 6px",borderRadius:4}}>${o.id}</span>
                 <${UPill} u=${o.urg}/>
@@ -2299,9 +2269,6 @@ function Kanban({ords,cls,tecs,buds,sel,onSel,onMv}){
   </div>`;
 }
 
-/* ══ SECCIÓN CLIENTES ═══════════════════════════════════════════════════ */
-
-/* ══ FICHA DE CLIENTE ═══════════════════════════════════════════════════ */
 function CliDetalle({cl,ords,pagos,gars,onEdit,onClose}){
   const clOrd = ords.filter(o=>o.cid===cl.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
   const clPag = pagos.filter(p=>clOrd.some(o=>o.id===p.ordId)).sort((a,b)=>(b.fecha+b.hora).localeCompare(a.fecha+a.hora));
