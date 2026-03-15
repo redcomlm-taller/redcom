@@ -32,7 +32,7 @@
 html,body,#root{height:100%;overflow:hidden}
 
 body{
-  font-family:-apple-system,'Plus Jakarta Sans',BlinkMacSystemFont,'Helvetica Neue',sans-serif;
+  font-family:-apple-system,'Source Sans 3',BlinkMacSystemFont,'Helvetica Neue',sans-serif;
   background:#E8E8E8;
   color:#1D1D1F;
   font-size:13px;
@@ -160,6 +160,31 @@ html.dark-mode .empty-state{color:#6A90B8}
 html.dark-mode .bottom-nav{background:#fff;border-color:rgba(0,80,200,.12)}
 html.dark-mode .bnav-btn{color:#6A90B8}
 html.dark-mode .bnav-btn.active{color:#0055CC}
+
+/* Forzar fondos blancos y texto oscuro en contenido (stat cards, panels, etc.) */
+html.dark-mode main{
+  background:#EAF2FF!important;
+}
+/* Override de colores inline oscuros que usan JS */
+html.dark-mode main [style*="background:\"#1e293b"],
+html.dark-mode main [style*="background:\"#0f172a"],
+html.dark-mode main [style*="background:\"#1E293B"],
+html.dark-mode main [style*="background:\"#334155"]{
+  background:#fff!important;color:#0A1628!important;
+}
+/* Stat cards: normalizar fondos pasteles a blanco limpio */
+html.dark-mode .glass-card{
+  background:#FFFFFF!important;
+  border-color:rgba(0,80,200,.1)!important;
+}
+/* Secciones y paneles de contenido */
+html.dark-mode section,
+html.dark-mode [class*="Section"],
+html.dark-mode .card{
+  background:#fff!important;
+  color:#0A1628!important;
+  border-color:rgba(0,80,200,.1)!important;
+}
 
 /* ══ EXTRA THEMES ════════════════════════════════════════════════════ */
 html.theme-minimal{
@@ -506,7 +531,7 @@ html.theme-tahoe .sidebar-group{
 /* ── Temas con sidebar CLARO → texto oscuro ── */
 html.theme-minimal .sidebar-link{color:rgba(0,0,0,.6)!important}
 html.theme-minimal .sidebar-link:hover{background:rgba(0,0,0,.05)!important;color:rgba(0,0,0,.85)!important}
-html.theme-minimal .sidebar-link.active{background:rgba(0,0,0,.08)!important;color:#000!important;box-shadow:none!important}
+html.theme-minimal .sidebar-link.active{background:#1C1917!important;color:#fff!important;box-shadow:none!important;border-radius:7px!important}
 html.theme-minimal .sidebar-group{color:rgba(0,0,0,.3)!important}
 
 /* ── Sidebar base (sobreescrito por temas vía CSS) ── */
@@ -515,6 +540,19 @@ aside{
   backdrop-filter:blur(28px) saturate(180%);
   -webkit-backdrop-filter:blur(28px) saturate(180%);
   border-right:.5px solid rgba(0,0,0,.12);
+  /* Texto por defecto: oscuro (sidebar claro) */
+  color:rgba(0,0,0,.75);
+}
+/* Temas con sidebar oscuro → texto blanco */
+html.dark-mode aside,
+html.theme-emerald aside,
+html.theme-violet aside,
+html.theme-tahoe aside{
+  color:rgba(255,255,255,.85)!important;
+}
+/* Tema Minimalista sidebar blanco → texto oscuro */
+html.theme-minimal aside{
+  color:rgba(0,0,0,.75)!important;
 }
 @media(max-width:1024px){aside{width:200px!important}}
 @media(max-width:768px){aside{display:none!important}}
@@ -729,13 +767,7 @@ window._fbSyncOk = false;
 
 /* ── Dark mode helper — reads CSS variables at render time ─────────── */
 function dm(lightVal, darkKey){
-  if(!document.documentElement.classList.contains("dark-mode")) return lightVal;
-  const map={
-    "#fff":"#1e293b","#f8fafc":"#1a2540","#f1f5f9":"#0f172a",
-    "#e2e8f0":"#2d3f5a","#f1f5f9border":"#2d3f5a",
-    "#1e293b":"#e2e8f0","#475569":"#cbd5e1","#64748b":"#94a3b8","#94a3b8":"#64748b",
-  };
-  return map[lightVal]||lightVal;
+  return lightVal;
 }
 
 /* ══ DATOS INICIALES ══════════════════════════════════════════════════ */
@@ -3603,7 +3635,7 @@ function LoginScreen({users,onLogin,config}){
     {ic:"🛡️",title:"Garantías",desc:"90 días automáticos al entregar"},
   ];
 
-  return html`<div style=${{minHeight:"100vh",display:"flex",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"#f8fafc"}}>
+  return html`<div style=${{minHeight:"100vh",display:"flex",fontFamily:"'Source Sans 3',sans-serif",background:"#f8fafc"}}>
 
     <!-- LEFT: decorative panel -->
     <div class="lright-panel" style=${{
@@ -8565,7 +8597,8 @@ function App(){
           <div style=${{
             fontSize:15,fontWeight:800,letterSpacing:".06em",
             textTransform:"uppercase",lineHeight:1,
-            fontFamily:"'Plus Jakarta Sans',system-ui"}}>
+            fontFamily:"'Source Sans 3',system-ui",
+            color:"inherit"}}>
             REDCOM
           </div>
         </div>
@@ -8610,7 +8643,7 @@ function App(){
         <div style=${{
           display:"flex",alignItems:"center",gap:8,
           padding:"7px 10px",borderRadius:9,
-          background:"rgba(128,128,128,.08)",
+          background:"rgba(128,128,128,.1)",
           cursor:"default"}}>
           <!-- Avatar -->
           <div style=${{
@@ -8622,19 +8655,20 @@ function App(){
             ${(session?.nombre||"U").charAt(0).toUpperCase()}
           </div>
           <div style=${{flex:1,minWidth:0}}>
-            <div style=${{fontSize:12,fontWeight:500,opacity:.65,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            <div style=${{fontSize:12,fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",opacity:.85}}>
               ${session?.nombre||"Usuario"}
             </div>
           </div>
           <button onClick=${()=>setShowConfig(true)} title="Preferencias"
             style=${{
-              width:22,height:22,borderRadius:5,border:".5px solid rgba(0,0,0,.12)",
-              background:"rgba(0,0,0,.04)",cursor:"pointer",
+              width:22,height:22,borderRadius:5,
+              border:".5px solid rgba(128,128,128,.25)",
+              background:"rgba(128,128,128,.15)",cursor:"pointer",
               display:"flex",alignItems:"center",justifyContent:"center",
-              transition:"background .1s",boxShadow:"0 .5px 1px rgba(0,0,0,.08)"}}
-            onMouseOver=${e=>e.currentTarget.style.background="rgba(0,0,0,.1)"}
-            onMouseOut=${e=>e.currentTarget.style.background="rgba(0,0,0,.04)"}>
-            <span style=${{fontSize:11,color:"rgba(0,0,0,.45)"}}>⚙</span>
+              transition:"background .1s"}}
+            onMouseOver=${e=>e.currentTarget.style.background="rgba(128,128,128,.3)"}
+            onMouseOut=${e=>e.currentTarget.style.background="rgba(128,128,128,.15)"}>
+            <span style=${{fontSize:11,opacity:.7}}>⚙</span>
           </button>
         </div>
       </div>
