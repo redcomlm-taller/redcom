@@ -90,101 +90,188 @@ body::before{
 }
 
 /* ── "Redcom Blue" — azul claro, vibrante, texto oscuro legible ── */
+/* ══ TEMA WINDOWS 11 — Fluent Design / Mica ══════════════════════════ */
 html.dark-mode{
-  --mac-bg:         #EAF2FF;
-  --mac-sidebar:    rgba(234,242,255,.9);
-  --mac-surface:    #FFFFFF;
-  --mac-surface2:   #EAF2FF;
-  --mac-surface3:   #D6E8FF;
-  --mac-rim:        rgba(0,80,200,.12);
-  --mac-rim2:       rgba(0,80,200,.07);
-  --mac-ink:        #0A1628;
-  --mac-ink2:       #1A3050;
-  --mac-ink3:       #3A6090;
-  --mac-ink4:       #6A90B8;
-  --mac-ink5:       #A8C4DE;
-  --mac-blue:       #0055CC;
-  --mac-blue-light: #D6E8FF;
-  --mac-red:        #FF6B35;
-  --mac-green:      #1A7A40;
-  --mac-amber:      #CC6600;
-  color-scheme:light;
+  /* Paleta W11: fondos oscuros cálidos, acento #0078D4 */
+  --mac-bg:          #202020;
+  --mac-surface:     #2C2C2C;
+  --mac-surface2:    #383838;
+  --mac-surface3:    #404040;
+  --mac-rim:         rgba(255,255,255,.08);
+  --mac-rim2:        rgba(255,255,255,.05);
+  --mac-ink:         #FFFFFF;
+  --mac-ink2:        rgba(255,255,255,.87);
+  --mac-ink3:        rgba(255,255,255,.6);
+  --mac-ink4:        rgba(255,255,255,.4);
+  --mac-ink5:        rgba(255,255,255,.2);
+  --mac-blue:        #0078D4;
+  --mac-blue-light:  rgba(0,120,212,.2);
+  --mac-red:         #FF4343;
+  --mac-green:       #6CCB5F;
+  --mac-amber:       #FCE100;
+  --w11-radius:      8px;
+  --w11-acrylic:     rgba(32,32,32,.7);
+  color-scheme:dark;
 }
+
+/* Fondo: Mica — color sólido con ruido sutil */
 html.dark-mode body{
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(59,139,255,.18) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(255,107,53,.1) 0%, transparent 50%),
-    #D8ECFF;
+  background:#1C1C1C;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
-html.dark-mode ::-webkit-scrollbar-thumb{background:rgba(0,60,160,.2)}
 
+/* SIDEBAR — Acrylic material: blur + tinte oscuro */
 html.dark-mode aside{
-  background:linear-gradient(175deg,#0044AA 0%,#0055CC 55%,#1A6EDD 100%)!important;
-  border-right:.5px solid rgba(255,255,255,.2)!important;
-  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  background:rgba(44,44,44,.85)!important;
+  backdrop-filter:blur(30px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(150%)!important;
+  border-right:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:none!important;
+  color:rgba(255,255,255,.87)!important;
 }
-html.dark-mode .sidebar-link{color:rgba(255,255,255,.6)!important}
-html.dark-mode .sidebar-link:hover{background:rgba(255,255,255,.15)!important;color:#fff!important}
-html.dark-mode .sidebar-link.active{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:600!important;box-shadow:inset 3px 0 0 #FF6B35!important}
-html.dark-mode .sidebar-group{color:rgba(255,255,255,.4)!important}
+html.dark-mode .sidebar-link{
+  color:rgba(255,255,255,.78)!important;
+  border-radius:var(--w11-radius)!important;
+  margin:1px 6px!important;
+  width:calc(100% - 12px)!important;
+}
+html.dark-mode .sidebar-link:hover{
+  background:rgba(255,255,255,.07)!important;
+  color:#fff!important;
+}
+html.dark-mode .sidebar-link.active{
+  background:#0078D4!important;
+  color:#fff!important;
+  font-weight:600!important;
+  box-shadow:none!important;
+  border-radius:var(--w11-radius)!important;
+}
+html.dark-mode .sidebar-group{
+  color:rgba(255,255,255,.4)!important;
+  font-size:10px!important;
+  letter-spacing:.06em!important;
+}
 
+/* TOPBAR — Mica tintada */
 html.dark-mode .glass-topbar{
-  background:rgba(234,242,255,.88)!important;
-  border-bottom:.5px solid rgba(0,80,200,.12)!important;
-  backdrop-filter:blur(20px) saturate(160%)!important;
-  -webkit-backdrop-filter:blur(20px) saturate(160%)!important;
+  background:rgba(32,32,32,.95)!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(20px)!important;
+  -webkit-backdrop-filter:blur(20px)!important;
+  box-shadow:none!important;
 }
 
+/* INPUTS — W11 style */
 html.dark-mode input,html.dark-mode select,html.dark-mode textarea{
-  background:#EAF2FF!important;border-color:transparent!important;color:#0A1628!important;box-shadow:none;
+  background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  color:#fff!important;
+  box-shadow:none!important;
 }
-html.dark-mode label{color:#3A6090!important}
-html.dark-mode .btn-ghost{background:#fff;border:.5px solid rgba(0,80,200,.2);color:#1A3050;box-shadow:none}
-html.dark-mode .btn-ghost:hover{background:#EAF2FF;color:#0A1628}
-html.dark-mode .modal{background:#fff!important;border:.5px solid rgba(0,80,200,.12)!important;box-shadow:0 20px 60px rgba(0,40,120,.15)!important}
-html.dark-mode .modal-bg{background:rgba(0,30,100,.25)!important}
-html.dark-mode .card{background:#fff;border:.5px solid rgba(0,80,200,.1)}
-html.dark-mode .glass-card{background:#fff!important;border:.5px solid rgba(0,80,200,.08)!important}
-html.dark-mode .order-row{border-bottom-color:rgba(0,80,200,.08)}
-html.dark-mode .order-row>div{color:#0A1628}
-html.dark-mode .order-row:hover{background:rgba(0,80,200,.04)}
-html.dark-mode .order-row.sel{background:rgba(0,85,204,.1)!important}
-html.dark-mode .tbl-row{border-bottom-color:rgba(0,80,200,.08)}
-html.dark-mode .tbl-row>div{color:#0A1628}
-html.dark-mode .tbl-row:hover{background:rgba(0,80,200,.04)}
-html.dark-mode .th{background:rgba(0,80,200,.04)!important;border-bottom-color:rgba(0,80,200,.1)!important;color:#3A6090!important}
-html.dark-mode .tbl-hdr{background:rgba(0,80,200,.04)!important;border-bottom-color:rgba(0,80,200,.1)!important}
-html.dark-mode .tbl-hdr>div{color:#3A6090!important}
-html.dark-mode .slide-in{background:#fff!important}
-html.dark-mode .empty-state{color:#6A90B8}
-html.dark-mode .bottom-nav{background:#fff;border-color:rgba(0,80,200,.12)}
-html.dark-mode .bnav-btn{color:#6A90B8}
-html.dark-mode .bnav-btn.active{color:#0055CC}
+html.dark-mode input:focus,html.dark-mode select:focus,html.dark-mode textarea:focus{
+  background:rgba(255,255,255,.09)!important;
+  border-color:#0078D4!important;
+  box-shadow:0 0 0 2px rgba(0,120,212,.3)!important;
+}
+html.dark-mode ::placeholder{color:rgba(255,255,255,.35)!important}
+html.dark-mode label{color:rgba(255,255,255,.6)!important}
 
-/* Forzar fondos blancos y texto oscuro en contenido (stat cards, panels, etc.) */
-html.dark-mode main{
-  background:#EAF2FF!important;
+/* BOTONES */
+html.dark-mode .btn-ghost{
+  background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  color:rgba(255,255,255,.87)!important;
+  border-radius:var(--w11-radius)!important;
+  box-shadow:none!important;
 }
-/* Override de colores inline oscuros que usan JS */
+html.dark-mode .btn-ghost:hover{
+  background:rgba(255,255,255,.12)!important;
+  color:#fff!important;
+}
+html.dark-mode .btn-primary{
+  background:#0078D4!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:var(--w11-radius)!important;
+  box-shadow:0 1px 3px rgba(0,0,0,.4)!important;
+}
+html.dark-mode .btn-primary:hover:not(:disabled){
+  background:#1084DA!important;
+}
+
+/* MODALES — Acrylic elevado */
+html.dark-mode .modal{
+  background:#2C2C2C!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:12px!important;
+  box-shadow:0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06)!important;
+}
+html.dark-mode .modal-bg{
+  background:rgba(0,0,0,.5)!important;
+  backdrop-filter:blur(6px)!important;
+}
+
+/* CARDS */
+html.dark-mode .card{
+  background:#2C2C2C!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:var(--w11-radius)!important;
+}
+html.dark-mode .glass-card{
+  background:#383838!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:var(--w11-radius)!important;
+}
+
+/* TABLAS */
+html.dark-mode .order-row{border-bottom:1px solid rgba(255,255,255,.05)!important}
+html.dark-mode .order-row>div{color:#fff!important}
+html.dark-mode .order-row:hover{background:rgba(255,255,255,.05)!important}
+html.dark-mode .order-row.sel{background:rgba(0,120,212,.2)!important}
+html.dark-mode .tbl-row{border-bottom:1px solid rgba(255,255,255,.05)!important}
+html.dark-mode .tbl-row>div{color:#fff!important}
+html.dark-mode .tbl-row:hover{background:rgba(255,255,255,.05)!important}
+html.dark-mode .th{
+  background:rgba(255,255,255,.04)!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+  color:rgba(255,255,255,.5)!important;
+}
+html.dark-mode .tbl-hdr{
+  background:rgba(255,255,255,.04)!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+}
+html.dark-mode .tbl-hdr>div{color:rgba(255,255,255,.5)!important}
+
+/* SLIDE-IN panel */
+html.dark-mode .slide-in{background:#2C2C2C!important}
+html.dark-mode .section-header{background:#202020!important;border-color:rgba(255,255,255,.08)!important}
+
+/* MISC */
+html.dark-mode .empty-state{color:rgba(255,255,255,.35)!important}
+html.dark-mode ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15)!important;border-radius:4px!important}
+html.dark-mode .bottom-nav{background:#2C2C2C!important;border-color:rgba(255,255,255,.08)!important}
+html.dark-mode .bnav-btn{color:rgba(255,255,255,.5)!important}
+html.dark-mode .bnav-btn.active{color:#0078D4!important}
+
+/* MAIN content area */
+html.dark-mode main{background:#202020!important}
 html.dark-mode main [style*="background:\"#1e293b"],
 html.dark-mode main [style*="background:\"#0f172a"],
 html.dark-mode main [style*="background:\"#1E293B"],
 html.dark-mode main [style*="background:\"#334155"]{
-  background:#fff!important;color:#0A1628!important;
+  background:#2C2C2C!important;color:#fff!important;
 }
-/* Stat cards: normalizar fondos pasteles a blanco limpio */
-html.dark-mode .glass-card{
-  background:#FFFFFF!important;
-  border-color:rgba(0,80,200,.1)!important;
-}
-/* Secciones y paneles de contenido */
+html.dark-mode .glass-card{background:#383838!important;border-color:rgba(255,255,255,.07)!important}
 html.dark-mode section,
 html.dark-mode [class*="Section"],
 html.dark-mode .card{
-  background:#fff!important;
-  color:#0A1628!important;
-  border-color:rgba(0,80,200,.1)!important;
+  background:#2C2C2C!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.08)!important;
 }
+/* Texto en las celdas de tabla que tiene color inline */
+html.dark-mode .order-row>div *,
+html.dark-mode .tbl-row>div *{color:inherit}
 
 /* ══ EXTRA THEMES ════════════════════════════════════════════════════ */
 html.theme-minimal{
@@ -208,6 +295,218 @@ html.theme-emerald aside{background:linear-gradient(175deg,#2D6A4F,#40916C)!impo
 html.theme-emerald .sidebar-link{color:rgba(255,255,255,.6)!important}
 html.theme-emerald .sidebar-link:hover{background:rgba(255,255,255,.09)!important}
 html.theme-emerald .sidebar-group{color:rgba(255,255,255,.25)!important}
+
+/* ══ TEMA TAHOE — Liquid Glass macOS 26 ══════════════════════════════ */
+html.theme-tahoe{
+  --mac-bg:          transparent;
+  --mac-surface:     rgba(255,255,255,.45);
+  --mac-surface2:    rgba(255,255,255,.25);
+  --mac-surface3:    rgba(255,255,255,.15);
+  --mac-rim:         rgba(255,255,255,.5);
+  --mac-rim2:        rgba(255,255,255,.25);
+  --mac-ink:         #1A1A2E;
+  --mac-ink2:        #2D3561;
+  --mac-ink3:        #5B6BAB;
+  --mac-ink4:        #8B9FCC;
+  --mac-ink5:        rgba(255,255,255,.3);
+  --mac-blue:        #0A7AFF;
+  --mac-blue-light:  rgba(10,122,255,.15);
+  --mac-red:         #FF3B30;
+  --mac-green:       #30D158;
+  --mac-amber:       #FF9F0A;
+  --lg-blur:         blur(40px) saturate(220%) brightness(1.08);
+  --lg-blur-heavy:   blur(60px) saturate(240%) brightness(1.1);
+  --lg-border:       1px solid rgba(255,255,255,.55);
+  --lg-shadow:       0 8px 32px rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.7) inset, 0 -1px 0 rgba(0,0,0,.05) inset;
+}
+
+/* Fondo: degradado cielo azul/lavanda con bokeh */
+html.theme-tahoe body{
+  background:
+    radial-gradient(ellipse 120% 80% at 15% -10%, #B8D4F8 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 85% 110%, #C4B5F4 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, #D6E8FF 0%, transparent 70%),
+    linear-gradient(160deg, #C9DCF5 0%, #D4C9F0 50%, #C5D8F5 100%);
+  min-height:100vh;
+}
+
+/* Bokeh circles decorativos */
+html.theme-tahoe body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(circle 300px at 20% 30%, rgba(120,180,255,.25) 0%, transparent 70%),
+    radial-gradient(circle 200px at 80% 15%, rgba(180,140,255,.2) 0%, transparent 70%),
+    radial-gradient(circle 250px at 60% 85%, rgba(100,200,255,.18) 0%, transparent 70%),
+    radial-gradient(circle 150px at 10% 80%, rgba(160,120,255,.15) 0%, transparent 70%);
+}
+
+/* SIDEBAR — Liquid Glass profundo */
+html.theme-tahoe aside{
+  background:rgba(30,50,100,.45)!important;
+  backdrop-filter:var(--lg-blur-heavy)!important;
+  -webkit-backdrop-filter:var(--lg-blur-heavy)!important;
+  border-right:var(--lg-border)!important;
+  box-shadow:1px 0 0 rgba(255,255,255,.3) inset, -1px 0 20px rgba(0,0,0,.1)!important;
+  color:rgba(255,255,255,.9)!important;
+}
+
+/* TOPBAR — Glass sutil */
+html.theme-tahoe .glass-topbar{
+  background:rgba(255,255,255,.35)!important;
+  backdrop-filter:blur(30px) saturate(200%)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(200%)!important;
+  border-bottom:1px solid rgba(255,255,255,.5)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 1px 8px rgba(0,0,0,.06)!important;
+}
+
+/* CARDS — Glass translúcido */
+html.theme-tahoe .card,
+html.theme-tahoe .glass-card{
+  background:rgba(255,255,255,.4)!important;
+  backdrop-filter:blur(20px) saturate(180%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(180%)!important;
+  border:var(--lg-border)!important;
+  box-shadow:var(--lg-shadow)!important;
+}
+
+/* MODALES — Glass con blur profundo */
+html.theme-tahoe .modal{
+  background:rgba(255,255,255,.55)!important;
+  backdrop-filter:var(--lg-blur)!important;
+  -webkit-backdrop-filter:var(--lg-blur)!important;
+  border:1px solid rgba(255,255,255,.7)!important;
+  box-shadow:0 20px 60px rgba(0,0,0,.18), 0 1px 0 rgba(255,255,255,.8) inset!important;
+}
+html.theme-tahoe .modal-bg{
+  background:rgba(80,100,160,.2)!important;
+  backdrop-filter:blur(4px)!important;
+  -webkit-backdrop-filter:blur(4px)!important;
+}
+
+/* INPUTS — Glass suave */
+html.theme-tahoe input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=file]),
+html.theme-tahoe select,
+html.theme-tahoe textarea{
+  background:rgba(255,255,255,.55)!important;
+  border:1px solid rgba(255,255,255,.65)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 0 2px 8px rgba(0,0,0,.06)!important;
+  color:var(--mac-ink)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+}
+html.theme-tahoe input:focus,
+html.theme-tahoe select:focus,
+html.theme-tahoe textarea:focus{
+  background:rgba(255,255,255,.75)!important;
+  border:1px solid rgba(10,122,255,.5)!important;
+  box-shadow:0 0 0 3px rgba(10,122,255,.15), 0 1px 0 rgba(255,255,255,.9) inset!important;
+}
+
+/* BOTONES — Specular highlight */
+html.theme-tahoe .btn-primary{
+  background:linear-gradient(160deg,rgba(10,122,255,.9),rgba(0,90,220,.95))!important;
+  border:1px solid rgba(255,255,255,.3)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 4px 16px rgba(10,122,255,.35)!important;
+}
+html.theme-tahoe .btn-ghost{
+  background:rgba(255,255,255,.4)!important;
+  border:1px solid rgba(255,255,255,.6)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 2px 6px rgba(0,0,0,.06)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  color:var(--mac-ink)!important;
+}
+html.theme-tahoe .btn-ghost:hover{
+  background:rgba(255,255,255,.6)!important;
+}
+
+/* TABLAS */
+html.theme-tahoe .order-row{border-bottom-color:rgba(255,255,255,.3)!important}
+html.theme-tahoe .order-row:hover{background:rgba(255,255,255,.25)!important}
+html.theme-tahoe .order-row.sel{background:rgba(10,122,255,.12)!important}
+html.theme-tahoe .order-row>div{color:var(--mac-ink)!important}
+html.theme-tahoe .tbl-row{border-bottom-color:rgba(255,255,255,.3)!important}
+html.theme-tahoe .tbl-row:hover{background:rgba(255,255,255,.25)!important}
+html.theme-tahoe .tbl-row>div{color:var(--mac-ink)!important}
+html.theme-tahoe .th{
+  background:rgba(255,255,255,.25)!important;
+  backdrop-filter:blur(12px)!important;
+  border-bottom-color:rgba(255,255,255,.4)!important;
+  color:var(--mac-ink3)!important;
+}
+html.theme-tahoe .tbl-hdr{
+  background:rgba(255,255,255,.25)!important;
+  backdrop-filter:blur(12px)!important;
+  border-bottom-color:rgba(255,255,255,.4)!important;
+}
+html.theme-tahoe .tbl-hdr>div{color:var(--mac-ink3)!important}
+
+/* SECTION HEADER */
+html.theme-tahoe .section-header{
+  background:rgba(255,255,255,.3)!important;
+  backdrop-filter:blur(16px)!important;
+  border-color:rgba(255,255,255,.4)!important;
+}
+
+/* SLIDE-IN PANEL */
+html.theme-tahoe .slide-in{
+  background:rgba(255,255,255,.45)!important;
+  backdrop-filter:blur(24px)!important;
+  -webkit-backdrop-filter:blur(24px)!important;
+}
+
+/* LABELS */
+html.theme-tahoe label{color:var(--mac-ink3)!important}
+
+/* SEARCH BAR */
+html.theme-tahoe .search-bar input{
+  background:rgba(255,255,255,.5)!important;
+  border-color:rgba(255,255,255,.6)!important;
+}
+
+/* SIDEBAR ACTIVE con glow */
+html.theme-tahoe .sidebar-link.active{
+  background:rgba(255,255,255,.2)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.4), 0 2px 12px rgba(10,122,255,.2)!important;
+  color:#fff!important;
+  font-weight:600!important;
+}
+html.theme-tahoe .sidebar-link{
+  color:rgba(255,255,255,.75)!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.3)!important;
+}
+html.theme-tahoe .sidebar-link:hover{
+  background:rgba(255,255,255,.15)!important;
+  color:#fff!important;
+}
+html.theme-tahoe .sidebar-group{
+  color:rgba(255,255,255,.45)!important;
+  text-shadow:none!important;
+}
+html.theme-tahoe aside{
+  color:rgba(255,255,255,.85)!important;
+}
+
+/* Scrollbar transparente */
+html.theme-tahoe ::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.3)!important;
+  border-radius:99px!important;
+}
+
+/* KANBAN columnas glass */
+html.theme-tahoe .kcol{
+  background:rgba(255,255,255,.25)!important;
+  backdrop-filter:blur(16px)!important;
+  border-color:rgba(255,255,255,.4)!important;
+}
+
+/* BOTTOM NAV */
+html.theme-tahoe .bottom-nav{
+  background:rgba(255,255,255,.4)!important;
+  backdrop-filter:blur(20px)!important;
+  border-color:rgba(255,255,255,.5)!important;
+}
 
 /* Tema "Blanco Minimalista" — todo blanco, texto negro, sin color */
 html.theme-violet{
@@ -643,7 +942,92 @@ html.dark-mode .search-bar input{background:rgba(255,255,255,.08)!important}
 html.dark-mode .glass,.glass-modal{background:rgba(44,44,46,.9)!important;border-color:rgba(255,255,255,.08)!important}
 html.dark-mode .glass-card{background:rgba(44,44,46,.95)!important;border-color:rgba(255,255,255,.06)!important}
 
-/* ══ BOTTOM NAV ═══════════════════════════════════════════════════════ */
+/* ── Animación de cambio de sección ── */
+@keyframes secIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.sec-content{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  animation:secIn .18s cubic-bezier(.16,1,.3,1) both;
+}
+
+/* ── Indicador Firebase ping ── */
+@keyframes ping{
+  75%,100%{transform:scale(2);opacity:0}
+}
+
+/* ── Toast notifications ── */
+@keyframes toastIn  {from{opacity:0;transform:translateX(24px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes toastOut {from{opacity:1;transform:none}to{opacity:0;transform:translateX(24px) scale(.95)}}
+.toast-stack{
+  position:fixed;bottom:24px;right:20px;
+  display:flex;flex-direction:column;gap:8px;
+  z-index:9999;pointer-events:none;
+}
+.toast{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;border-radius:10px;
+  font-size:13px;font-weight:500;
+  box-shadow:0 4px 20px rgba(0,0,0,.14),0 0 0 .5px rgba(0,0,0,.06);
+  animation:toastIn .22s cubic-bezier(.16,1,.3,1) both;
+  pointer-events:all;min-width:220px;max-width:320px;
+  backdrop-filter:blur(12px);
+}
+.toast-ok  {background:rgba(5,150,105,.92);color:#fff}
+.toast-err {background:rgba(220,38,38,.92);color:#fff}
+.toast-info{background:rgba(29,78,216,.92);color:#fff}
+.toast-warn{background:rgba(217,119,6,.92);color:#fff}
+
+/* ── Avatar con iniciales ── */
+.avatar{
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;font-weight:700;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;letter-spacing:-.02em;
+  user-select:none;
+}
+
+/* ── Skeleton loading ── */
+@keyframes shimmer{
+  0%{background-position:-600px 0}
+  100%{background-position:600px 0}
+}
+.skeleton{
+  background:linear-gradient(90deg,#f0f0ee 25%,#e4e4e0 50%,#f0f0ee 75%);
+  background-size:600px 100%;
+  animation:shimmer 1.4s ease infinite;
+  border-radius:6px;
+}
+
+/* ── Barra de progreso de estado ── */
+.ord-progress{
+  display:flex;align-items:center;gap:0;margin:4px 0 8px;
+}
+.ord-progress-step{
+  flex:1;height:3px;
+  border-radius:99px;
+  transition:background .3s ease;
+  position:relative;
+}
+.ord-progress-step+.ord-progress-step{margin-left:3px}
+
+/* ── Animación confetti al entregar ── */
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(60px) rotate(360deg);opacity:0}
+}
+@keyframes deliverPop{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.18)}
+  70%{transform:scale(.94)}
+  100%{transform:scale(1)}
+}
+.deliver-pop{animation:deliverPop .4s cubic-bezier(.16,1,.3,1) both}
+.confetti-piece{
+  position:absolute;width:7px;height:7px;border-radius:2px;
+  animation:confettiFall .7s ease-out both;
+  pointer-events:none;
+}
 .bottom-nav{
   display:none;position:fixed;bottom:0;left:0;right:0;
   background:rgba(236,236,236,.92);
@@ -1052,6 +1436,33 @@ function gst(k){return STS.find(x=>x.k===k)||STS[0]}
 function gur(k){return URGS.find(x=>x.k===k)||URGS[0]}
 function gcl(cls,id){return cls.find(c=>c.id===id)||{nombre:"—",empresa:"",tel:""}}
 function gtec(tecs,id){return tecs.find(t=>t.id===id)||{nombre:"Sin asignar"}}
+
+// Avatar: color único determinista basado en nombre
+function avatarColor(name=""){
+  const P=[["#DBEAFE","#1D4ED8"],["#FEF3C7","#D97706"],["#FCE7F3","#BE185D"],
+    ["#D1FAE5","#059669"],["#EDE9FE","#7C3AED"],["#FFE4E6","#E11D48"],
+    ["#E0F2FE","#0369A1"],["#FEF9C3","#CA8A04"],["#F0FDF4","#15803D"],["#F5F3FF","#6D28D9"]];
+  let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))&0xffffff;
+  const [bg,fg]=P[Math.abs(h)%P.length];
+  const ini=(name.split(" ").map(w=>w[0]||"").join("").toUpperCase()||"?").slice(0,2);
+  return {bg,fg,ini};
+}
+function Avatar({name="",size=28,cls="",style={}}){
+  const {bg,fg,ini}=avatarColor(name);
+  return html`<div class=${"avatar "+cls} style=${{
+    width:size,height:size,background:bg,color:fg,
+    fontSize:Math.round(size*.38),border:"1.5px solid "+fg+"30",...style}}>${ini}</div>`;
+}
+function ToastStack({toasts}){
+  if(!toasts.length) return null;
+  const ICO={ok:"✓",err:"✕",info:"ℹ",warn:"⚠"};
+  return html`<div class="toast-stack">
+    ${toasts.map(t=>html`<div key=${t.id} class=${"toast toast-"+(t.type||"ok")}>
+      <span style=${{fontSize:15,flexShrink:0}}>${ICO[t.type||"ok"]}</span>
+      <span>${t.msg}</span>
+    </div>`)}
+  </div>`;
+}
 function today(){return new Date().toISOString().slice(0,10)}
 
 /* ══ TICKET ════════════════════════════════════════════════════════════ */
@@ -2274,6 +2685,24 @@ function BudModal({ord,cli,invItems,svcItems,exist,tarifaMO,onSave,onClose}){
 /* ══ DETAIL PANEL (Órdenes) ════════════════════════════════════════════ */
 
 function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onPrint,onNotaVenta,onFotos,onFirma,onPortal}){
+  const [justDelivered,setJustDelivered]=useState(false);
+  const [confetti,setConfetti]=useState([]);
+
+  function handleSt(id,st){
+    if(st==="Entregado" && ord.est!=="Entregado"){
+      setJustDelivered(true);
+      const pieces=Array.from({length:16},(_,i)=>({
+        id:i,
+        x:Math.random()*100,
+        color:["#1d4ed8","#059669","#d97706","#dc2626","#9333ea","#0891b2"][i%6],
+        delay:Math.random()*.4,
+        size:5+Math.random()*5
+      }));
+      setConfetti(pieces);
+      setTimeout(()=>{setJustDelivered(false);setConfetti([]);},1200);
+    }
+    onSt(id,st);
+  }
   const [showWA,setWA]=useState(false);
   const [diagEdit,setDiagEdit]=useState(false);
   const [diagTxt,setDiagTxt]=useState(ord.diag||"");
@@ -2281,7 +2710,32 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
   const cv=bud?calc(bud.items):null;
   const BC={Borrador:"#64748b",Aceptado:"#059669",Rechazado:"#dc2626"};
   const idx=STS.findIndex(x=>x.k===ord.est);
-  return html`<div class="slide-in" style=${{background:"#fff",height:"100%",display:"flex",flexDirection:"column",overflowY:"auto"}}>
+  return html`<div class="slide-in" style=${{background:"#fff",height:"100%",display:"flex",flexDirection:"column",overflowY:"auto",position:"relative"}}>
+
+    <!-- Confetti al marcar Entregado -->
+    ${confetti.length>0&&html`
+      <div style=${{position:"absolute",top:0,left:0,right:0,height:80,pointerEvents:"none",zIndex:50,overflow:"hidden"}}>
+        ${confetti.map(p=>html`
+          <div key=${p.id} class="confetti-piece" style=${{
+            left:p.x+"%",top:0,
+            width:p.size+"px",height:p.size+"px",
+            background:p.color,
+            animationDelay:p.delay+"s",
+            borderRadius:Math.random()>0.5?"50%":"2px"}}/>
+        `)}
+      </div>`}
+
+    <!-- Banner de entrega -->
+    ${justDelivered&&html`
+      <div class="deliver-pop" style=${{
+        position:"absolute",top:8,left:"50%",transform:"translateX(-50%)",
+        background:"linear-gradient(135deg,#059669,#10b981)",
+        color:"#fff",padding:"6px 18px",borderRadius:99,
+        fontSize:12,fontWeight:700,zIndex:51,
+        boxShadow:"0 4px 16px rgba(5,150,105,.4)",
+        whiteSpace:"nowrap"}}>
+        ✅ ¡Entregado exitosamente!
+      </div>`}
     <div style=${{padding:"14px 18px",borderBottom:"1px solid #e2e8f0",background:"#f8fafc",flexShrink:0}}>
       <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
         <div>
@@ -2324,8 +2778,32 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
             <${Ic} n="wa" z=${12} s="#16a34a"/> Avisar listo
           </button>`}
       </div>
-      <div style=${{display:"flex",gap:4,flexWrap:"wrap"}}>
-        ${STS.map((x,i)=>html`<button key=${x.k} onClick=${()=>onSt(ord.id,x.k)} style=${{padding:"3px 9px",borderRadius:99,fontSize:10,fontWeight:600,cursor:"pointer",border:"1.5px solid",borderColor:ord.est===x.k?x.c:i<idx?"#cbd5e1":"#e2e8f0",background:ord.est===x.k?x.bg:i<idx?"#f8fafc":"#fff",color:ord.est===x.k?x.c:i<idx?"#94a3b8":"#cbd5e1",transition:"all .15s"}}>${ord.est===x.k?"● ":i<idx?"✓ ":""}${x.k}</button>`)}
+      <div style=${{display:"flex",gap:4,flexWrap:"wrap",flexDirection:"column"}}>
+        <!-- Barra de progreso -->
+        <div class="ord-progress">
+          ${STS.map((x,i)=>{
+            const done=i<=idx;
+            const active=ord.est===x.k;
+            return html`<div key=${x.k} class="ord-progress-step" style=${{
+              background:done?x.c:"#e2e8f0",
+              height:active?"4px":"3px",
+              boxShadow:active?"0 0 6px "+x.c+"88":""}}/>`;
+          })}
+        </div>
+        <!-- Botones estado -->
+        <div style=${{display:"flex",gap:3,flexWrap:"wrap"}}>
+          ${STS.map((x,i)=>html`
+            <button key=${x.k} onClick=${()=>handleSt(ord.id,x.k)}
+              style=${{
+                padding:"3px 9px",borderRadius:99,fontSize:10,fontWeight:600,
+                cursor:"pointer",border:"1.5px solid",transition:"all .15s",
+                borderColor:ord.est===x.k?x.c:i<idx?"#cbd5e1":"#e2e8f0",
+                background:ord.est===x.k?x.bg:i<idx?"#f8fafc":"#fff",
+                color:ord.est===x.k?x.c:i<idx?"#94a3b8":"#cbd5e1",
+                transform:ord.est===x.k?"scale(1.05)":"scale(1)"}}>
+              ${ord.est===x.k?"● ":i<idx?"✓ ":""}${x.k}
+            </button>`)}
+        </div>
       </div>
     </div>
     <div style=${{padding:"14px 18px",display:"grid",gap:12,flex:1}}>
@@ -2767,12 +3245,11 @@ function ClientsSection({cls,ords,pagos,gars,onAdd,onEdit,onDel}){
                 borderLeft:isSelected?"3px solid #1d4ed8":"3px solid transparent",
                 transition:"background .1s"}}>
               <div style=${{display:"flex",gap:10,alignItems:"center"}}>
-                <div style=${{width:36,height:36,borderRadius:10,background:isSelected?"#1d4ed8":"var(--mac-surface2)",
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  fontSize:14,fontWeight:800,color:isSelected?"#fff":"var(--mac-ink4)",flexShrink:0}}
-                  onClick=${()=>setSelId(isSelected?null:cl.id)}>
-                  ${cl.nombre.charAt(0).toUpperCase()}
-                </div>
+                <${Avatar} name=${cl.nombre} size=${36}
+                  style=${{borderRadius:10,cursor:"pointer",flexShrink:0,
+                    outline:isSelected?"2px solid #1d4ed8":"none",
+                    outlineOffset:"2px"}}
+                  onClick=${()=>setSelId(isSelected?null:cl.id)}/>
                 <div style=${{flex:1,minWidth:0}} onClick=${()=>setSelId(isSelected?null:cl.id)}>
                   <div style=${{display:"flex",alignItems:"center",gap:5}}>
                     <div style=${{fontSize:13,fontWeight:600,color:isSelected?"#1d4ed8":"var(--mac-ink)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${cl.nombre}</div>
@@ -3701,10 +4178,13 @@ function LoginScreen({users,onLogin,config}){
     </div>
 
     <!-- RIGHT: form panel -->
-    <div style=${{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",padding:"48px 40px",background:"#f8fafc",position:"relative"}}>
+    <div style=${{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",padding:"48px 40px",background:"#fff",position:"relative"}}>
+
+      <!-- Fondo sutil -->
+      <div style=${{position:"absolute",inset:0,backgroundImage:"radial-gradient(#e2e8f0 1px,transparent 1px)",backgroundSize:"32px 32px",opacity:.4,pointerEvents:"none"}}/>
 
       <!-- Mobile header -->
-      <div class="lmobile-logo" style=${{flexDirection:"column",alignItems:"center",marginBottom:32,animation:"fadeUp .4s ease both"}}>
+      <div class="lmobile-logo" style=${{flexDirection:"column",alignItems:"center",marginBottom:32,animation:"fadeUp .4s ease both",position:"relative"}}>
         ${logoSrc
           ?html`<img src=${logoSrc} style=${{height:48,maxWidth:160,objectFit:"contain",marginBottom:8}}/>`
           :html`<div style=${{width:52,height:52,borderRadius:14,background:"linear-gradient(135deg,#1d4ed8,#3b82f6)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:10,boxShadow:"0 4px 16px rgba(29,78,216,.3)"}}>
@@ -3715,15 +4195,30 @@ function LoginScreen({users,onLogin,config}){
       </div>
 
       <!-- Card -->
-      <div style=${{width:"100%",maxWidth:400,animation:"fadeUp .45s ease both"}}>
-        <!-- Header -->
-        <div style=${{marginBottom:32}}>
-          <div style=${{fontSize:26,fontWeight:800,color:"#0f172a",marginBottom:6}}>Iniciar sesión</div>
-          <div style=${{fontSize:13,color:"#94a3b8"}}>Ingresa a tu cuenta para continuar</div>
+      <div style=${{
+        width:"100%",maxWidth:400,
+        background:"#fff",borderRadius:20,
+        border:"1px solid #e2e8f0",
+        boxShadow:"0 8px 40px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05)",
+        padding:"36px 36px 32px",
+        animation:"fadeUp .45s ease both",
+        position:"relative"}}>
+
+        <!-- Header del card -->
+        <div style=${{marginBottom:28,textAlign:"center"}}>
+          <div style=${{
+            width:52,height:52,borderRadius:14,margin:"0 auto 16px",
+            background:"linear-gradient(135deg,#1d4ed8,#3b82f6)",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            boxShadow:"0 6px 20px rgba(29,78,216,.3)"}}>
+            <${Ic} n="lock" z=${22} s="#fff"/>
+          </div>
+          <div style=${{fontSize:22,fontWeight:800,color:"#0f172a",marginBottom:4}}>Bienvenido</div>
+          <div style=${{fontSize:13,color:"#94a3b8"}}>Ingresa tus credenciales para continuar</div>
         </div>
 
         <!-- Form -->
-        <div style=${{display:"grid",gap:18}}>
+        <div style=${{display:"grid",gap:16}}>
           <!-- Usuario -->
           <div>
             <label class="lb2">Usuario</label>
@@ -3763,43 +4258,24 @@ function LoginScreen({users,onLogin,config}){
           </div>`}
 
           <!-- Submit -->
-          <button class="lbtn2" onClick=${login} disabled=${loading} style=${{marginTop:4}}>
+          <button class="lbtn2" onClick=${login} disabled=${loading} style=${{marginTop:4,borderRadius:12}}>
             ${loading
               ?html`<span style=${{display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
                   <span style=${{width:16,height:16,border:"2px solid rgba(255,255,255,.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin2 .7s linear infinite",display:"inline-block"}}/>
                   Verificando...
                 </span>`
               :html`<span style=${{display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-                  <${Ic} n="lock" z=${15} s="#fff"/> Entrar al sistema
+                  Entrar al sistema →
                 </span>`}
           </button>
         </div>
 
-        <!-- Divider -->
-        <div style=${{display:"flex",alignItems:"center",gap:10,margin:"28px 0 20px"}}>
-          <div style=${{flex:1,height:1,background:"#e2e8f0"}}/>
-          <span style=${{fontSize:11,color:"#cbd5e1",fontWeight:600,letterSpacing:.5}}>SISTEMA SEGURO</span>
-          <div style=${{flex:1,height:1,background:"#e2e8f0"}}/>
-        </div>
-
-        <!-- Trust badges -->
-        <div style=${{display:"flex",gap:8,justifyContent:"center"}}>
-          ${[["🔒","Datos locales"],["☁️","Sync Drive"],["🤖","IA incluida"]].map(([ic,lbl])=>html`
-            <div key=${lbl} style=${{
-              background:"#fff",border:"1px solid #e2e8f0",
-              borderRadius:99,padding:"5px 12px",
-              fontSize:11,color:"#64748b",fontWeight:500,
-              display:"flex",alignItems:"center",gap:5,
-              boxShadow:"0 1px 3px rgba(0,0,0,.05)"}}>
-              <span>${ic}</span> ${lbl}
-            </div>`)}
+        <!-- Footer del card -->
+        <div style=${{marginTop:20,textAlign:"center",fontSize:11,color:"#cbd5e1"}}>
+          🔒 Conexión segura · ${empresa} © ${yr}
         </div>
       </div>
 
-      <!-- Footer -->
-      <div style=${{position:"absolute",bottom:24,fontSize:11,color:"#cbd5e1",textAlign:"center"}}>
-        ${empresa} · ${tagline} · ${yr}
-      </div>
     </div>
   </div>`;
 }
@@ -6468,60 +6944,99 @@ function NotifPanel({ords,inv,gars,cls,session,onClose,onNavTo}){
   ];
 
   return html`<div style=${{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-start",justifyContent:"flex-end",padding:"60px 16px 16px",background:"rgba(0,0,0,.18)"}} onClick=${onClose}>
-    <div class="modal fade-in" style=${{width:420,maxHeight:"84vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,.25)"}} onClick=${e=>e.stopPropagation()}>
+    <div class="modal fade-in" style=${{width:420,maxHeight:"84vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,.25)",borderRadius:16,overflow:"hidden"}} onClick=${e=>e.stopPropagation()}>
 
-      <!-- Header -->
-      <div style=${{padding:"18px 22px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
-        <div style=${{display:"flex",alignItems:"center",gap:10}}>
-          <div style=${{width:34,height:34,borderRadius:9,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <${Ic} n="bell" z=${17} s="#1d4ed8"/>
+      <!-- Header mejorado -->
+      <div style=${{
+        padding:"20px 22px 16px",
+        background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)",
+        flexShrink:0}}>
+        <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
+          <div style=${{display:"flex",alignItems:"center",gap:10}}>
+            <div style=${{width:36,height:36,borderRadius:10,background:"rgba(255,255,255,.15)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <${Ic} n="bell" z=${18} s="#fff"/>
+            </div>
+            <div>
+              <div style=${{fontSize:16,fontWeight:800,color:"#fff"}}>Recordatorios</div>
+              <div style=${{fontSize:11,color:"rgba(255,255,255,.65)",marginTop:1}}>
+                ${notifs.length===0?"Sin alertas pendientes":notifs.length+" alerta"+(notifs.length!==1?"s":"")+" activa"+(notifs.length!==1?"s":"")}
+              </div>
+            </div>
           </div>
-          <div>
-            <div style=${{fontSize:15,fontWeight:700,color:"#0f172a"}}>Recordatorios</div>
-            <div style=${{fontSize:11,color:"#94a3b8",marginTop:1}}>${notifs.length===0?"Sin alertas":notifs.length+" alerta"+( notifs.length!==1?"s":"")+" pendiente"+(notifs.length!==1?"s":"")}</div>
-          </div>
+          <button onClick=${onClose} style=${{background:"rgba(255,255,255,.15)",border:"none",borderRadius:7,width:28,height:28,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:14,transition:"background .1s"}}
+            onMouseOver=${e=>e.currentTarget.style.background="rgba(255,255,255,.25)"}
+            onMouseOut=${e=>e.currentTarget.style.background="rgba(255,255,255,.15)"}>✕</button>
         </div>
-        <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
+        <!-- Mini contadores por tipo -->
+        ${notifs.length>0&&html`
+          <div style=${{display:"flex",gap:6,flexWrap:"wrap"}}>
+            ${grupos.filter(({tipos})=>notifs.some(n=>tipos.includes(n.tipo))).map(({label,tipos})=>{
+              const cnt=notifs.filter(n=>tipos.includes(n.tipo)).length;
+              const n=notifs.find(x=>tipos.includes(x.tipo));
+              return html`<div key=${label} style=${{
+                background:"rgba(255,255,255,.15)",borderRadius:99,
+                padding:"3px 10px",fontSize:10,fontWeight:700,
+                color:"#fff",display:"flex",alignItems:"center",gap:4}}>
+                <span>${n?.icon}</span>
+                <span>${cnt}</span>
+              </div>`;
+            })}
+          </div>`}
       </div>
 
       <!-- Body -->
-      <div style=${{overflowY:"auto",flex:1}}>
+      <div style=${{overflowY:"auto",flex:1,background:"#fff"}}>
         ${notifs.length===0
-          ?html`<div style=${{padding:"48px 24px",textAlign:"center",color:"#94a3b8"}}>
-            <div style=${{fontSize:40,marginBottom:12}}>🎉</div>
-            <div style=${{fontWeight:700,fontSize:15,color:"#475569",marginBottom:6}}>¡Todo en orden!</div>
-            <div style=${{fontSize:13,lineHeight:1.6}}>No hay órdenes vencidas<br/>ni alertas pendientes</div>
+          ?html`<div style=${{padding:"52px 24px",textAlign:"center",color:"#94a3b8"}}>
+            <div style=${{fontSize:44,marginBottom:14}}>🎉</div>
+            <div style=${{fontWeight:700,fontSize:16,color:"#475569",marginBottom:6}}>¡Todo en orden!</div>
+            <div style=${{fontSize:13,lineHeight:1.6,color:"#94a3b8"}}>No hay órdenes vencidas<br/>ni alertas pendientes hoy</div>
           </div>`
           :grupos.map(({label,tipos})=>{
             const items=notifs.filter(n=>tipos.includes(n.tipo));
             if(!items.length) return null;
+            const sample=items[0];
             return html`<div key=${label}>
-              <div style=${{padding:"8px 22px 4px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,background:"#f8fafc",borderBottom:"1px solid #f1f5f9"}}>${label} · ${items.length}</div>
+              <div style=${{
+                padding:"8px 20px 6px",fontSize:10,fontWeight:700,
+                color:sample.color,textTransform:"uppercase",letterSpacing:.8,
+                background:sample.bg,borderBottom:"1px solid "+sample.borde,
+                display:"flex",alignItems:"center",gap:5}}>
+                <span>${sample.icon}</span>
+                <span>${label.replace(/^[^\s]+\s/,"")} — ${items.length}</span>
+              </div>
               ${items.map(n=>html`
                 <div key=${n.id} onClick=${()=>{onNavTo(n.nav);onClose();}}
-                  style=${{padding:"13px 20px",borderBottom:"1px solid #f8fafc",cursor:"pointer",
+                  style=${{
+                    padding:"12px 20px",borderBottom:"1px solid #f8fafc",cursor:"pointer",
                     display:"flex",gap:12,alignItems:"flex-start",
-                    borderLeft:"3px solid",borderLeftColor:n.borde,
+                    borderLeft:"3px solid "+n.color,
                     transition:"background .1s"}}
                   onMouseOver=${e=>{e.currentTarget.style.background=n.bg}}
                   onMouseOut=${e=>{e.currentTarget.style.background="#fff"}}>
-                  <div style=${{fontSize:20,flexShrink:0,marginTop:1}}>${n.icon}</div>
+                  <div style=${{
+                    width:32,height:32,borderRadius:8,background:n.bg,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:16,flexShrink:0,border:"1px solid "+n.borde}}>
+                    ${n.icon}
+                  </div>
                   <div style=${{flex:1,minWidth:0}}>
                     <div style=${{fontWeight:700,fontSize:12,color:n.color,marginBottom:2}}>${n.titulo}</div>
                     <div style=${{fontSize:12,color:"#1e293b",fontWeight:500,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${n.desc}</div>
                     <div style=${{fontSize:11,color:"#94a3b8"}}>${n.sub}</div>
                   </div>
-                  <${Ic} n="chevron" z=${14} s="#cbd5e1"/>
+                  <${Ic} n="chevron" z=${13} s="#d1d5db"/>
                 </div>`)}
             </div>`;
           })}
       </div>
 
       <!-- Footer -->
-      ${notifs.length>0&&html`<div style=${{padding:"12px 20px",borderTop:"1px solid #f1f5f9",background:"#f8fafc",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <span style=${{fontSize:11,color:"#94a3b8"}}>Toca una alerta para ir a la orden</span>
-        <button class="btn btn-ghost btn-sm" onClick=${()=>{onNavTo("orders");onClose();}}>Ver órdenes</button>
-      </div>`}
+      ${notifs.length>0&&html`
+        <div style=${{padding:"12px 20px",borderTop:"1px solid #f1f5f9",background:"#f8fafc",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style=${{fontSize:11,color:"#94a3b8"}}>Toca una alerta para ir a la orden</span>
+          <button class="btn btn-ghost btn-sm" onClick=${()=>{onNavTo("orders");onClose();}}>Ver órdenes</button>
+        </div>`}
     </div>
   </div>`;
 }
@@ -6710,14 +7225,16 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
           ${[
             {k:"light",   label:"☀️ Claro",       sub:"macOS natural",
               prev:[["#ECECEC","#fff","#0A7AFF"],["#fff","#e0e0e0","#EBF3FF"]]},
-            {k:"dark",    label:"🔵 Redcom Blue",  sub:"Azul claro + naranja",
-              prev:[["#D8ECFF","#fff","#0055CC"],["#fff","#EAF2FF","#D6E8FF"]]},
+            {k:"dark",    label:"🪟 Windows 11",   sub:"Fluent Design · Mica oscuro",
+              prev:[["#1C1C1C","#2C2C2C","#0078D4"],["#383838","#404040","rgba(0,120,212,.3)"]]},
             {k:"minimal", label:"⬜ Minimalista",  sub:"Arena · Notion style",
               prev:[["#F5F4F0","#fff","#111110"],["#fff","#DEDAD2","#F0EFE9"]]},
             {k:"emerald", label:"🌿 Esmeralda",    sub:"Verde profesional",
               prev:[["#EFF8F2","#fff","#1B4332"],["#fff","#C8E0D4","#D1F0DA"]]},
             {k:"violet",  label:"⬛ Minimalista B/N", sub:"Blanco puro · texto negro",
               prev:[["#fff","#fff","#000"],["#fff","#F5F5F5","#FAFAFA"]]},
+            {k:"tahoe",   label:"🫧 Tahoe",         sub:"Liquid Glass · macOS 26",
+              prev:[["#B8D4F8","rgba(255,255,255,.35)","#0A7AFF"],["rgba(255,255,255,.4)","rgba(180,210,255,.3)","rgba(255,255,255,.6)"]]},
           ].map(({k,label,sub,prev})=>{
             const isCur=(f.tema||"light")===k;
             const [bg,card,acc]=prev[0];
@@ -8169,11 +8686,25 @@ function App(){
   });
   const [gas,setGas]=useState(()=>{try{return localStorage.getItem(GAS_KEY)||"";}catch(e){return "";}});
   const [syncSt,setSyncSt]=useState("idle"); // idle | saving | ok | error | loading
+  const [lastSync,setLastSync]=useState(null); // timestamp de último sync exitoso
+  const [syncTick,setSyncTick]=useState(0); // fuerza re-render para actualizar tiempo relativo
+  React.useEffect(()=>{
+    const t=setInterval(()=>setSyncTick(k=>k+1),15000);
+    return ()=>clearInterval(t);
+  },[]);
   const [showGasModal,setShowGasModal]=useState(false);
   const [showConfig,setShowConfig]=useState(false);
   const [darkTick,setDarkTick]=useState(0);
   const [showUserMenu,setShowUserMenu]=useState(false);
   const [showSearch,setShowSearch]=useState(false);
+  const [toasts,setToasts]=useState([]);
+
+  // Toast helper
+  function toast(msg, type="ok"){
+    const id=Date.now();
+    setToasts(p=>[...p,{id,msg,type}]);
+    setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),3000);
+  }
   const [config,setConfig]=useState(()=>lsGet("redcom_config",{
     titulo:"Redcom — Sistema de Reparaciones",
     logo:"",
@@ -8224,6 +8755,7 @@ function App(){
         const val=snap.data().data;
         if(!val) return;
         setter(val);
+        setLastSync(new Date()); // registrar timestamp de sync
         try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}
       }, err=>console.warn("onSnapshot["+key+"]:",err));
 
@@ -8270,6 +8802,13 @@ function App(){
 
   // Navigation
   const [sec,setSec]=useState("orders");
+  const [animKey,setAnimKey]=useState(0);
+  const [skeletonSec,setSkeletonSec]=useState("");
+  const goSec=React.useCallback((s)=>{
+    setSec(s);setAnimKey(k=>k+1);setSel(null);
+    setSkeletonSec(s);
+    setTimeout(()=>setSkeletonSec(""),450);
+  },[]);
   const [view,setView]=useState("list");
   const [q,setQ]=useState("");
   const [fst,setFst]=useState("Todos");
@@ -8349,6 +8888,7 @@ function App(){
       });
     }
     setNewOrd(false);setEditOrd(null);setSel(o.id);
+    toast("Orden guardada correctamente","ok");
   }
   function saveFotos(ordId,fotos){setOrds(p=>{const n=p.map(o=>o.id===ordId?{...o,fotos}:o);lsSet("redcom_ords",n);return n;});setShowFotos(null);}
   function saveFirma(ordId,firma){
@@ -8372,7 +8912,7 @@ function App(){
     });
     setShowFirma(null);
   }
-  function delOrd(id){setOrds(p=>{const n=p.filter(o=>o.id!==id);lsSet("redcom_ords",n);return n;});setSel(null);}
+  function delOrd(id){setOrds(p=>{const n=p.filter(o=>o.id!==id);lsSet("redcom_ords",n);return n;});setSel(null);toast("Orden eliminada","err");}
   function saveBud(b){
     // Descuento de stock: solo cuando cambia a Aceptado y no lo era antes
     const prevBud=buds[b.id];
@@ -8454,13 +8994,14 @@ function App(){
     if(cfg.titulo) document.title=cfg.titulo;
     // Quitar todas las clases de tema
     const el=document.documentElement;
-    el.classList.remove("dark-mode","theme-minimal","theme-emerald","theme-violet");
+    el.classList.remove("dark-mode","theme-minimal","theme-emerald","theme-violet","theme-tahoe");
     // Aplicar tema seleccionado
     const tema=cfg.tema||"light";
     if(tema==="dark")    el.classList.add("dark-mode");
     else if(tema==="minimal") el.classList.add("theme-minimal");
     else if(tema==="emerald") el.classList.add("theme-emerald");
     else if(tema==="violet")  el.classList.add("theme-violet");
+    else if(tema==="tahoe")   el.classList.add("theme-tahoe");
     setDarkTick(t=>t+1);
   }
   function saveCot(ct){
@@ -8500,9 +9041,9 @@ function App(){
       return next;
     });
   }
-  function saveCli(c){setCls(p=>{const n=p.find(x=>x.id===c.id)?p.map(x=>x.id===c.id?c:x):[c,...p];lsSet("redcom_cls",n);saveSeqs();return n;});setNewCli(false);setEditCli(null);}
-  function delCli(id){setCls(p=>{const n=p.filter(c=>c.id!==id);lsSet("redcom_cls",n);return n;});}
-  function saveInv(p){setInv(prev=>{const n=prev.find(x=>x.id===p.id)?prev.map(x=>x.id===p.id?p:x):[p,...prev];lsSet("redcom_inv",n);saveSeqs();return n;});setNewInv(false);setEditInv(null);}
+  function saveCli(c){setCls(p=>{const n=p.find(x=>x.id===c.id)?p.map(x=>x.id===c.id?c:x):[c,...p];lsSet("redcom_cls",n);saveSeqs();return n;});setNewCli(false);setEditCli(null);toast("Cliente guardado","ok");}
+  function delCli(id){setCls(p=>{const n=p.filter(c=>c.id!==id);lsSet("redcom_cls",n);return n;});toast("Cliente eliminado","err");}
+  function saveInv(p){setInv(prev=>{const n=prev.find(x=>x.id===p.id)?prev.map(x=>x.id===p.id?p:x):[p,...prev];lsSet("redcom_inv",n);saveSeqs();return n;});setNewInv(false);setEditInv(null);toast("Artículo guardado","ok");}
   function delInv(id){setInv(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_inv",n);return n;});}
   function saveTec(t){setTecs(p=>{const n=p.find(x=>x.id===t.id)?p.map(x=>x.id===t.id?t:x):[t,...p];lsSet("redcom_tecs",n);saveSeqs();return n;});setNewTec(false);setEditTec(null);}
   function delTec(id){
@@ -8612,7 +9153,7 @@ function App(){
             ${items.map(([key,lbl,icon])=>{
               const on=sec===key;
               return html`<button key=${key}
-                onClick=${()=>{setSec(key);setSel(null);}}
+                onClick=${()=>goSec(key)}
                 class=${"sidebar-link"+(on?" active":"")}>
                 <${Ic} n=${icon} z=${13} s=${on?"rgba(255,255,255,.9)":"currentColor"}/>
                 <span style=${{flex:1,fontSize:13,fontWeight:on?500:400}}>${lbl}</span>
@@ -8693,21 +9234,59 @@ function App(){
           <!-- Firebase indicator -->
           <!-- Firebase indicator -->
           <!-- Firebase indicator -->
-          <div title=${window.fbDb?"Firebase conectado":"Firebase sin conexión"} style=${{
-            display:"flex",alignItems:"center",gap:4,padding:"5px 8px",borderRadius:8,cursor:"default",
-            background:window.fbDb?"#f0fdf4":"#fef2f2",
-            border:"1px solid",borderColor:window.fbDb?"#86efac":"#fca5a5"}}>
-            <${Ic} n=${window.fbDb?"cloudok":"cloudno"} z=${16} s=${window.fbDb?"#16a34a":"#dc2626"}/>
-            <span style=${{fontSize:9,fontWeight:700,color:window.fbDb?"#16a34a":"#dc2626"}}>BD</span>
+          <div title=${window.fbDb?"Firebase conectado — click para ver detalles":"Firebase sin conexión"} 
+            style=${{
+              display:"flex",alignItems:"center",gap:5,padding:"5px 10px",borderRadius:8,cursor:"default",
+              background:window.fbDb?"#f0fdf4":"#fef2f2",
+              border:"1px solid",borderColor:window.fbDb?"#86efac":"#fca5a5",
+              minWidth:0}}>
+            <!-- Pulso animado -->
+            <div style=${{position:"relative",width:8,height:8,flexShrink:0}}>
+              ${window.fbDb&&html`<div style=${{
+                position:"absolute",inset:0,borderRadius:"50%",
+                background:"#16a34a",opacity:.4,
+                animation:"ping 1.5s cubic-bezier(0,0,.2,1) infinite"}}/>`}
+              <div style=${{
+                width:8,height:8,borderRadius:"50%",
+                background:window.fbDb?"#16a34a":"#dc2626"}}/>
+            </div>
+            <div style=${{display:"flex",flexDirection:"column",lineHeight:1.2,minWidth:0}}>
+              <span style=${{fontSize:9,fontWeight:700,color:window.fbDb?"#15803d":"#dc2626",letterSpacing:".02em"}}>
+                ${window.fbDb?"SYNC":"OFFLINE"}
+              </span>
+              ${lastSync&&html`
+                <span style=${{fontSize:8,color:"#6b7280",fontVariantNumeric:"tabular-nums"}}>
+                  ${(()=>{
+                    const s=Math.floor((Date.now()-lastSync.getTime())/1000);
+                    if(s<10) return "ahora";
+                    if(s<60) return s+"s";
+                    if(s<3600) return Math.floor(s/60)+"m";
+                    return Math.floor(s/3600)+"h";
+                  })()}
+                </span>`}
+            </div>
           </div>
           <!-- IA indicator -->
-          <div title=${gas?"IA conectada (Groq/Llama)":"IA no conectada"} style=${{
-            display:"flex",alignItems:"center",gap:4,padding:"5px 8px",borderRadius:8,cursor:"pointer",
-            background:gas?"#f0fdf4":"#fef2f2",
-            border:"1px solid",borderColor:gas?"#86efac":"#fca5a5"}}
+          <div title=${gas?"IA conectada (Groq/Llama)":"IA no configurada — click para conectar"}
+            style=${{
+              display:"flex",alignItems:"center",gap:5,padding:"5px 10px",borderRadius:8,cursor:"pointer",
+              background:gas?"#f0fdf4":"#fef2f2",
+              border:"1px solid",borderColor:gas?"#86efac":"#fca5a5"}}
             onClick=${()=>setShowGasModal(true)}>
-            <${Ic} n="bot" z=${16} s=${gas?"#16a34a":"#dc2626"}/>
-            <span style=${{fontSize:9,fontWeight:700,color:gas?"#16a34a":"#dc2626"}}>IA</span>
+            <!-- Pulso -->
+            <div style=${{position:"relative",width:8,height:8,flexShrink:0}}>
+              ${gas&&html`<div style=${{
+                position:"absolute",inset:0,borderRadius:"50%",
+                background:"#16a34a",opacity:.4,
+                animation:"ping 2s cubic-bezier(0,0,.2,1) infinite"}}/>`}
+              <div style=${{
+                width:8,height:8,borderRadius:"50%",
+                background:gas?"#16a34a":"#dc2626"}}/>
+            </div>
+            <div style=${{display:"flex",flexDirection:"column",lineHeight:1.2}}>
+              <span style=${{fontSize:9,fontWeight:700,color:gas?"#15803d":"#dc2626",letterSpacing:".02em"}}>IA</span>
+              <span style=${{fontSize:8,color:"#6b7280"}}>${gas?"activa":"sin config"}</span>
+            </div>
           </div>
           <!-- Bell -->
           <button onClick=${()=>setShowNotif(p=>!p)} style=${{position:"relative",background:"transparent",border:"1px solid #e2e8f0",borderRadius:8,padding:"6px 9px",cursor:"pointer",display:"flex",alignItems:"center"}}>
@@ -8766,6 +9345,8 @@ function App(){
           </div>
         </div>
       </div>
+      <!-- Contenido de sección con animación -->
+      <div key=${animKey} class="sec-content">
             ${sec==="orders"&&html`
         <div style=${{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"10px 18px",display:"flex",gap:8,alignItems:"center",flexShrink:0,flexWrap:"wrap"}}>
           <div style=${{position:"relative",flex:1,minWidth:180,maxWidth:360}}>
@@ -8792,8 +9373,19 @@ function App(){
             ${view==="list"?html`
               <div>
                 <div class="order-hdr">${["Folio","Cliente / Equipo","Estado","Urgencia","Técnico","Ingreso","Total"].map(h=>html`<div key=${h} class="th">${h}</div>`)}</div>
-                ${filt.length===0?html`<div class="empty-state"><${Ic} n="search" z=${28} s="#cbd5e1"/><div style=${{marginTop:10}}>Sin resultados</div></div>`
-                :filt.map(o=>{
+                ${skeletonSec==="orders"
+                  ?[1,2,3,4,5].map(i=>html`
+                    <div key=${i} class="order-row" style=${{cursor:"default",pointerEvents:"none"}}>
+                      <div><div class="skeleton" style=${{width:64,height:14}}/></div>
+                      <div><div class="skeleton" style=${{width:120,height:14,marginBottom:5}}/><div class="skeleton" style=${{width:80,height:10}}/></div>
+                      <div><div class="skeleton" style=${{width:70,height:20,borderRadius:99}}/></div>
+                      <div><div class="skeleton" style=${{width:50,height:14}}/></div>
+                      <div><div class="skeleton" style=${{width:90,height:14}}/></div>
+                      <div><div class="skeleton" style=${{width:60,height:14}}/></div>
+                      <div><div class="skeleton" style=${{width:55,height:14}}/></div>
+                    </div>`)
+                  :filt.length===0?html`<div class="empty-state"><${Ic} n="search" z=${28} s="#cbd5e1"/><div style=${{marginTop:10}}>Sin resultados</div></div>`
+                  :filt.map(o=>{
                   const c=gcl(cls,o.cid),t=tecs.find(x=>x.id===o.tec),bud=Object.values(buds).find(b=>b.oid===o.id),cv=bud?calc(bud.items):null;
                   return html`<div key=${o.id} class=${"order-row"+(sel===o.id?" sel":"")} onClick=${()=>setSel(sel===o.id?null:o.id)}>
                     <div style=${{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"#1d4ed8",fontWeight:500}}>${o.id}</div>
@@ -8863,7 +9455,7 @@ function App(){
         onAdd=${()=>setNewProv(true)}
         onEdit=${pv=>setEditProv(pv)}
         onDel=${delProv}
-        onNewOC=${pv=>{setNewOCPrvInit(pv);setNewOC(true);setSec("ocs");}}/>`}
+        onNewOC=${pv=>{setNewOCPrvInit(pv);setNewOC(true);goSec("ocs");}}/>`}
       ${sec==="ocs"&&isAdmin&&html`<${OCSection}
         ocs=${ocs} provs=${provs} inv=${inv} session=${session}
         onAdd=${()=>setNewOC(true)}
@@ -8880,11 +9472,12 @@ function App(){
         gars=${gars} ords=${ords} cls=${cls} tecs=${tecs}
         onAdd=${addGar} onReclamo=${reclamoGar} onDel=${delGar}/>`}
       ${sec==="ia"&&html`<${IASection} inv=${inv} svcs=${svcs} tecs=${tecs}/>`}
-      ${sec==="calc"&&html`<${CalcInstalacionSection} inv=${inv} svcs=${svcs} cls=${cls} tecs=${tecs} session=${session} config=${config} onSaveCot=${ct=>{saveCot({...ct,id:`COT-${String(++COTSEQ).padStart(4,"0")}`});setSec("cots");}}/>`}
+      ${sec==="calc"&&html`<${CalcInstalacionSection} inv=${inv} svcs=${svcs} cls=${cls} tecs=${tecs} session=${session} config=${config} onSaveCot=${ct=>{saveCot({...ct,id:`COT-${String(++COTSEQ).padStart(4,"0")}`});goSec("cots");}}/>`}
       ${sec==="servicios"&&isAdmin&&html`<${ServiciosSection} svcs=${svcs} onAdd=${()=>setNewSvc(true)} onEdit=${s=>setEditSvc(s)} onDel=${delSvc}/>`}
       ${sec==="users"&&isAdmin&&html`<${UsersSection} users=${users} tecs=${tecs} session=${session} onAdd=${()=>setNewUser(true)} onEdit=${u=>setEditUser(u)} onDel=${delUser}/>`}
       ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} notas=${notas} pagos=${pagos} svcs=${svcs} onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
-      ${false&&html`<${CalendarioSection} ords=${ords} cls=${cls} tecs=${tecs} citas=${citas} recs=${recs} session=${session} config=${config} onSaveCita=${saveCita} onDelCita=${delCita} onSaveRec=${saveRec} onDelRec=${delRec} onSyncGCal=${syncGCal}/>`}
+      ${false&&html`<${CalendarioSection}/>`}
+      </div>
     </main>
 
     <!-- MODALS ÓRDENES -->
@@ -8898,7 +9491,7 @@ function App(){
     <nav class="bottom-nav">
       ${NAV_ITEMS.map(({key,lbl,icon})=>html`
         <button key=${key} class=${"bnav-btn"+(sec===key?" active":"")}
-          onClick=${()=>{setSec(key);setSel(null);}}>
+          onClick=${()=>goSec(key)}>
           <${Ic} n=${icon} z=${18} s=${sec===key?"#1d4ed8":"#94a3b8"}/>
           ${lbl}
           ${key==="orders"&&ords.length>0?html`<span style=${{background:"#eff6ff",color:"#1d4ed8",fontSize:8,padding:"0 5px",borderRadius:99,fontWeight:700}}>${ords.length}</span>`:""}
@@ -8947,6 +9540,8 @@ function App(){
       ords=${ords} cls=${cls} inv=${inv} cots=${cots}
       onNav=${k=>{setSec(k);setSel(null);setShowSearch(false);}}
       onClose=${()=>setShowSearch(false)}/>`}
+    <!-- TOASTS -->
+    <${ToastStack} toasts=${toasts}/>
   </div>`;
 }
 
