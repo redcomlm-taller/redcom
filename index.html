@@ -2265,7 +2265,7 @@ function printCotizacion(cot, cli, tec, cfg){
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#1e293b;padding:32px;max-width:720px;margin:0 auto}
     .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #1d4ed8}
-    .logo-block{display:flex;align-items:center;gap:12px}
+    .logo-block{display:flex;flex-direction:column;gap:4px}
     .logo-box{width:48px;height:48px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px}
     .folio-block{text-align:right}
     .folio{font-size:22px;font-weight:900;color:#1d4ed8}
@@ -2293,14 +2293,15 @@ function printCotizacion(cot, cli, tec, cfg){
   </div>
   <div class="header">
     <div class="logo-block">
-      ${(cfg&&cfg.logo)?`<img src="${cfg&&cfg.logo}" style="height:52px;max-width:120px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;padding:3px;background:#fff"/>`:
-        `<div class="logo-box">RC</div>`}
-      <div>
-        <div style="font-size:18px;font-weight:900;letter-spacing:.5px">${(cfg&&cfg.empresa)||"REDCOM"}</div>
-        ${(cfg&&cfg.calle)?`<div style="font-size:11px;color:#64748b;margin-top:3px">📍 ${cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||cfg.estado||"Los Mochis")+", "+cfg.estado}</div>`:`<div style="font-size:11px;color:#64748b;margin-top:3px">📍 Los Mochis, Sinaloa</div>`}
-        ${(cfg&&cfg.tel)?`<div style="font-size:11px;color:#64748b;margin-top:2px">📞 ${cfg.tel}</div>`:""}
-        ${(cfg&&cfg.email)?`<div style="font-size:11px;color:#64748b;margin-top:2px">✉️ ${cfg.email}</div>`:""}
-        ${(cfg&&cfg.web)?`<div style="font-size:11px;color:#64748b;margin-top:2px">🌐 ${cfg.web}</div>`:""}
+      ${(cfg&&cfg.logo)
+        ? `<img src="${cfg.logo}" style="height:55px;max-width:180px;object-fit:contain;object-position:left;margin-bottom:6px"/>`
+        : `<div style="font-size:24px;font-weight:900;letter-spacing:.5px;color:#1e293b;margin-bottom:6px">${((cfg&&cfg.empresa)||"REDCOM").toUpperCase()}</div>`
+      }
+      <div style="display:flex;flex-direction:column;gap:3px">
+        ${(cfg&&cfg.calle)?`<div style="font-size:11px;color:#64748b">📍 ${cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")}</div>`:`<div style="font-size:11px;color:#64748b">📍 Los Mochis, Sinaloa</div>`}
+        ${(cfg&&cfg.tel)?`<div style="font-size:11px;color:#64748b">📞 ${cfg.tel}</div>`:""}
+        ${(cfg&&cfg.email)?`<div style="font-size:11px;color:#64748b">✉️ ${cfg.email}</div>`:""}
+        ${(cfg&&cfg.web)?`<div style="font-size:11px;color:#64748b">🌐 ${cfg.web}</div>`:""}
       </div>
     </div>
     <div class="folio-block">
