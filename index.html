@@ -7990,49 +7990,16 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
 }
 
 function UserModal({edit,tecs,onSave,onClose}){
-  const [f,setF]=useState(edit||{username:"",password:"",nombre:"",rol:"tecnico",tecId:"",activo:true,firmaBase64:""});
+  const [f,setF]=useState(edit||{username:"",password:"",nombre:"",rol:"tecnico",tecId:"",activo:true});
   const s=k=>e=>setF(p=>({...p,[k]:e.target.value}));
   const [showPwd,setShowPwd]=useState(false);
-  const [tab,setTab]=useState("datos");
-  const canvasRef=React.useRef();
-  const [drawing,setDrawing]=useState(false);
-  const [hasTrazos,setHasTrazos]=useState(false);
-
-  React.useEffect(()=>{
-    if(tab==="firma"){
-      setHasTrazos(false);
-      if(f.firmaBase64&&canvasRef.current){
-        const img=new Image();
-        img.onload=()=>{
-          const c=canvasRef.current;
-          if(c){c.getContext("2d").clearRect(0,0,c.width,c.height);c.getContext("2d").drawImage(img,0,0,c.width,c.height);}
-        };
-        img.src=f.firmaBase64;
-      }
-    }
-  },[tab]);
-
-  function getPos(e,c){
-    const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
-    if(e.touches) return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
-    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};
-  }
-  function startDraw(e){e.preventDefault();const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.beginPath();ctx.moveTo(p.x,p.y);setDrawing(true);}
-  function draw(e){e.preventDefault();if(!drawing)return;const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.lineWidth=2.2;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1d4ed8";ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);setHasTrazos(true);}
-  function endDraw(e){e.preventDefault();setDrawing(false);}
-  function clearCanvas(){const c=canvasRef.current;if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height);setHasTrazos(false);}
-
   function save(){
     if(!f.username.trim()||!f.password.trim()||!f.nombre.trim()){alert("Completa usuario, contraseña y nombre.");return;}
-    let firmaFinal=f.firmaBase64||"";
-    if(tab==="firma"&&hasTrazos&&canvasRef.current){firmaFinal=canvasRef.current.toDataURL("image/png");}
-    onSave({...f,firmaBase64:firmaFinal,id:edit?.id||`U${++USERSEQ}`});
+    onSave({...f,id:edit?.id||`U${++USERSEQ}`});
   }
   const techList=tecs.filter(t=>t.rol!=="Sistema");
-
   return html`<div class="modal-bg" onClick=${onClose}>
-    <div class="modal fade-in" style=${{maxWidth:480}} onClick=${e=>e.stopPropagation()}>
-
+    <div class="modal fade-in" style=${{maxWidth:460}} onClick=${e=>e.stopPropagation()}>
       <div style=${{padding:"18px 24px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style=${{display:"flex",alignItems:"center",gap:8}}>
           <${Ic} n="shield" z=${18} s="#1d4ed8"/>
@@ -8040,21 +8007,7 @@ function UserModal({edit,tecs,onSave,onClose}){
         </div>
         <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
       </div>
-
-      <div style=${{display:"flex",borderBottom:"1px solid #e2e8f0",background:"#f8fafc"}}>
-        ${[["datos","👤","Datos"],["firma","✍️","Mi firma"]].map(([k,ic,lbl])=>html`
-          <button key=${k} onClick=${()=>setTab(k)} style=${{
-            flex:1,padding:"10px 0",border:"none",cursor:"pointer",fontFamily:"inherit",
-            fontSize:12,fontWeight:700,background:"transparent",
-            display:"flex",alignItems:"center",justifyContent:"center",gap:6,
-            color:tab===k?"#1d4ed8":"#64748b",
-            borderBottom:tab===k?"2px solid #1d4ed8":"2px solid transparent"}}>
-            ${ic} ${lbl}
-            ${k==="firma"&&f.firmaBase64&&html`<span style=${{width:7,height:7,borderRadius:"50%",background:"#059669",flexShrink:0,display:"inline-block"}}/>`}
-          </button>`)}
-      </div>
-
-      ${tab==="datos"&&html`<div style=${{padding:"20px 24px",display:"grid",gap:12}}>
+      <div style=${{padding:"20px 24px",display:"grid",gap:12}}>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div><label>Nombre completo *</label><input value=${f.nombre} onChange=${s("nombre")} placeholder="ej. Carlos Mendoza"/></div>
           <div><label>Rol</label>
@@ -8098,47 +8051,10 @@ function UserModal({edit,tecs,onSave,onClose}){
             </button>`)}
           </div>
         </div>
-      </div>`}
-
-      ${tab==="firma"&&html`<div style=${{padding:"20px 24px",display:"grid",gap:14}}>
-        <div style=${{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"11px 14px",fontSize:12,color:"#1e40af",lineHeight:1.6}}>
-          ✍️ Dibuja tu firma. Se guardará al hacer clic en <b>Guardar cambios</b> y aparecerá en los presupuestos que imprimas.
-        </div>
-        ${f.firmaBase64&&!hasTrazos&&html`
-          <div style=${{textAlign:"center",background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"12px"}}>
-            <div style=${{fontSize:10,fontWeight:700,color:"#059669",marginBottom:8,textTransform:"uppercase",letterSpacing:.8}}>✓ Firma guardada actualmente</div>
-            <img src=${f.firmaBase64} style=${{maxWidth:300,maxHeight:80,objectFit:"contain",display:"block",margin:"0 auto"}}/>
-          </div>`}
-        <div>
-          <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-            <label style=${{margin:0,fontWeight:700,fontSize:11,color:"#475569"}}>
-              ${f.firmaBase64&&!hasTrazos?"Redibujar firma":"Dibuja tu firma aquí"}
-            </label>
-            <button class="btn btn-ghost btn-sm" onClick=${clearCanvas} style=${{fontSize:10,color:"#dc2626",border:"1px solid #fca5a5"}}>✕ Limpiar</button>
-          </div>
-          <canvas ref=${canvasRef} width=${440} height=${170}
-            style=${{width:"100%",height:170,border:"2px solid #bfdbfe",borderRadius:10,
-              background:"#fff",cursor:"crosshair",touchAction:"none",display:"block",
-              boxShadow:"inset 0 1px 4px rgba(0,0,0,.06)"}}
-            onMouseDown=${startDraw} onMouseMove=${draw} onMouseUp=${endDraw} onMouseLeave=${endDraw}
-            onTouchStart=${startDraw} onTouchMove=${draw} onTouchEnd=${endDraw}/>
-          <div style=${{fontSize:10,color:"#94a3b8",marginTop:5,textAlign:"center"}}>Traza con mouse o dedo · Fondo blanco · Trazo azul</div>
-        </div>
-      </div>`}
-
-      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style=${{fontSize:11}}>
-          ${f.firmaBase64
-            ?html`<span style=${{color:"#059669",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
-                <span style=${{width:7,height:7,borderRadius:"50%",background:"#059669",display:"inline-block"}}></span>
-                Firma digital activa
-              </span>`
-            :html`<span style=${{color:"#94a3b8"}}>Sin firma digital aún</span>`}
-        </div>
-        <div style=${{display:"flex",gap:8}}>
-          <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
-          <button class="btn btn-primary" onClick=${save}><${Ic} n="ok" z=${14} s="#fff"/> ${edit?"Guardar cambios":"Crear usuario"}</button>
-        </div>
+      </div>
+      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
+        <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
+        <button class="btn btn-primary" onClick=${save}><${Ic} n="ok" z=${14} s="#fff"/> ${edit?"Guardar":"Crear usuario"}</button>
       </div>
     </div>
   </div>`;
@@ -8856,7 +8772,7 @@ function buildCalcWAMsg(calc, tot, sub, iva, config){
   return L.join("\n");
 }
 
-function printCalcInstalacion(calc,cfg,session){
+function printCalcInstalacion(calc,cfg){
   cfg=cfg||{};
   const empresa=cfg.empresa||"Redcom";
   const tel=cfg.tel||"";
@@ -8865,7 +8781,6 @@ function printCalcInstalacion(calc,cfg,session){
   const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const terminos=cfg.terminos||"";
-  const firmaDigital=session?.firmaBase64||"";
 
   const allItems=calc.items||[];
   const sub=allItems.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
@@ -8920,8 +8835,8 @@ function printCalcInstalacion(calc,cfg,session){
     /* TABLE */
     .tbl-wrap{padding:0 28px 0}
     table{width:100%;border-collapse:collapse}
-    thead tr{background:#104E8D;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    thead th{padding:11px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#fff;text-align:left}
+    thead tr{background:#104E8D}
+    thead th{padding:8px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
     thead th.r{text-align:right}thead th.c{text-align:center}
     tbody tr:last-child td{border-bottom:1px solid #e2e8f0}
 
@@ -8948,11 +8863,9 @@ function printCalcInstalacion(calc,cfg,session){
     .terms-list{font-size:10px;color:#64748b;line-height:1.7;padding-left:14px}
 
     /* FIRMA */
-    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 28px 32px;border-top:none}
+    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 28px 20px;border-top:none}
     .firma-col{text-align:center}
-    .firma-espacio{height:72px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
-    .firma-img{max-width:180px;max-height:64px;object-fit:contain;display:block;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:72%;margin-left:auto;margin-right:auto}
+    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:70%;margin-left:auto;margin-right:auto}
     .firma-nombre{font-size:12px;font-weight:600;color:#1e293b}
     .firma-rol{font-size:10px;color:#94a3b8;margin-top:2px}
 
@@ -8961,8 +8874,6 @@ function printCalcInstalacion(calc,cfg,session){
       body{background:#fff;padding:0}
       .doc{box-shadow:none;border:none;border-radius:0;max-width:100%}
       .no-print{display:none!important}
-      thead tr{background:#104E8D!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-      thead th{color:#fff!important}
       @page{margin:8mm;size:A4}
     }
   </style></head><body>
@@ -9055,15 +8966,11 @@ function printCalcInstalacion(calc,cfg,session){
     <!-- FIRMAS -->
     <div class="firma">
       <div class="firma-col">
-        <div class="firma-espacio">
-          ${firmaDigital?`<img src="${firmaDigital}" class="firma-img" alt="Firma"/>`:`<span></span>`}
-        </div>
         <div class="firma-line"></div>
         <div class="firma-nombre">Elaboró: ${calc.elaboro||"—"}</div>
         <div class="firma-rol">Representante</div>
       </div>
       <div class="firma-col">
-        <div class="firma-espacio"></div>
         <div class="firma-line"></div>
         <div class="firma-nombre">Autoriza cliente</div>
         <div class="firma-rol">Firma y nombre</div>
@@ -9548,7 +9455,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
 
           <!-- Primario: Imprimir -->
           <button class="btn btn-primary" style=${{justifyContent:"center",padding:"10px"}}
-            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config,session)}
+            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config)}
             disabled=${calc.items.length===0}>
             <${Ic} n="print" z=${15} s="#fff"/> Imprimir / Vista previa
           </button>
@@ -9594,11 +9501,18 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
                 let token=calc.token;
                 if(!token){
                   token=genToken();
-                  // Guardar token en localStorage
+                  // Guardar token en localStorage (calcs locales)
                   const saved=JSON.parse(localStorage.getItem("redcom_calcs")||"[]");
                   const updated=saved.map(c=>c.id===calc.id?{...c,token}:c);
                   localStorage.setItem("redcom_calcs",JSON.stringify(updated));
                   setCalc(p=>({...p,token}));
+                  // Guardar token en Firestore (cots) para que el cliente pueda acceder
+                  if(calc.id){
+                    onSaveCot({
+                      ...(cots.find(c=>c.id===calc.id)||{id:calc.id,cid:calc.cliId||"",tec:"",ref:calc.id,notas:calc.notas||"",validez:calc.validez||15,iva:calc.conIva,est:calc.est||"Borrador",fecha:calc.fecha||new Date().toISOString().slice(0,10),descripcion:calc.descripcion,sub:sub,tot:tot,items:(calc.items||[]).map(i=>({id:i.id,nombre:i.nombre,cat:i.cat,desc:"",precio:i.precio,qty:i.qty,src:"custom"}))}),
+                      token
+                    });
+                  }
                 }
                 const url=portalCotURL(token);
                 const num=(tel||"").replace(/\D/g,"");
@@ -9705,7 +9619,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
               <div style=${{fontSize:14,fontWeight:700,color:"#1d4ed8",whiteSpace:"nowrap"}}>${mxn(s.tot||0)}</div>
               <div style=${{display:"flex",gap:4}}>
                 <button class="btn btn-ghost btn-sm" onClick=${()=>loadCalc(s)} title="Cargar"><${Ic} n="edit" z=${13}/></button>
-                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config,session)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
+                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
                 <button class="btn btn-danger btn-sm" onClick=${()=>delCalc(s.id)} title="Eliminar"><${Ic} n="trash" z=${13} s="#dc2626"/></button>
               </div>
             </div>`)}
@@ -9723,8 +9637,13 @@ function App(){
   const [buds,setBuds]=useState(()=>lsGet("redcom_buds",BUDGETS0));
   const [showFotos,setShowFotos]=useState(null);   // ordId
   const [showFirma,setShowFirma]=useState(null);   // ordId
-  const [portalOrd,setPortalOrd]=useState(null);   // ord object for portal preview
-  const [portalCot,setPortalCot]=useState(null);   // cot object for firma portal
+  // Leer token de la URL al primer render — ANTES del check de sesión
+  const [portalToken]=useState(()=>{
+    try{const p=new URLSearchParams(window.location.search);return{portal:p.get("portal")||"",cotfirma:p.get("cotfirma")||""};}
+    catch(e){return{portal:"",cotfirma:""};}
+  });
+  const [portalOrd,setPortalOrd]=useState(null);
+  const [portalCot,setPortalCot]=useState(null);
   const [provs,setProvs]=useState(()=>lsGet("redcom_provs",PROVS0));
   const [ocs,setOcs]=useState(()=>lsGet("redcom_ocs",OCMPS0));
   const [citas,setCitas]=useState(()=>lsGet("redcom_citas",[]));
@@ -10099,15 +10018,7 @@ function App(){
   function delCot(id){setCots(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_cots",n);return n;});}
   function login(u){setSession(u);try{sessionStorage.setItem("redcom_session",JSON.stringify(u));}catch(e){}}
   function logout(){setSession(null);try{sessionStorage.removeItem("redcom_session");}catch(e){}}
-  function saveUser(u){
-    setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});
-    if(u.id===session?.id){
-      const updated={...session,...u};
-      setSession(updated);
-      try{sessionStorage.setItem("redcom_session",JSON.stringify(updated));}catch(e){}
-    }
-    setNewUser(false);setEditUser(null);
-  }
+  function saveUser(u){setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});setNewUser(false);setEditUser(null);}
   function delUser(id){setUsers(p=>{const n=p.filter(u=>u.id!==id);lsSet("redcom_users",n);return n;});}
   function addNota(nv){
     setNotas(p=>{
@@ -10163,33 +10074,62 @@ function App(){
     });
   },[]);
 
-  // Portal intercept — check URL for ?portal=TOKEN or ?cotfirma=TOKEN
+  // Portal intercept — sincronizar con Firestore cuando carguen los datos
   React.useEffect(()=>{
-    const params=new URLSearchParams(window.location.search);
-    const tok=params.get("portal");
-    if(tok){
-      const found=ords.find(o=>o.token===tok);
-      if(found) setPortalOrd(found);
-    }
-    const ctok=params.get("cotfirma");
-    if(ctok){
-      const found=cots.find(c=>c.token===ctok);
+    if(portalToken.cotfirma){
+      const found=cots.find(c=>c.token===portalToken.cotfirma);
       if(found) setPortalCot(found);
     }
-  },[]);
+    if(portalToken.portal){
+      const found=ords.find(o=>o.token===portalToken.portal);
+      if(found) setPortalOrd(found);
+    }
+  },[cots,ords]);
 
-  // Portal view (no login required)
+  // ── Mostrar portal ANTES del check de sesión ──────────────────────
+  if(portalToken.cotfirma){
+    const pCot=cots.find(c=>c.token===portalToken.cotfirma)||portalCot;
+    if(pCot){
+      const pCli=cls.find(c=>c.id===pCot.cid);
+      const pTec=tecs.find(t=>t.id===pCot.tec);
+      return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
+        onFirmada=${(cotId,firma)=>{
+          setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);lsSet("redcom_cots",n);return n;});
+          setPortalCot(prev=>({...prev,firma,est:"Firmada"}));
+        }}/>`;
+    }
+    // Firebase aún cargando — pantalla de espera
+    return html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(160deg,#1e3a8a,#1d4ed8)",fontFamily:"'Segoe UI',sans-serif"}}>
+      <div style=${{textAlign:"center",color:"#fff"}}>
+        <div style=${{width:52,height:52,border:"4px solid rgba(255,255,255,.25)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.8s linear infinite",margin:"0 auto 20px"}}/>
+        <div style=${{fontSize:17,fontWeight:700,marginBottom:8}}>Cargando cotización</div>
+        <div style=${{fontSize:13,opacity:.7}}>Un momento por favor...</div>
+      </div>
+    </div>`;
+  }
+  if(portalToken.portal){
+    const pOrd=ords.find(o=>o.token===portalToken.portal)||portalOrd;
+    if(pOrd){
+      const pCli=cls.find(c=>c.id===pOrd.cid);
+      const pTec=tecs.find(t=>t.id===pOrd.tec);
+      return html`<${PortalCliente} ord=${pOrd} cli=${pCli} tec=${pTec}/>`;
+    }
+    return html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(160deg,#1e3a8a,#1d4ed8)",fontFamily:"'Segoe UI',sans-serif"}}>
+      <div style=${{textAlign:"center",color:"#fff"}}>
+        <div style=${{width:52,height:52,border:"4px solid rgba(255,255,255,.25)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.8s linear infinite",margin:"0 auto 20px"}}/>
+        <div style=${{fontSize:17,fontWeight:700,marginBottom:8}}>Cargando orden</div>
+        <div style=${{fontSize:13,opacity:.7}}>Un momento por favor...</div>
+      </div>
+    </div>`;
+  }
+  // Fallback legacy
   if(portalCot){
     const pCot=cots.find(c=>c.id===portalCot.id)||portalCot;
     const pCli=cls.find(c=>c.id===pCot.cid);
     const pTec=tecs.find(t=>t.id===pCot.tec);
     return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
       onFirmada=${(cotId,firma)=>{
-        setCots(p=>{
-          const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);
-          lsSet("redcom_cots",n);
-          return n;
-        });
+        setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);lsSet("redcom_cots",n);return n;});
         setPortalCot(prev=>({...prev,firma,est:"Firmada"}));
       }}/>`;
   }
