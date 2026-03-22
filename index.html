@@ -4816,6 +4816,7 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
   const [custPrecio,setCP]=useState(0);
   const [qty,setQty]=useState(1);
   const [showWA,setShowWA]=useState(false);
+  const [showWABanco,setShowWABanco]=useState(false);
 
   const sf=k=>e=>setF(p=>({...p,[k]:e.target.type==="checkbox"?e.target.checked:e.target.type==="number"?Number(e.target.value):e.target.value}));
   const sub=f.items.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
@@ -5003,6 +5004,7 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
           ${f.items.length>0&&cli?.tel&&html`<button class="btn btn-success" onClick=${()=>setShowWA(true)}>
             <${Ic} n="wa" z=${14} s="#059669"/> WhatsApp
           </button>`}
+
         </div>
         <div style=${{display:"flex",gap:8}}>
           <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
@@ -5011,6 +5013,83 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
           </button>
         </div>
       </div>
+
+      ${showWABanco&&html`<div class="modal-bg" onClick=${()=>setShowWABanco(false)}>
+        <div class="modal fade-in" style=${{maxWidth:440}} onClick=${e=>e.stopPropagation()}>
+          <div style=${{padding:"16px 24px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style=${{display:"flex",alignItems:"center",gap:8}}>
+              <${Ic} n="cash" z=${18} s="#1d4ed8"/>
+              <h3 style=${{fontSize:15,fontWeight:700}}>Datos bancarios por WhatsApp</h3>
+            </div>
+            <button class="btn btn-ghost btn-sm" onClick=${()=>setShowWABanco(false)}><${Ic} n="x" z=${14}/></button>
+          </div>
+          <div style=${{padding:"16px 24px"}}>
+            ${(()=>{
+              const cfg=config||{};
+              const hasBanco=cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta;
+              if(!hasBanco) return html`<div style=${{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"12px 14px",fontSize:12,color:"#dc2626"}}>
+                ⚠️ No tienes datos bancarios configurados.<br/>Ve a <b>Preferencias → Datos bancarios</b> y agrégalos.
+              </div>`;
+              let msg=`🏦 *Datos para transferencia — ${cfg.empresa||"Redcom"}*
+`;
+              msg+=`─────────────────────
+`;
+              if(cfg.bancoNombre) msg+=`👤 Beneficiario: *${cfg.bancoNombre}*
+`;
+              if(cfg.bancoBanco)  msg+=`🏦 Banco: *${cfg.bancoBanco}*
+`;
+              if(cfg.bancoCuenta) msg+=`💳 Cuenta: *${cfg.bancoCuenta}*
+`;
+              if(cfg.bancoClabe)  msg+=`🔢 CLABE: *${cfg.bancoClabe}*
+`;
+              if(cfg.bancoPago)   msg+=`💰 Forma de pago: ${cfg.bancoPago}
+`;
+              if(cfg.bancoRef)    msg+=`📝 Referencia sugerida: ${cfg.bancoRef}
+`;
+              msg+=`─────────────────────
+`;
+              if(f.id) msg+=`Cotización: *${f.id}* — Total: *${mxn(tot)}*
+`;
+              msg+=`
+Gracias por su preferencia 🙏`;
+              return html`<div style=${{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:12,fontSize:11,fontFamily:"monospace",whiteSpace:"pre-wrap",lineHeight:1.6,maxHeight:220,overflowY:"auto"}}>${msg}</div>`;
+            })()}
+          </div>
+          <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}> 
+            <button class="btn btn-ghost" onClick=${()=>setShowWABanco(false)}>Cancelar</button>
+            <button class="btn btn-primary" disabled=${!cli?.tel} onClick=${()=>{
+              const cfg=config||{};
+              const hasBanco=cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta;
+              if(!hasBanco){alert("Configura tus datos bancarios en Preferencias.");return;}
+              let msg=`🏦 *Datos para transferencia — ${cfg.empresa||"Redcom"}*
+─────────────────────
+`;
+              if(cfg.bancoNombre) msg+=`👤 Beneficiario: *${cfg.bancoNombre}*
+`;
+              if(cfg.bancoBanco)  msg+=`🏦 Banco: *${cfg.bancoBanco}*
+`;
+              if(cfg.bancoCuenta) msg+=`💳 Cuenta: *${cfg.bancoCuenta}*
+`;
+              if(cfg.bancoClabe)  msg+=`🔢 CLABE: *${cfg.bancoClabe}*
+`;
+              if(cfg.bancoPago)   msg+=`💰 Forma de pago: ${cfg.bancoPago}
+`;
+              if(cfg.bancoRef)    msg+=`📝 Ref: ${cfg.bancoRef}
+`;
+              msg+=`─────────────────────
+`;
+              if(f.id) msg+=`Cotización: *${f.id}* · Total: *${mxn(tot)}*
+`;
+              msg+=`
+Gracias por su preferencia 🙏`;
+              window.open("https://wa.me/"+fmtTelWA(cli.tel)+"?text="+encodeURIComponent(msg),"_blank");
+              setShowWABanco(false);
+            }}>
+              <${Ic} n="wa" z=${14} s="#fff"/> Enviar por WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>`}
 
       ${showWA&&cli&&html`<div class="modal-bg" onClick=${()=>setShowWA(false)}>
         <div class="modal fade-in" style=${{maxWidth:480}} onClick=${e=>e.stopPropagation()}>
@@ -5105,10 +5184,7 @@ function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit
                   style=${{background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",padding:"4px 8px",display:"flex",alignItems:"center",gap:3}}>
                   <${Ic} n="wa" z=${13} s="#16a34a"/>
                 </button>
-                <button class="btn btn-sm" title="Enviar datos bancarios por WhatsApp" onClick=${()=>onWABanco(ct)}
-                  style=${{background:"#eff6ff",color:"#1d4ed8",border:"1px solid #bfdbfe",padding:"4px 8px",display:"flex",alignItems:"center",gap:3}}>
-                  <${Ic} n="cash" z=${13} s="#1d4ed8"/>
-                </button>
+
                 <button class="btn btn-ghost btn-sm" title="Editar" onClick=${()=>onEdit(ct)}><${Ic} n="edit" z=${12}/></button>
                 <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirm(ct)}><${Ic} n="trash" z=${12} s="#dc2626"/></button>
               </div>
@@ -8544,6 +8620,18 @@ function buildCalcWAMsg(calc, tot, sub, iva, config){
   L.push(``);
   L.push(`⏳ Válida por ${calc.validez||15} días`);
   if(calc.notas) L.push(`📝 ${calc.notas}`);
+  // Datos bancarios
+  const hasBanco=config&&(config.bancoNombre||config.bancoBanco||config.bancoCuenta);
+  if(hasBanco){
+    L.push(``);
+    L.push(`🏦 *Datos para transferencia:*`);
+    if(config.bancoNombre) L.push(`👤 Beneficiario: ${config.bancoNombre}`);
+    if(config.bancoBanco)  L.push(`🏦 Banco: ${config.bancoBanco}`);
+    if(config.bancoCuenta) L.push(`💳 Cuenta: ${config.bancoCuenta}`);
+    if(config.bancoClabe)  L.push(`🔢 CLABE: ${config.bancoClabe}`);
+    if(config.bancoPago)   L.push(`💰 Forma de pago: ${config.bancoPago}`);
+    if(config.bancoRef)    L.push(`📝 Referencia: ${config.bancoRef}`);
+  }
   L.push(``);
   L.push(`¡Gracias por su preferencia! 🙏`);
   return L.join("\n");
