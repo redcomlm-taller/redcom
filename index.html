@@ -1519,7 +1519,7 @@ function printTicket(o,c,cfg){
   cfg=cfg||{};
   const empresa=cfg.empresa||"Redcom";
   const tel=cfg.tel||"";
-  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const now=new Date();
   const ds=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
@@ -1647,7 +1647,7 @@ function printNotaVenta(nv, cfg){
   cfg=cfg||{};
   const empresa=cfg.empresa||"Redcom";
   const tel=cfg.tel||""; const email=cfg.email||""; const web=cfg.web||"";
-  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const cv=nv.bud?calc(nv.bud.items):{s:0,iv:0,tot:0};
   const items=nv.bud?.items||[];
@@ -1812,7 +1812,7 @@ function printTicketCobro(pago, ord, cli, cfg, bud){
   const tel=cfg.tel||"";
   const email=cfg.email||"";
   const web=cfg.web||"";
-  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"";
   const logo=cfg.logo||"";
   const METODO_C={efectivo:"#059669",transferencia:"#1d4ed8",tarjeta:"#9333ea"};
   const METODO_L={efectivo:"💵 Efectivo",transferencia:"🏦 Transferencia",tarjeta:"💳 Tarjeta"};
@@ -2330,7 +2330,7 @@ function portalURL(token){return window.location.origin+window.location.pathname
 function printTicketPOS(items, total, metodo, recibido, cambio, config, folio){
   const empresa=(config&&config.empresa)||"REDCOM";
   const tel=(config&&config.tel)||"";
-  const dir=config&&config.calle?(config.calle+(config.numExt?" "+config.numExt:"")+", "+(config.ciudad||config.estado||"Los Mochis")+", "+(config.estado||"Sinaloa")):"";
+  const dir=config&&config.calle?(config.calle+(config.numExt?" "+config.numExt:"")+(config.colonia?", "+config.colonia:"")+", "+(config.ciudad||"Los Mochis")+", "+(config.estado||"Sinaloa")):"";
   const logo=(config&&config.logo)||"";
   const now=new Date();
   const ds=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
@@ -5039,7 +5039,7 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
 }
 
 /* ══ SECCIÓN COTIZACIONES ═══════════════════════════════════════════════ */
-function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit,onDel,onPrint,onWA}){
+function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit,onDel,onPrint,onWA,onWABanco}){
   const [q,setQ]=useState("");
   const [estF,setEstF]=useState("Todos");
   const [confirm,setConfirm]=useState(null);
@@ -5101,9 +5101,13 @@ function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit
               <div><span style=${{background:ec[0],color:ec[1],padding:"2px 10px",borderRadius:99,fontSize:11,fontWeight:700}}>${ct.est}</span></div>
               <div style=${{display:"flex",gap:3,padding:"9px 6px",justifyContent:"flex-end"}}>
                 <button class="btn btn-ghost btn-sm" title="Imprimir" onClick=${()=>onPrint(ct)}><${Ic} n="print" z=${12}/></button>
-                <button class="btn btn-sm btn-success" title="Enviar por WhatsApp" onClick=${()=>onWA(ct)}
-                  style=${{background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",padding:"4px 8px"}}>
+                <button class="btn btn-sm" title="Enviar cotización por WhatsApp" onClick=${()=>onWA(ct)}
+                  style=${{background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",padding:"4px 8px",display:"flex",alignItems:"center",gap:3}}>
                   <${Ic} n="wa" z=${13} s="#16a34a"/>
+                </button>
+                <button class="btn btn-sm" title="Enviar datos bancarios por WhatsApp" onClick=${()=>onWABanco(ct)}
+                  style=${{background:"#eff6ff",color:"#1d4ed8",border:"1px solid #bfdbfe",padding:"4px 8px",display:"flex",alignItems:"center",gap:3}}>
+                  <${Ic} n="cash" z=${13} s="#1d4ed8"/>
                 </button>
                 <button class="btn btn-ghost btn-sm" title="Editar" onClick=${()=>onEdit(ct)}><${Ic} n="edit" z=${12}/></button>
                 <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirm(ct)}><${Ic} n="trash" z=${12} s="#dc2626"/></button>
@@ -5712,7 +5716,7 @@ function printOC(oc, pv, cfg){
   cfg=cfg||{};
   const empresa=cfg.empresa||"Redcom";
   const tel=cfg.tel||""; const email=cfg.email||""; const web=cfg.web||"";
-  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const tot=oc.items.reduce((a,i)=>a+(i.qty*(i.precCosto||0)),0);
   const rows=oc.items.map(it=>`
@@ -7578,6 +7582,8 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
           <div><label>Núm. exterior</label>
             <input value=${f.numExt||""} onChange=${sf("numExt")} placeholder="528 Nte"/></div>
         </div>
+        <div><label>Colonia</label>
+          <input value=${f.colonia||""} onChange=${sf("colonia")} placeholder="Col. Centro"/></div>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <div><label>Ciudad</label>
             <input value=${f.ciudad||""} onChange=${sf("ciudad")} placeholder="Los Mochis"/></div>
@@ -8549,7 +8555,7 @@ function printCalcInstalacion(calc,cfg){
   const tel=cfg.tel||"";
   const email=cfg.email||"";
   const web=cfg.web||"";
-  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||cfg.estado||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const terminos=cfg.terminos||"";
 
@@ -9802,14 +9808,14 @@ function App(){
   if(!session) return html`<${LoginScreen} users=${users} onLogin=${login} config=${config}/>`;
 
   const NAV=[
-    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],["calc","Cotizaciones","calc"],...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
+    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],["calc","Cotizaciones","tag"],...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
     ...(isAdmin?[{g:"CATÁLOGOS",items:[["clients","Clientes","clients"],["inv","Inventario","inv"],["techs","Técnicos","techs"],["servicios","Servicios","tag"],["users","Usuarios","shield"]]},{g:"COMPRAS",items:[["provs","Proveedores","truck"],["ocs","Órdenes de Compra","truck"],["reportes","Reportes","xls"]]}]:[]),
   ];
 
   const NAV_ITEMS=[
     {key:"orders",lbl:"Órdenes",icon:"orders"},
-    {key:"ia",lbl:"IA",icon:"shield"},
-    {key:"calc",lbl:"Cotizar",icon:"calc"},
+    {key:"ia",lbl:"IA",icon:"bot"},
+    ...(canCotizar?[{key:"calc",lbl:"Cotizar",icon:"tag"}]:[]),
     ...(isAdmin?[
       {key:"clients",lbl:"Clientes",icon:"clients"},
       {key:"inv",lbl:"Inventario",icon:"inv"},
@@ -10159,6 +10165,38 @@ function App(){
           const tec=tecs.find(x=>x.id===ct.tec);
           if(!cli?.tel){alert("El cliente no tiene teléfono registrado.");return;}
           const msg=buildCotWAMsg(ct,cli,tec,config);
+          const tel=fmtTelWA(cli.tel);
+          window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
+        }}
+        onWABanco=${ct=>{
+          const cli=cls.find(x=>x.id===ct.cid);
+          if(!cli?.tel){alert("El cliente no tiene teléfono registrado.");return;}
+          const cfg=config||{};
+          const hasBanco=cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta;
+          if(!hasBanco){alert("Configura tus datos bancarios en Preferencias → Datos bancarios.");return;}
+          const empresa=cfg.empresa||"Redcom";
+          let msg=`🏦 *Datos para transferencia — ${empresa}*
+`;
+          msg+=`─────────────────────
+`;
+          if(cfg.bancoNombre) msg+=`👤 Beneficiario: *${cfg.bancoNombre}*
+`;
+          if(cfg.bancoBanco)  msg+=`🏦 Banco: *${cfg.bancoBanco}*
+`;
+          if(cfg.bancoCuenta) msg+=`💳 Cuenta: *${cfg.bancoCuenta}*
+`;
+          if(cfg.bancoClabe)  msg+=`🔢 CLABE: *${cfg.bancoClabe}*
+`;
+          if(cfg.bancoPago)   msg+=`💰 Forma de pago: ${cfg.bancoPago}
+`;
+          if(cfg.bancoRef)    msg+=`📝 Referencia: ${cfg.bancoRef}
+`;
+          msg+=`─────────────────────
+`;
+          msg+=`Cotización: *${ct.id}* — Total: *${mxn(ct.tot||0)}*
+`;
+          msg+=`
+Gracias por su preferencia 🙏`;
           const tel=fmtTelWA(cli.tel);
           window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
         }}
