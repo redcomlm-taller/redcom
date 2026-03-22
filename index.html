@@ -1999,10 +1999,12 @@ function fmtTelWA(tel){
   if(d.length===10) d="52"+d;
   return d;
 }
-function buildWAMsg(ord,cli,bud,tec){
+function buildWAMsg(ord,cli,bud,tec,cfg){
+  cfg=cfg||{};
   const cv=bud?calc(bud.items):{s:0,iv:0,tot:0};
   const L=[];
-  L.push("\uD83D\uDD27 *REDCOM \u2014 Servicio T\u00E9cnico en C\u00F3mputo*");
+  const empresa=(cfg.empresa)||"REDCOM";
+  L.push("\uD83D\uDD27 *"+empresa+"*");
   L.push("\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
   L.push("\uD83D\uDCCB *Orden:* "+ord.id);
   L.push("\uD83D\uDC64 *Cliente:* "+cli.nombre);
@@ -2024,14 +2026,26 @@ function buildWAMsg(ord,cli,bud,tec){
   L.push("");
   if(ord.ent) L.push("\uD83D\uDCC5 *Entrega estimada:* "+fmtD(ord.ent));
   if(tec&&tec.nombre&&tec.nombre!=="Sin asignar") L.push("\uD83D\uDC68\u200D\uD83D\uDD27 *T\u00E9cnico:* "+tec.nombre);
+  // Datos bancarios
+  const hasBanco=cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta;
+  if(hasBanco){
+    L.push("");
+    L.push("\uD83C\uDFE6 *Datos para pago:*");
+    if(cfg.bancoNombre) L.push("\uD83D\uDC64 Beneficiario: "+cfg.bancoNombre);
+    if(cfg.bancoBanco)  L.push("\uD83C\uDFE6 Banco: "+cfg.bancoBanco);
+    if(cfg.bancoCuenta) L.push("\uD83D\uDCB3 Cuenta: "+cfg.bancoCuenta);
+    if(cfg.bancoClabe)  L.push("\uD83D\uDD22 CLABE: "+cfg.bancoClabe);
+    if(cfg.bancoPago)   L.push("\uD83D\uDCB0 Forma de pago: "+cfg.bancoPago);
+    if(cfg.bancoRef)    L.push("\uD83D\uDCDD Referencia: "+cfg.bancoRef);
+  }
   L.push("");
   L.push("Para *aceptar o rechazar* este presupuesto, responde este mensaje.");
-  L.push("\uD83D\uDE4F \u00A1Gracias por confiar en Redcom!");
+  L.push("\uD83D\uDE4F \u00A1Gracias por confiar en "+empresa+"!");
   return L.join("\n");
 }
 
-function WAModal({ord,cli,bud,tec,onClose}){
-  const msg=buildWAMsg(ord,cli,bud,tec);
+function WAModal({ord,cli,bud,tec,cfg,onClose}){
+  const msg=buildWAMsg(ord,cli,bud,tec,cfg||{});
   const tel=fmtTelWA(cli.tel||"");
   const hasTel=tel.length>=10;
   function send(){
@@ -2325,6 +2339,7 @@ function OrdModal({cls,tecs,edit,onSave,onClose,onPrint}){
 /* ── Token generator ──────────────────────────────────────────────────── */
 function genToken(){return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10);}
 function portalURL(token){return window.location.origin+window.location.pathname+"?portal="+token;}
+function portalCotURL(token){return window.location.origin+window.location.pathname+"?cotfirma="+token;}
 
 /* ══ IMPRIMIR COTIZACIÓN ════════════════════════════════════════════════ */
 function printTicketPOS(items, total, metodo, recibido, cambio, config, folio){
@@ -3011,7 +3026,7 @@ function BudModal({ord,cli,invItems,svcItems,exist,tarifaMO,onSave,onClose}){
 
 /* ══ DETAIL PANEL (Órdenes) ════════════════════════════════════════════ */
 
-function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onPrint,onNotaVenta,onFotos,onFirma,onPortal}){
+function Detail({ord,cli,tec,bud,invItems,cfg,onEdit,onDel,onBud,onSt,onSaveDiag,onPrint,onNotaVenta,onFotos,onFirma,onPortal}){
   const [justDelivered,setJustDelivered]=useState(false);
   const [confetti,setConfetti]=useState([]);
 
@@ -3253,7 +3268,7 @@ function Detail({ord,cli,tec,bud,invItems,onEdit,onDel,onBud,onSt,onSaveDiag,onP
         </div>`}
     </div>
   </div>
-  ${showWA&&bud&&html`<${WAModal} ord=${ord} cli=${cli} bud=${bud} tec=${tec} onClose=${()=>setWA(false)}/>`}
+  ${showWA&&bud&&html`<${WAModal} ord=${ord} cli=${cli} bud=${bud} tec=${tec} cfg=${cfg} onClose=${()=>setWA(false)}/>`}
   `;
 }
 
@@ -3912,47 +3927,43 @@ function TecSection({tecs,ords,onAdd,onEdit,onDel,onToggle}){
 
 /* ══ DASHBOARD ══════════════════════════════════════════════════════════ */
 
-function DashKPIs({ords,pagos,notas,cls}){
-  const hoy   = new Date().toISOString().slice(0,10);
-  const mes   = hoy.slice(0,7);
-  const ayer  = new Date(Date.now()-86400000).toISOString().slice(0,10);
+function DashKPIs({ords,pagos,cls,cots,gars}){
+  const hoy  = new Date().toISOString().slice(0,10);
+  const mes  = hoy.slice(0,7);
+  const ayer = new Date(Date.now()-86400000).toISOString().slice(0,10);
 
-  const ingresosHoy = pagos.filter(p=>p.fecha===hoy).reduce((s,p)=>s+p.monto,0);
-  const ingresosMes = pagos.filter(p=>p.fecha.startsWith(mes)).reduce((s,p)=>s+p.monto,0);
-  const ingresosAyer= pagos.filter(p=>p.fecha===ayer).reduce((s,p)=>s+p.monto,0);
-  const deltaHoy    = ingresosHoy - ingresosAyer;
-
-  const ordsActivas = ords.filter(o=>o.est!=="Entregado").length;
-  const ordsHoy     = ords.filter(o=>o.fecha===hoy).length;
-  const urgentes    = ords.filter(o=>o.urg==="Urgente"&&o.est!=="Entregado").length;
-
-  // Tiempo promedio de reparación (días, órdenes entregadas)
-  const entregadas = ords.filter(o=>o.est==="Entregado"&&o.fechaEntrega&&o.fecha);
-  const avgDias = entregadas.length
+  const ingresosHoy  = pagos.filter(p=>p.fecha===hoy).reduce((s,p)=>s+p.monto,0);
+  const ingresosMes  = pagos.filter(p=>p.fecha.startsWith(mes)).reduce((s,p)=>s+p.monto,0);
+  const ingresosAyer = pagos.filter(p=>p.fecha===ayer).reduce((s,p)=>s+p.monto,0);
+  const deltaHoy     = ingresosHoy - ingresosAyer;
+  const ordsActivas  = ords.filter(o=>o.est!=="Entregado").length;
+  const ordsHoy      = ords.filter(o=>o.fecha===hoy).length;
+  const urgentes     = ords.filter(o=>o.urg==="Urgente"&&o.est!=="Entregado").length;
+  const cotsAcep     = (cots||[]).filter(ct=>ct.est==="Aceptada").length;
+  const garsVig      = (gars||[]).filter(g=>g.estado==="Vigente"||g.estado==="Por vencer").length;
+  const entregadas   = ords.filter(o=>o.est==="Entregado"&&o.fechaEntrega&&o.fecha);
+  const avgDias      = entregadas.length
     ? (entregadas.reduce((s,o)=>s+Math.max(0,(new Date(o.fechaEntrega)-new Date(o.fecha))/(1000*60*60*24)),0)/entregadas.length).toFixed(1)
     : "—";
 
-  const clisNuevos = cls.filter(cl=>{
-    const primerOrd = ords.filter(o=>o.cid===cl.id).sort((a,b)=>a.fecha.localeCompare(b.fecha))[0];
-    return primerOrd?.fecha?.startsWith(mes);
-  }).length;
-
   const KPIS=[
-    {lbl:"Ingresos hoy",     val:mxn(ingresosHoy), sub:deltaHoy>=0?"▲ "+mxn(Math.abs(deltaHoy))+" vs ayer":"▼ "+mxn(Math.abs(deltaHoy))+" vs ayer", subCol:deltaHoy>=0?"#059669":"#dc2626", col:"#1d4ed8", bg:"#eff6ff", icon:"💰"},
-    {lbl:"Ingresos del mes", val:mxn(ingresosMes), sub:pagos.filter(p=>p.fecha.startsWith(mes)).length+" cobros",    subCol:"#64748b",  col:"#059669", bg:"#f0fdf4", icon:"📈"},
-    {lbl:"Órdenes activas",  val:ordsActivas,      sub:ordsHoy+" nuevas hoy",   subCol:"#64748b",  col:"#7c3aed", bg:"#f5f3ff", icon:"🔧"},
-    {lbl:"Urgentes",         val:urgentes,          sub:"sin entregar",          subCol:urgentes>0?"#dc2626":"#059669", col:"#dc2626", bg:"#fef2f2", icon:"🚨"},
-    {lbl:"Tiempo promedio",  val:avgDias==="—"?"—":avgDias+"d", sub:"días por reparación", subCol:"#64748b", col:"#d97706", bg:"#fffbeb", icon:"⏱️"},
-    {lbl:"Clientes nuevos",  val:clisNuevos,        sub:"este mes",             subCol:"#64748b",  col:"#0891b2", bg:"#ecfeff", icon:"👤"},
+    {lbl:"Ingresos hoy",    val:mxn(ingresosHoy), sub:deltaHoy>=0?"▲ "+mxn(Math.abs(deltaHoy))+" vs ayer":"▼ "+mxn(Math.abs(deltaHoy))+" vs ayer", subCol:deltaHoy>=0?"#059669":"#dc2626", col:"#1d4ed8", bg:"#eff6ff", icon:"💰"},
+    {lbl:"Mes actual",      val:mxn(ingresosMes), sub:pagos.filter(p=>p.fecha.startsWith(mes)).length+" cobros", subCol:"#64748b", col:"#059669", bg:"#f0fdf4", icon:"📈"},
+    {lbl:"Órdenes activas", val:ordsActivas,       sub:ordsHoy+" nuevas hoy",    subCol:"#64748b", col:"#7c3aed", bg:"#f5f3ff", icon:"🔧"},
+    {lbl:"Urgentes",        val:urgentes,           sub:"sin entregar",           subCol:urgentes>0?"#dc2626":"#059669", col:"#dc2626", bg:"#fef2f2", icon:"🚨"},
+    {lbl:"Tiempo promedio", val:avgDias==="—"?"—":avgDias+"d", sub:"días / reparación", subCol:"#64748b", col:"#d97706", bg:"#fffbeb", icon:"⏱️"},
+    {lbl:"Cotizaciones",    val:cotsAcep,           sub:"aceptadas",              subCol:"#64748b", col:"#0891b2", bg:"#ecfeff", icon:"📋"},
+    {lbl:"Garantías",       val:garsVig,            sub:"vigentes",               subCol:"#64748b", col:"#059669", bg:"#f0fdf4", icon:"🛡️"},
+    {lbl:"Clientes",        val:cls.length,         sub:ords.filter(o=>o.fecha.startsWith(mes)).map(o=>o.cid).filter((v,i,a)=>a.indexOf(v)===i).length+" activos este mes", subCol:"#64748b", col:"#64748b", bg:"#f8fafc", icon:"👥"},
   ];
 
-  return html`<div style=${{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+  return html`<div style=${{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:20}}>
     ${KPIS.map(k=>html`
       <div key=${k.lbl} class="glass-card" style=${{background:k.bg,border:"1px solid",borderColor:k.col+"33",borderRadius:12,padding:"12px",display:"flex",gap:8,alignItems:"flex-start"}}>
-        <div style=${{fontSize:20,lineHeight:1,flexShrink:0}}>${k.icon}</div>
+        <div style=${{fontSize:18,lineHeight:1,flexShrink:0}}>${k.icon}</div>
         <div style=${{flex:1,minWidth:0}}>
           <div style=${{fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,color:k.col,opacity:.7,marginBottom:2}}>${k.lbl}</div>
-          <div style=${{fontSize:18,fontWeight:800,color:k.col,lineHeight:1,marginBottom:2}}>${k.val}</div>
+          <div style=${{fontSize:20,fontWeight:800,color:k.col,lineHeight:1,marginBottom:2}}>${k.val}</div>
           <div style=${{fontSize:10,fontWeight:600,color:k.subCol}}>${k.sub}</div>
         </div>
       </div>`)}
@@ -3960,14 +3971,12 @@ function DashKPIs({ords,pagos,notas,cls}){
 }
 
 function DashBarChart({pagos}){
-  const [rango,setRango]=useState(30); // 7 o 30
+  const [rango,setRango]=useState(30);
   const days=[];
   for(let i=rango-1;i>=0;i--){
     const d=new Date(Date.now()-i*86400000);
     const key=d.toISOString().slice(0,10);
-    const label=rango===7
-      ? ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][d.getDay()]
-      : d.getDate()+"/"+(d.getMonth()+1);
+    const label=d.getDate()+"/"+(d.getMonth()+1);
     const val=pagos.filter(p=>p.fecha===key).reduce((s,p)=>s+p.monto,0);
     days.push({key,label,val,isToday:i===0,isWeekend:d.getDay()===0||d.getDay()===6});
   }
@@ -3975,52 +3984,39 @@ function DashBarChart({pagos}){
   const total=days.reduce((s,d)=>s+d.val,0);
   const avg=total/rango;
 
-  return html`<div class="glass-card" style=${{border:"1px solid var(--mac-rim)",borderRadius:12,padding:"16px 20px"}}>
-    <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+  return html`<div class="glass-card" style=${{border:"1px solid var(--mac-rim)",borderRadius:12,padding:"16px 20px",marginBottom:16}}>
+    <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:8}}>
       <div>
-        <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)"}}>📊 Ingresos — últimos ${rango} días</div>
-        <div style=${{fontSize:11,color:"var(--mac-ink4)",marginTop:2}}>Total: ${mxn(total)} · Promedio: ${mxn(avg)}/día</div>
+        <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)"}}>📊 Ingresos</div>
+        <div style=${{fontSize:11,color:"var(--mac-ink4)",marginTop:1}}>Total: ${mxn(total)} · Prom: ${mxn(avg)}/día</div>
       </div>
       <div style=${{display:"flex",gap:4}}>
-        ${[7,30].map(r=>html`
-          <button key=${r} onClick=${()=>setRango(r)} style=${{
-            padding:"3px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"inherit",
-            fontSize:11,fontWeight:600,
-            background:rango===r?"#1d4ed8":"var(--mac-surface2)",
-            color:rango===r?"#fff":"var(--mac-ink4)"}}>
-            ${r===7?"Semana":"30 días"}
-          </button>`)}
+        ${[7,30].map(r=>html`<button key=${r} onClick=${()=>setRango(r)} style=${{
+          padding:"3px 10px",borderRadius:99,border:"1px solid",fontFamily:"inherit",
+          fontSize:10,fontWeight:700,cursor:"pointer",
+          background:rango===r?"#1d4ed8":"transparent",
+          color:rango===r?"#fff":"var(--mac-ink4)",
+          borderColor:rango===r?"#1d4ed8":"var(--mac-rim)"}}>${r}d</button>`)}
       </div>
     </div>
-    <div style=${{display:"flex",alignItems:"flex-end",gap:rango===7?8:3,height:110,paddingBottom:22,position:"relative"}}>
-      <div style=${{position:"absolute",left:0,right:0,bottom:22+((avg/maxVal)*88-0.5),height:1,borderTop:"1px dashed var(--mac-ink5)",pointerEvents:"none",zIndex:1}}/>
-      ${days.map(d=>html`
+    <div style=${{display:"flex",alignItems:"flex-end",gap:2,height:80,paddingBottom:18,position:"relative"}}>
+      <div style=${{position:"absolute",left:0,right:0,bottom:18+(avg/maxVal*80-0.5)+"px",height:1,borderTop:"1px dashed #94a3b833",pointerEvents:"none"}}/>
+      ${days.map((d,i)=>html`
         <div key=${d.key} title=${d.label+": "+mxn(d.val)}
-          style=${{flex:1,display:"flex",flexDirection:"column",alignItems:"center",height:"100%",justifyContent:"flex-end",position:"relative"}}>
+          style=${{flex:1,display:"flex",flexDirection:"column",alignItems:"center",height:"100%",justifyContent:"flex-end",cursor:"default",position:"relative"}}>
           <div style=${{
             width:"100%",
-            height:d.val>0?Math.max(3,(d.val/maxVal)*88)+"%":"3px",
+            height:d.val>0?Math.max(3,(d.val/maxVal)*80)+"px":"2px",
             background:d.isToday?"#1d4ed8":d.isWeekend?"#94a3b8":"#93c5fd",
-            borderRadius:"3px 3px 0 0",transition:"opacity .15s",opacity:.9}}
-            onMouseOver=${e=>{e.currentTarget.style.opacity="1";e.currentTarget.style.background="#1d4ed8";}}
-            onMouseOut=${e=>{e.currentTarget.style.opacity=".9";e.currentTarget.style.background=d.isToday?"#1d4ed8":d.isWeekend?"#94a3b8":"#93c5fd";}}/>
-          <div style=${{position:"absolute",bottom:0,fontSize:rango===7?9:8,color:d.isToday?"#1d4ed8":"var(--mac-ink4)",whiteSpace:"nowrap",fontWeight:d.isToday?700:400}}>
-            ${rango===7||d.isToday||days.indexOf(d)%5===0?d.label:""}
-          </div>
+            borderRadius:"3px 3px 0 0",opacity:.9,transition:"height .3s"}}/>
+          ${(d.isToday||(rango===7)||(rango===30&&i%5===0))&&html`
+            <div style=${{position:"absolute",bottom:0,fontSize:8,color:"var(--mac-ink4)",whiteSpace:"nowrap",fontFamily:"monospace"}}>${d.label}</div>`}
         </div>`)}
     </div>
-    ${rango===7&&html`
-      <div style=${{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,marginTop:4}}>
-        ${days.map(d=>html`
-          <div key=${d.key} style=${{textAlign:"center",fontSize:10,fontWeight:600,color:d.isToday?"#1d4ed8":d.val>0?"#059669":"var(--mac-ink4)"}}>
-            ${d.val>0?mxn(d.val):"—"}
-          </div>`)}
-      </div>`}
   </div>`;
 }
 
 function DashTopServicios({buds,svcs}){
-  // Contar los servicios y refacciones más usados en presupuestos aceptados
   const freq={};
   Object.values(buds||{}).filter(b=>b.est==="Aceptado").forEach(b=>{
     (b.items||[]).forEach(it=>{
@@ -4028,36 +4024,32 @@ function DashTopServicios({buds,svcs}){
       if(!freq[key]) freq[key]={nombre:key,tipo:it.t==="r"?"refacción":it.t==="s"?"servicio":"MO",qty:0,total:0};
       const q=it.t==="m"?it.h:it.q;
       const p=it.t==="m"?it.ph:it.p;
-      freq[key].qty+=q;
-      freq[key].total+=q*p;
+      freq[key].qty+=q; freq[key].total+=q*p;
     });
   });
-  const top=Object.values(freq).sort((a,b)=>b.qty-a.qty).slice(0,7);
+  const top=Object.values(freq).sort((a,b)=>b.qty-a.qty).slice(0,6);
   const maxQ=Math.max(...top.map(t=>t.qty),1);
   const TIPO_C={refacción:["#eff6ff","#1d4ed8"],servicio:["#f0fdf4","#059669"],MO:["#fdf4ff","#7c3aed"]};
 
   return html`<div class="glass-card" style=${{border:"1px solid var(--mac-rim)",borderRadius:12,padding:"16px 20px"}}>
-    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>🔩 Top servicios y refacciones</div>
+    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>🔩 Top servicios</div>
     ${top.length===0
-      ?html`<div style=${{fontSize:12,color:"var(--mac-ink4)",textAlign:"center",padding:"20px 0"}}>Acepta presupuestos para ver estadísticas</div>`
+      ?html`<div style=${{fontSize:12,color:"var(--mac-ink4)",textAlign:"center",padding:"20px 0"}}>Acepta presupuestos para ver stats</div>`
       :html`<div style=${{display:"grid",gap:9}}>
         ${top.map((s,i)=>{
           const [bg,col]=TIPO_C[s.tipo]||TIPO_C["servicio"];
-          return html`<div key=${s.nombre} style=${{display:"flex",alignItems:"center",gap:10}}>
-            <div style=${{width:18,fontSize:11,fontWeight:800,color:i<3?"#f59e0b":"var(--mac-ink4)",textAlign:"center",flexShrink:0}}>${i+1}</div>
+          return html`<div key=${s.nombre} style=${{display:"flex",alignItems:"center",gap:8}}>
+            <div style=${{width:16,fontSize:10,fontWeight:800,color:i<3?"#f59e0b":"var(--mac-ink4)",textAlign:"center",flexShrink:0}}>${i+1}</div>
             <div style=${{flex:1,minWidth:0}}>
-              <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3,gap:6}}>
+              <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3,gap:4}}>
                 <div style=${{fontSize:11,fontWeight:600,color:"var(--mac-ink)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1}}>${s.nombre}</div>
-                <div style=${{display:"flex",gap:5,flexShrink:0,alignItems:"center"}}>
-                  <span style=${{background:bg,color:col,fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:99}}>${s.tipo}</span>
-                  <span style=${{fontSize:11,fontWeight:700,color:"var(--mac-ink3)"}}>${s.qty}x</span>
-                </div>
+                <span style=${{background:bg,color:col,fontSize:9,fontWeight:700,padding:"1px 5px",borderRadius:99,flexShrink:0}}>${s.qty}x</span>
               </div>
-              <div style=${{height:5,background:"var(--mac-surface2)",borderRadius:99,overflow:"hidden"}}>
-                <div style=${{height:"100%",width:Math.max(4,(s.qty/maxQ)*100)+"%",background:col,borderRadius:99,transition:"width .5s"}}/>
+              <div style=${{height:4,background:"var(--mac-surface2)",borderRadius:99,overflow:"hidden"}}>
+                <div style=${{height:"100%",width:Math.max(4,(s.qty/maxQ)*100)+"%",background:col,borderRadius:99}}/>
               </div>
             </div>
-            <div style=${{fontSize:10,color:"#059669",fontWeight:600,flexShrink:0,width:70,textAlign:"right"}}>${mxn(s.total)}</div>
+            <div style=${{fontSize:10,color:"#059669",fontWeight:600,flexShrink:0,width:64,textAlign:"right"}}>${mxn(s.total)}</div>
           </div>`;
         })}
       </div>`}
@@ -4067,40 +4059,33 @@ function DashTopServicios({buds,svcs}){
 function DashDonut({ords}){
   const total=ords.length||1;
   const datos=STS.map(s=>({...s,n:ords.filter(o=>o.est===s.k).length})).filter(s=>s.n>0);
-  // Simple SVG donut
   let offset=0;
-  const R=42,CX=60,CY=60,STROKE=18;
-  const CIRC=2*Math.PI*R;
+  const R=42,CX=60,CY=60,STROKE=18,CIRC=2*Math.PI*R;
   const slices=datos.map(s=>{
-    const pct=s.n/total;
-    const dash=pct*CIRC;
-    const slice={...s,dash,offset,pct};
-    offset+=dash;
-    return slice;
+    const dash=(s.n/total)*CIRC;
+    const sl={...s,dash,offset}; offset+=dash; return sl;
   });
-
   return html`<div class="glass-card" style=${{border:"1px solid var(--mac-rim)",borderRadius:12,padding:"16px 20px"}}>
-    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>🍩 Órdenes por estado</div>
-    <div style=${{display:"flex",gap:16,alignItems:"center"}}>
-      <svg width="120" height="120" viewBox="0 0 120 120">
+    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>🍩 Por estado</div>
+    <div style=${{display:"flex",gap:12,alignItems:"center"}}>
+      <svg width="110" height="110" viewBox="0 0 120 120" style=${{flexShrink:0}}>
         <circle cx=${CX} cy=${CY} r=${R} fill="none" stroke="var(--mac-rim)" strokeWidth=${STROKE}/>
         ${slices.map(s=>html`
           <circle key=${s.k} cx=${CX} cy=${CY} r=${R} fill="none"
             stroke=${s.c} strokeWidth=${STROKE}
             strokeDasharray=${s.dash+" "+(CIRC-s.dash)}
             strokeDashoffset=${-s.offset}
-            transform="rotate(-90 60 60)"
-            style=${{transition:"stroke-dasharray .5s"}}/>`)}
-        <text x=${CX} y=${CY-4} textAnchor="middle" fontSize="18" fontWeight="800" fill="var(--mac-ink)">${ords.length}</text>
-        <text x=${CX} y=${CY+12} textAnchor="middle" fontSize="9" fill="var(--mac-ink4)">órdenes</text>
+            transform="rotate(-90 60 60)"/>`)}
+        <text x=${CX} y=${CY-4} textAnchor="middle" fontSize="17" fontWeight="800" fill="var(--mac-ink)">${ords.length}</text>
+        <text x=${CX} y=${CY+11} textAnchor="middle" fontSize="8" fill="var(--mac-ink4)">total</text>
       </svg>
-      <div style=${{flex:1,display:"grid",gap:6}}>
+      <div style=${{flex:1,display:"grid",gap:5}}>
         ${datos.map(s=>html`
-          <div key=${s.k} style=${{display:"flex",alignItems:"center",gap:7}}>
-            <div style=${{width:10,height:10,borderRadius:3,background:s.c,flexShrink:0}}/>
+          <div key=${s.k} style=${{display:"flex",alignItems:"center",gap:6}}>
+            <div style=${{width:8,height:8,borderRadius:2,background:s.c,flexShrink:0}}/>
             <div style=${{fontSize:11,color:"var(--mac-ink2)",flex:1}}>${s.k}</div>
             <div style=${{fontSize:12,fontWeight:700,color:s.c}}>${s.n}</div>
-            <div style=${{fontSize:9,color:"var(--mac-ink4)",width:28,textAlign:"right"}}>${Math.round(s.n/total*100)}%</div>
+            <div style=${{fontSize:9,color:"var(--mac-ink4)",width:24,textAlign:"right"}}>${Math.round(s.n/total*100)}%</div>
           </div>`)}
       </div>
     </div>
@@ -4112,174 +4097,86 @@ function DashTopTecs({ords,tecs,pagos}){
   const ranking=tecs.filter(t=>t.activo&&t.rol!=="Sistema").map(t=>{
     const cerradas=ords.filter(o=>o.tec===t.id&&o.est==="Entregado").length;
     const activas =ords.filter(o=>o.tec===t.id&&o.est!=="Entregado").length;
-    const ingrMes =pagos.filter(p=>{
-      const ord=ords.find(o=>o.id===p.ordId);
-      return ord&&ord.tec===t.id&&p.fecha.startsWith(mes);
-    }).reduce((s,p)=>s+p.monto,0);
-    return{...t,cerradas,activas,ingrMes};
+    return{...t,cerradas,activas};
   }).sort((a,b)=>b.cerradas-a.cerradas).slice(0,5);
-
   const maxC=Math.max(...ranking.map(t=>t.cerradas),1);
 
   return html`<div class="glass-card" style=${{border:"1px solid var(--mac-rim)",borderRadius:12,padding:"16px 20px"}}>
-    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>🏆 Top técnicos del mes</div>
+    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>🏆 Técnicos</div>
     ${ranking.length===0
       ?html`<div style=${{fontSize:12,color:"var(--mac-ink4)",textAlign:"center",padding:"20px 0"}}>Sin técnicos activos</div>`
       :html`<div style=${{display:"grid",gap:10}}>
         ${ranking.map((t,i)=>html`
-          <div key=${t.id} style=${{display:"flex",alignItems:"center",gap:10}}>
-            <div style=${{width:22,height:22,borderRadius:"50%",background:i===0?"#fbbf24":i===1?"#94a3b8":i===2?"#d97706":"var(--mac-surface2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:i<3?"#fff":"var(--mac-ink3)",flexShrink:0}}>${i+1}</div>
+          <div key=${t.id} style=${{display:"flex",alignItems:"center",gap:8}}>
+            <div style=${{width:20,height:20,borderRadius:"50%",background:i===0?"#fbbf24":i===1?"#94a3b8":i===2?"#d97706":"var(--mac-surface2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:i<3?"#fff":"var(--mac-ink3)",flexShrink:0}}>${i+1}</div>
             <div style=${{flex:1,minWidth:0}}>
               <div style=${{display:"flex",justifyContent:"space-between",marginBottom:3}}>
                 <div style=${{fontSize:12,fontWeight:600,color:"var(--mac-ink)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${t.nombre}</div>
-                <div style=${{fontSize:11,fontWeight:700,color:"#059669",flexShrink:0,marginLeft:8}}>${t.cerradas} ent.</div>
+                <div style=${{fontSize:11,fontWeight:700,color:"#059669",flexShrink:0,marginLeft:6}}>${t.cerradas}✓</div>
               </div>
-              <div style=${{height:6,background:"var(--mac-surface2)",borderRadius:99,overflow:"hidden"}}>
-                <div style=${{height:"100%",width:t.cerradas>0?Math.max(4,(t.cerradas/maxC)*100)+"%":"4px",background:i===0?"#fbbf24":"#1d4ed8",borderRadius:99,transition:"width .5s"}}/>
+              <div style=${{height:5,background:"var(--mac-surface2)",borderRadius:99,overflow:"hidden"}}>
+                <div style=${{height:"100%",width:t.cerradas>0?Math.max(4,(t.cerradas/maxC)*100)+"%":"4px",background:i===0?"#fbbf24":"#1d4ed8",borderRadius:99}}/>
               </div>
             </div>
-            <div style=${{fontSize:10,color:"var(--mac-ink4)",flexShrink:0,textAlign:"right",width:52}}>
-              <div style=${{color:"var(--mac-ink3)",fontWeight:600}}>${t.activas} act.</div>
-            </div>
+            <div style=${{fontSize:10,color:"var(--mac-ink4)",flexShrink:0,width:36,textAlign:"right",fontWeight:600}}>${t.activas} act</div>
           </div>`)}
       </div>`}
   </div>`;
 }
 
 function DashActividad({ords,cls,pagos}){
-  // Recent activity feed: last 8 events across orders + payments
   const eventos=[];
-  [...ords].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,5).forEach(o=>{
+  [...ords].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,4).forEach(o=>{
     const cl=cls.find(x=>x.id===o.cid);
-    eventos.push({id:"o"+o.id,tipo:"orden",icon:"🔧",color:"#7c3aed",
-      titulo:"Orden "+o.id,desc:(cl?.nombre||"?")+(" · "+o.equipo),
-      fecha:o.fecha,estado:o.est});
+    eventos.push({id:"o"+o.id,icon:"🔧",color:"#7c3aed",titulo:"Orden "+o.id,desc:(cl?.nombre||"?")+" · "+o.equipo,fecha:o.fecha,estado:o.est});
   });
-  [...pagos].sort((a,b)=>(b.fecha+b.hora).localeCompare(a.fecha+a.hora)).slice(0,5).forEach(p=>{
-    eventos.push({id:"p"+p.id,tipo:"cobro",icon:"💰",color:"#059669",
-      titulo:mxn(p.monto)+" cobrados",desc:p.concepto,
-      fecha:p.fecha,estado:p.metodo});
+  [...pagos].sort((a,b)=>(b.fecha+b.hora).localeCompare(a.fecha+a.hora)).slice(0,4).forEach(p=>{
+    eventos.push({id:"p"+p.id,icon:"💰",color:"#059669",titulo:mxn(p.monto)+" cobrado",desc:p.concepto,fecha:p.fecha,estado:p.metodo});
   });
   eventos.sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  const recientes=eventos.slice(0,8);
+  const rec=eventos.slice(0,7);
 
   return html`<div class="glass-card" style=${{border:"1px solid var(--mac-rim)",borderRadius:12,padding:"16px 20px"}}>
-    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:14}}>⚡ Actividad reciente</div>
-    ${recientes.length===0
+    <div style=${{fontSize:13,fontWeight:700,color:"var(--mac-ink)",marginBottom:12}}>⚡ Actividad</div>
+    ${rec.length===0
       ?html`<div style=${{fontSize:12,color:"var(--mac-ink4)",textAlign:"center",padding:"20px 0"}}>Sin actividad aún</div>`
-      :html`<div style=${{display:"grid",gap:0}}>
-        ${recientes.map((e,i)=>html`
-          <div key=${e.id} style=${{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:i<recientes.length-1?"1px solid var(--mac-rim)":"none"}}>
-            <div style=${{width:28,height:28,borderRadius:8,background:e.color+"15",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>${e.icon}</div>
-            <div style=${{flex:1,minWidth:0}}>
-              <div style=${{fontSize:12,fontWeight:600,color:"var(--mac-ink)"}}>${e.titulo}</div>
-              <div style=${{fontSize:10,color:"var(--mac-ink4)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${e.desc}</div>
-            </div>
-            <div style=${{fontSize:9,color:"var(--mac-ink4)",flexShrink:0,textAlign:"right"}}>
-              <div>${fmtD(e.fecha)}</div>
-              <div style=${{marginTop:2,padding:"1px 6px",borderRadius:99,background:e.color+"15",color:e.color,fontWeight:700,fontSize:9}}>${e.estado}</div>
-            </div>
-          </div>`)}
-      </div>`}
-  </div>`;
-}
-
-/* ── Dashboard NV Tab (historial de notas de venta) ─────────────────── */
-function DashNVTab({notas,onDelNota,onPrintNota}){
-  const [q,setQ]=useState("");
-  const [confirm,setConfirm]=useState(null);
-  const lista=q.trim()
-    ?notas.filter(nv=>[nv.id,nv.ord.id,nv.cli.nombre,nv.cli.empresa||"",nv.ord.equipo,nv.tecNombre,nv.fecha].some(x=>x.toLowerCase().includes(q.toLowerCase())))
-    :notas;
-
-  if(notas.length===0) return html`
-    <div class="empty-state" style=${{paddingTop:60}}>
-      <${Ic} n="receipt" z=${34} s="#cbd5e1"/>
-      <div style=${{marginTop:12,fontSize:14,fontWeight:500}}>Sin notas de venta</div>
-      <div style=${{fontSize:12,color:"#94a3b8",marginTop:4}}>Aparecerán al entregar órdenes</div>
-    </div>`;
-
-  return html`<div style=${{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <div style=${{padding:"12px 20px",borderBottom:"1px solid var(--mac-rim)",background:"var(--mac-bg)",flexShrink:0}}>
-      <div style=${{position:"relative",maxWidth:360}}>
-        <input value=${q} onChange=${e=>setQ(e.target.value)}
-          placeholder="Buscar por folio, cliente, equipo…"
-          />
-        
-      </div>
-    </div>
-    <div style=${{flex:1,overflowY:"auto"}}>
-      <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"90px 90px 1fr 140px 90px 110px 80px"}}>
-        ${["Folio NV","Orden","Cliente / Equipo","Técnico","Fecha","Total",""].map(h=>html`<div key=${h}>${h}</div>`)}
-      </div>
-      ${lista.map(nv=>{
-        const cv=nv.bud?calc(nv.bud.items):{s:0,iv:0,tot:0};
-        return html`<div key=${nv.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"90px 90px 1fr 140px 90px 110px 80px",alignItems:"center"}}
-          onMouseOver=${e=>e.currentTarget.style.background="var(--mac-surface)"}
-          onMouseOut=${e=>e.currentTarget.style.background=""}>
-          <div style=${{fontFamily:"monospace",fontSize:11,color:"#1d4ed8",fontWeight:600,padding:"10px 12px"}}>${nv.id}</div>
-          <div style=${{fontFamily:"monospace",fontSize:11,color:"var(--mac-ink4)",padding:"10px 12px"}}>${nv.ord.id}</div>
-          <div style=${{padding:"10px 12px"}}>
-            <div style=${{fontWeight:600,fontSize:13,color:"var(--mac-ink)"}}>${nv.cli.nombre}</div>
-            <div style=${{fontSize:11,color:"var(--mac-ink4)",marginTop:1}}>${nv.ord.equipo}</div>
+      :rec.map((e,i)=>html`
+        <div key=${e.id} style=${{display:"flex",gap:8,alignItems:"flex-start",padding:"7px 0",borderBottom:i<rec.length-1?"1px solid var(--mac-rim2)":"none"}}>
+          <div style=${{width:26,height:26,borderRadius:7,background:e.color+"15",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>${e.icon}</div>
+          <div style=${{flex:1,minWidth:0}}>
+            <div style=${{fontSize:12,fontWeight:600,color:"var(--mac-ink)"}}>${e.titulo}</div>
+            <div style=${{fontSize:10,color:"var(--mac-ink4)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${e.desc}</div>
           </div>
-          <div style=${{fontSize:12,color:"var(--mac-ink3)",padding:"10px 12px"}}>${nv.tecNombre}</div>
-          <div style=${{fontSize:11,color:"var(--mac-ink4)",padding:"10px 12px"}}>${nv.fecha}</div>
-          <div style=${{fontSize:13,fontWeight:700,color:"#059669",padding:"10px 12px"}}>${mxn(cv.tot)}</div>
-          <div style=${{padding:"10px 8px",display:"flex",gap:4,justifyContent:"flex-end"}}>
-            <button class="btn btn-ghost btn-sm" onClick=${()=>onPrintNota(nv)}><${Ic} n="print" z=${13}/></button>
-            <button class="btn btn-danger btn-sm" onClick=${()=>setConfirm(nv)}><${Ic} n="trash" z=${13} s="#dc2626"/></button>
+          <div style=${{fontSize:9,color:"var(--mac-ink4)",flexShrink:0,textAlign:"right"}}>
+            <div>${fmtD(e.fecha)}</div>
+            <div style=${{marginTop:2,padding:"1px 5px",borderRadius:99,background:e.color+"15",color:e.color,fontWeight:700}}>${e.estado}</div>
           </div>
-        </div>`;
-      })}
-    </div>
-    ${confirm&&html`<${Confirm}
-      msg=${"¿Eliminar nota <b>"+confirm.id+"</b>?"}
-      onOk=${()=>{onDelNota(confirm.id);setConfirm(null);}}
-      onCancel=${()=>setConfirm(null)}/>`}
+        </div>`)}
   </div>`;
 }
 
 /* ── Dashboard principal ─────────────────────────────────────────────── */
-function Dashboard({ords,buds,cls,tecs,notas,pagos,svcs,onDelNota,onPrintNota}){
-  const [tab,setTab]=useState("resumen");
-  const TABS=[["resumen","📊","Resumen"],["notas","🧾","Notas de Venta"]];
+function Dashboard({ords,buds,cls,tecs,pagos,svcs,cots,gars}){
+  const isMob = window.innerWidth<=768;
+  return html`<div style=${{height:"100%",overflowY:"auto",padding:"16px",background:"var(--mac-surface)"}}>
 
-  return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-    <!-- Tab bar -->
-    <div style=${{background:"var(--mac-bg)",borderBottom:"1px solid var(--mac-rim)",display:"flex",padding:"0 20px",flexShrink:0}}>
-      ${TABS.map(([k,ic,lbl])=>html`
-        <button key=${k} onClick=${()=>setTab(k)} style=${{
-          padding:"11px 16px",border:"none",cursor:"pointer",fontFamily:"inherit",
-          fontSize:12,fontWeight:700,background:"transparent",display:"flex",alignItems:"center",gap:6,
-          color:tab===k?"#1d4ed8":"#64748b",
-          borderBottom:tab===k?"2px solid #1d4ed8":"2px solid transparent"}}>
-          ${ic} ${lbl}
-          ${k==="notas"&&notas.length>0&&html`<span style=${{background:"#eff6ff",color:"#1d4ed8",fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:99}}>${notas.length}</span>`}
-        </button>`)}
+    <!-- KPIs -->
+    <${DashKPIs} ords=${ords} pagos=${pagos} cls=${cls} cots=${cots||[]} gars=${gars||[]}/>
+
+    <!-- Fila 1: gráfica + donut -->
+    <div style=${{display:"grid",gridTemplateColumns:isMob?"1fr":"1fr 280px",gap:12,marginBottom:12}}>
+      <${DashBarChart} pagos=${pagos}/>
+      <${DashDonut} ords=${ords}/>
     </div>
 
-    ${tab==="resumen"&&html`
-      <div style=${{flex:1,overflowY:"auto",padding:"20px 24px",background:"var(--mac-surface)"}}>
-        <${DashKPIs} ords=${ords} pagos=${pagos} notas=${notas} cls=${cls}/>
-        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-          <${DashDonut} ords=${ords}/>
-          <${DashTopTecs} ords=${ords} tecs=${tecs} pagos=${pagos}/>
-        </div>
-        <div style=${{marginBottom:16}}>
-          <${DashBarChart} pagos=${pagos}/>
-        </div>
-        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-          <${DashTopServicios} buds=${buds} svcs=${svcs}/>
-          <${DashActividad} ords=${ords} cls=${cls} pagos=${pagos}/>
-        </div>
-      </div>`}
-
-    ${tab==="notas"&&html`
-      <${DashNVTab} notas=${notas} onDelNota=${onDelNota} onPrintNota=${onPrintNota}/>`}
+    <!-- Fila 2: top servicios + técnicos + actividad -->
+    <div style=${{display:"grid",gridTemplateColumns:isMob?"1fr":"1fr 1fr 1fr",gap:12}}>
+      <${DashTopServicios} buds=${buds} svcs=${svcs}/>
+      <${DashTopTecs} ords=${ords} tecs=${tecs} pagos=${pagos}/>
+      <${DashActividad} ords=${ords} cls=${cls} pagos=${pagos}/>
+    </div>
   </div>`;
 }
-
 
 
 /* ══ LOCALSTORAGE HELPERS ═══════════════════════════════════════════════ */
@@ -5118,12 +5015,178 @@ Gracias por su preferencia 🙏`;
 }
 
 /* ══ SECCIÓN COTIZACIONES ═══════════════════════════════════════════════ */
-function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit,onDel,onPrint,onWA,onWABanco}){
+/* ══ PORTAL FIRMA COTIZACIÓN ═══════════════════════════════════════════ */
+function PortalFirmaCot({cot,cli,tec,cfg,onFirmada}){
+  const canvasRef=React.useRef();
+  const [drawing,setDrawing]=useState(false);
+  const [signed,setSigned]=useState(false);
+  const [nombre,setNombre]=useState(cli?.nombre||"");
+  const [enviada,setEnviada]=useState(false);
+  const [step,setStep]=useState("ver"); // ver | firmar | gracias
+
+  const items=cot.items||[];
+  const sub=items.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
+  const iva=cot.iva?+(sub*.16).toFixed(2):0;
+  const tot=+(sub+iva).toFixed(2);
+  const empresa=(cfg&&cfg.empresa)||"REDCOM";
+  const logo=(cfg&&cfg.logo)||"";
+
+  function getPos(e,canvas){
+    const rect=canvas.getBoundingClientRect();
+    const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+    if(e.touches) return{x:(e.touches[0].clientX-rect.left)*sx,y:(e.touches[0].clientY-rect.top)*sy};
+    return{x:(e.clientX-rect.left)*sx,y:(e.clientY-rect.top)*sy};
+  }
+  function startDraw(e){e.preventDefault();const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.beginPath();ctx.moveTo(p.x,p.y);setDrawing(true);setSigned(true);}
+  function draw(e){e.preventDefault();if(!drawing)return;const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.lineWidth=2.5;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1d4ed8";ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function endDraw(e){e.preventDefault();setDrawing(false);}
+  function clear(){const c=canvasRef.current;if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height);setSigned(false);}
+
+  function confirmar(){
+    if(!signed){alert("Por favor dibuja tu firma.");return;}
+    if(!nombre.trim()){alert("Ingresa tu nombre.");return;}
+    const canvas=canvasRef.current;
+    const base64=canvas.toDataURL("image/png");
+    const firma={base64,nombre,fecha:new Date().toISOString().slice(0,10),hora:new Date().toTimeString().slice(0,5)};
+    onFirmada(cot.id,firma);
+    setStep("gracias");
+  }
+
+  const EST_C={Borrador:["#f1f5f9","#64748b"],Enviada:["#eff6ff","#1d4ed8"],Aceptada:["#f0fdf4","#059669"],Rechazada:["#fef2f2","#dc2626"],Firmada:["#f0fdf4","#059669"]};
+  const ec=EST_C[cot.est]||EST_C["Borrador"];
+
+  if(step==="gracias") return html`
+    <div style=${{minHeight:"100vh",background:"#f1f5f9",display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"'Segoe UI',sans-serif"}}>
+      <div style=${{background:"#fff",borderRadius:16,padding:"40px 32px",textAlign:"center",maxWidth:380,width:"100%",boxShadow:"0 4px 24px rgba(0,0,0,.1)"}}>
+        <div style=${{fontSize:64,marginBottom:16}}>✅</div>
+        <div style=${{fontSize:22,fontWeight:800,color:"#059669",marginBottom:8}}>¡Cotización firmada!</div>
+        <div style=${{fontSize:14,color:"#475569",lineHeight:1.6,marginBottom:24}}>
+          Gracias <b>${nombre}</b>, hemos recibido tu firma de aceptación.<br/>
+          Folio: <b style=${{fontFamily:"monospace"}}>${cot.id}</b>
+        </div>
+        <div style=${{fontSize:12,color:"#94a3b8"}}>Puedes cerrar esta ventana.<br/>Pronto nos pondremos en contacto contigo.</div>
+        <div style=${{marginTop:24,fontSize:12,fontWeight:600,color:"#1d4ed8"}}>${empresa}</div>
+      </div>
+    </div>`;
+
+  return html`<div style=${{minHeight:"100vh",background:"#f1f5f9",fontFamily:"'Segoe UI',sans-serif",paddingBottom:32}}>
+
+    <!-- Header -->
+    <div style=${{background:"linear-gradient(135deg,#1e3a8a,#1d4ed8)",padding:"16px 20px",display:"flex",alignItems:"center",gap:12,color:"#fff"}}>
+      ${logo?html`<img src=${logo} style=${{height:40,maxWidth:120,objectFit:"contain",borderRadius:6,background:"rgba(255,255,255,.15)",padding:"3px 6px"}}/>`:html`<div style=${{width:38,height:38,borderRadius:10,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:16}}>RC</div>`}
+      <div>
+        <div style=${{fontWeight:700,fontSize:15}}>${empresa}</div>
+        <div style=${{fontSize:11,opacity:.75}}>Cotización para firma</div>
+      </div>
+      <span style=${{marginLeft:"auto",background:ec[0],color:ec[1],fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>${cot.est}</span>
+    </div>
+
+    <div style=${{maxWidth:540,margin:"20px auto",padding:"0 16px",display:"grid",gap:14}}>
+
+      <!-- Folio y cliente -->
+      <div style=${{background:"#fff",borderRadius:12,padding:"18px 20px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
+        <div style=${{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+          <div>
+            <div style=${{fontSize:11,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Folio</div>
+            <div style=${{fontSize:24,fontWeight:900,color:"#1d4ed8",fontFamily:"monospace"}}>${cot.id}</div>
+          </div>
+          <div style=${{textAlign:"right",fontSize:11,color:"#94a3b8"}}>
+            <div>${fmtD(cot.fecha)}</div>
+            ${cot.validez?html`<div>Válida ${cot.validez} días</div>`:""}
+          </div>
+        </div>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div style=${{background:"#f8fafc",borderRadius:8,padding:"10px 12px"}}>
+            <div style=${{fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:"#94a3b8",marginBottom:3}}>Cliente</div>
+            <div style=${{fontSize:13,fontWeight:600}}>${cli?.nombre||"—"}</div>
+            ${cli?.empresa?html`<div style=${{fontSize:11,color:"#64748b"}}>${cli.empresa}</div>`:""}
+          </div>
+          ${tec?html`<div style=${{background:"#f8fafc",borderRadius:8,padding:"10px 12px"}}>
+            <div style=${{fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:"#94a3b8",marginBottom:3}}>Asesor</div>
+            <div style=${{fontSize:13,fontWeight:600}}>${tec.nombre}</div>
+          </div>`:""}
+        </div>
+        ${cot.ref?html`<div style=${{marginTop:10,fontSize:12,color:"#475569"}}>📌 ${cot.ref}</div>`:""}
+        ${cot.notas?html`<div style=${{marginTop:6,fontSize:12,color:"#64748b",fontStyle:"italic"}}>${cot.notas}</div>`:""}
+      </div>
+
+      <!-- Items -->
+      <div style=${{background:"#fff",borderRadius:12,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
+        <div style=${{background:"#1d4ed8",padding:"10px 16px",display:"grid",gridTemplateColumns:"1fr 48px 80px",gap:8}}>
+          ${["Descripción","Cant.","Total"].map(h=>html`<div key=${h} style=${{fontSize:10,fontWeight:700,color:"#fff",textTransform:"uppercase",letterSpacing:.5}}>${h}</div>`)}
+        </div>
+        ${items.map((it,i)=>html`
+          <div key=${i} style=${{display:"grid",gridTemplateColumns:"1fr 48px 80px",gap:8,padding:"10px 16px",borderBottom:"1px solid #f1f5f9"}}>
+            <div>
+              <div style=${{fontSize:13,fontWeight:500}}>${it.nombre}</div>
+              ${it.desc?html`<div style=${{fontSize:10,color:"#94a3b8"}}>${it.desc}</div>`:""}
+            </div>
+            <div style=${{fontSize:12,color:"#475569",textAlign:"center",paddingTop:2}}>${it.qty}</div>
+            <div style=${{fontSize:13,fontWeight:700,textAlign:"right",paddingTop:2}}>${mxn(it.qty*it.precio)}</div>
+          </div>`)}
+        <div style=${{padding:"12px 16px",display:"flex",flexDirection:"column",gap:4,alignItems:"flex-end",background:"#f8fafc"}}>
+          ${cot.iva?html`<div style=${{fontSize:12,color:"#475569"}}>Subtotal: ${mxn(sub)}</div>`:null}
+          ${cot.iva?html`<div style=${{fontSize:12,color:"#475569"}}>IVA 16%: ${mxn(iva)}</div>`:null}
+          <div style=${{fontSize:20,fontWeight:800,color:"#1d4ed8"}}>TOTAL: ${mxn(tot)}</div>
+        </div>
+      </div>
+
+      <!-- Firma (solo si no está ya firmada) -->
+      ${cot.firma
+        ?html`<div style=${{background:"#f0fdf4",border:"2px solid #bbf7d0",borderRadius:12,padding:"18px 20px",textAlign:"center"}}>
+          <div style=${{fontSize:32,marginBottom:8}}>✅</div>
+          <div style=${{fontSize:15,fontWeight:700,color:"#059669"}}>Cotización ya firmada</div>
+          <div style=${{fontSize:12,color:"#475569",marginTop:4}}>Firmado por: ${cot.firma.nombre} · ${fmtD(cot.firma.fecha)}</div>
+          <img src=${cot.firma.base64} style=${{marginTop:12,maxWidth:200,border:"1px solid #bbf7d0",borderRadius:8}}/>
+        </div>`
+        :step==="ver"
+          ?html`<button onClick=${()=>setStep("firmar")} style=${{
+              width:"100%",padding:"16px",borderRadius:12,border:"none",cursor:"pointer",
+              background:"linear-gradient(135deg,#059669,#10b981)",color:"#fff",
+              fontFamily:"inherit",fontSize:16,fontWeight:700,
+              boxShadow:"0 4px 16px rgba(5,150,105,.35)"}}>
+              ✍️ Firmar y aceptar cotización
+            </button>`
+          :html`<div style=${{background:"#fff",borderRadius:12,padding:"20px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
+            <div style=${{fontWeight:700,fontSize:15,color:"#1e293b",marginBottom:4}}>✍️ Tu firma de aceptación</div>
+            <div style=${{fontSize:12,color:"#64748b",marginBottom:14}}>Al firmar confirmas que aceptas esta cotización y sus condiciones.</div>
+            <div>
+              <label style=${{fontSize:11,fontWeight:600,color:"#475569",display:"block",marginBottom:5}}>Nombre completo *</label>
+              <input value=${nombre} onChange=${e=>setNombre(e.target.value)}
+                placeholder="Escribe tu nombre" style=${{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:14,fontFamily:"inherit",marginBottom:12,boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <div style=${{marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <label style=${{fontSize:11,fontWeight:600,color:"#475569"}}>Firma *</label>
+              <button onClick=${clear} style=${{background:"none",border:"none",cursor:"pointer",fontSize:11,color:"#94a3b8",fontFamily:"inherit"}}>✕ Limpiar</button>
+            </div>
+            <canvas ref=${canvasRef} width=${480} height=${160}
+              style=${{width:"100%",height:160,border:"2px solid #e2e8f0",borderRadius:10,background:"#fafafa",cursor:"crosshair",touchAction:"none",display:"block"}}
+              onMouseDown=${startDraw} onMouseMove=${draw} onMouseUp=${endDraw} onMouseLeave=${endDraw}
+              onTouchStart=${startDraw} onTouchMove=${draw} onTouchEnd=${endDraw}/>
+            ${!signed?html`<div style=${{textAlign:"center",fontSize:11,color:"#94a3b8",marginTop:6}}>Dibuja tu firma con el dedo o el mouse</div>`:""}
+            <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:14}}>
+              <button onClick=${()=>setStep("ver")} style=${{padding:"12px",borderRadius:10,border:"1px solid #e2e8f0",background:"#f8fafc",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:600,color:"#64748b"}}>← Volver</button>
+              <button onClick=${confirmar} style=${{padding:"12px",borderRadius:10,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,color:"#fff",background:signed&&nombre.trim()?"linear-gradient(135deg,#059669,#10b981)":"#e2e8f0",color:signed&&nombre.trim()?"#fff":"#94a3b8"}}>
+                ✅ Confirmar firma
+              </button>
+            </div>
+          </div>`}
+
+      <!-- Footer -->
+      <div style=${{textAlign:"center",fontSize:11,color:"#94a3b8",paddingTop:8}}>
+        ${empresa}${cfg?.ciudad?" · "+cfg.ciudad:""}<br/>
+        Este enlace es único para esta cotización
+      </div>
+    </div>
+  </div>`;
+}
+
+function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit,onDel,onPrint,onWA,onWABanco,onFirmaLink}){
   const [q,setQ]=useState("");
   const [estF,setEstF]=useState("Todos");
   const [confirm,setConfirm]=useState(null);
-  const ESTS=["Todos","Borrador","Enviada","Aceptada","Rechazada"];
-  const EST_C={Borrador:["#f1f5f9","#64748b"],Enviada:["#eff6ff","#1d4ed8"],Aceptada:["#f0fdf4","#059669"],Rechazada:["#fef2f2","#dc2626"]};
+  const ESTS=["Todos","Borrador","Enviada","Aceptada","Firmada","Rechazada"];
+  const EST_C={Borrador:["#f1f5f9","#64748b"],Enviada:["#eff6ff","#1d4ed8"],Aceptada:["#f0fdf4","#059669"],Firmada:["#f0fdf4","#059669"],Rechazada:["#fef2f2","#dc2626"]};
   const filt=cots.filter(ct=>{
     const cli=cls.find(x=>x.id===ct.cid);
     const mq=!q||ct.id.toLowerCase().includes(q.toLowerCase())||(cli?.nombre||"").toLowerCase().includes(q.toLowerCase())||(ct.ref||"").toLowerCase().includes(q.toLowerCase());
@@ -5177,14 +5240,20 @@ function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit
               <div style=${{fontSize:12,color:"#475569"}}>${tec?.nombre||"—"}</div>
               <div style=${{fontSize:12,color:"#475569",textAlign:"center"}}>${ct.items?.length||0}</div>
               <div style=${{fontWeight:700,fontSize:13,color:"#1e293b"}}>${mxn(ct.tot)}</div>
-              <div><span style=${{background:ec[0],color:ec[1],padding:"2px 10px",borderRadius:99,fontSize:11,fontWeight:700}}>${ct.est}</span></div>
+              <div style=${{display:"flex",alignItems:"center",gap:4}}>
+                <span style=${{background:ec[0],color:ec[1],padding:"2px 10px",borderRadius:99,fontSize:11,fontWeight:700}}>${ct.est}</span>
+                ${ct.firma&&html`<span title=${"Firmado por: "+ct.firma.nombre} style=${{fontSize:14}}>✍️</span>`}
+              </div>
               <div style=${{display:"flex",gap:3,padding:"9px 6px",justifyContent:"flex-end"}}>
                 <button class="btn btn-ghost btn-sm" title="Imprimir" onClick=${()=>onPrint(ct)}><${Ic} n="print" z=${12}/></button>
                 <button class="btn btn-sm" title="Enviar cotización por WhatsApp" onClick=${()=>onWA(ct)}
                   style=${{background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",padding:"4px 8px",display:"flex",alignItems:"center",gap:3}}>
                   <${Ic} n="wa" z=${13} s="#16a34a"/>
                 </button>
-
+                <button class="btn btn-sm" title="Link para firma digital" onClick=${()=>onFirmaLink(ct)}
+                  style=${{background:ct.firma?"#f0fdf4":ct.token?"#eff6ff":"#f8fafc",color:ct.firma?"#059669":ct.token?"#1d4ed8":"#94a3b8",border:"1px solid",borderColor:ct.firma?"#bbf7d0":ct.token?"#bfdbfe":"#e2e8f0",padding:"4px 8px",display:"flex",alignItems:"center",gap:3}}>
+                  <${Ic} n=${ct.firma?"ok":"link"} z=${13} s=${ct.firma?"#059669":ct.token?"#1d4ed8":"#94a3b8"}/>
+                </button>
                 <button class="btn btn-ghost btn-sm" title="Editar" onClick=${()=>onEdit(ct)}><${Ic} n="edit" z=${12}/></button>
                 <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirm(ct)}><${Ic} n="trash" z=${12} s="#dc2626"/></button>
               </div>
@@ -6701,7 +6770,71 @@ function CajaGastosTab({gastos,session,onAddGasto,onDelGasto}){
   </div>`;
 }
 
-function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,onAddPago,onCorte,onDelPago,onAddGasto,onDelGasto}){
+/* ── Notas de Venta Tab ────────────────────────────────────────────────── */
+function DashNVTab({notas,onDelNota,onPrintNota}){
+  const [q,setQ]=useState("");
+  const [confirm,setConfirm]=useState(null);
+
+  const lista=q.trim()
+    ?notas.filter(nv=>[nv.id,nv.ord?.id||"",nv.cli?.nombre||"",nv.cli?.empresa||"",nv.ord?.equipo||"",nv.tecNombre||"",nv.fecha||""].some(x=>x.toLowerCase().includes(q.toLowerCase())))
+    :[...notas].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+
+  if(notas.length===0) return html`
+    <div class="empty-state" style=${{paddingTop:60}}>
+      <${Ic} n="receipt" z=${34} s="#cbd5e1"/>
+      <div style=${{marginTop:12,fontSize:14,fontWeight:500,color:"var(--mac-ink3)"}}>Sin notas de venta</div>
+      <div style=${{fontSize:12,color:"var(--mac-ink4)",marginTop:4}}>Aparecen al entregar órdenes y generar la nota</div>
+    </div>`;
+
+  return html`<div style=${{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",width:"100%"}}>
+    <!-- Buscador -->
+    <div style=${{padding:"10px 16px",borderBottom:"1px solid var(--mac-rim)",background:"var(--mac-bg)",flexShrink:0}}>
+      <div style=${{position:"relative",maxWidth:360}}>
+        <span style=${{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)"}}><${Ic} n="search" z=${13} s="#94a3b8"/></span>
+        <input value=${q} onChange=${e=>setQ(e.target.value)}
+          placeholder="Buscar por folio, cliente, equipo…"
+          style=${{paddingLeft:30,fontSize:12}}/>
+      </div>
+    </div>
+
+    <!-- Tabla desktop -->
+    <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"90px 90px 1fr 140px 90px 110px 72px"}}>
+      ${["Folio NV","Orden","Cliente / Equipo","Técnico","Fecha","Total",""].map(h=>html`<div key=${h}>${h}</div>`)}
+    </div>
+
+    <div style=${{flex:1,overflowY:"auto"}}>
+      ${lista.length===0
+        ?html`<div class="empty-state"><div style=${{marginTop:10,color:"var(--mac-ink4)"}}>Sin resultados</div></div>`
+        :lista.map(nv=>{
+          const cv=nv.bud?calc(nv.bud.items):{s:0,iv:0,tot:0};
+          return html`<div key=${nv.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"90px 90px 1fr 140px 90px 110px 72px",alignItems:"center"}}
+            onMouseOver=${e=>e.currentTarget.style.background="var(--mac-surface2)"}
+            onMouseOut=${e=>e.currentTarget.style.background=""}>
+            <div style=${{fontFamily:"monospace",fontSize:11,color:"#1d4ed8",fontWeight:600,padding:"10px 12px"}}>${nv.id}</div>
+            <div style=${{fontFamily:"monospace",fontSize:11,color:"var(--mac-ink4)",padding:"10px 12px"}}>${nv.ord?.id||"—"}</div>
+            <div style=${{padding:"10px 12px"}}>
+              <div style=${{fontWeight:600,fontSize:13,color:"var(--mac-ink)"}}>${nv.cli?.nombre||"—"}</div>
+              <div style=${{fontSize:11,color:"var(--mac-ink4)",marginTop:1}}>${nv.ord?.equipo||"—"}</div>
+            </div>
+            <div style=${{fontSize:12,color:"var(--mac-ink3)",padding:"10px 12px"}}>${nv.tecNombre||"—"}</div>
+            <div style=${{fontSize:11,color:"var(--mac-ink4)",padding:"10px 12px"}}>${nv.fecha||"—"}</div>
+            <div style=${{fontSize:13,fontWeight:700,color:"#059669",padding:"10px 12px"}}>${mxn(cv.tot)}</div>
+            <div style=${{padding:"10px 8px",display:"flex",gap:4,justifyContent:"flex-end"}}>
+              <button class="btn btn-ghost btn-sm" title="Reimprimir" onClick=${()=>onPrintNota(nv)}><${Ic} n="print" z=${13}/></button>
+              <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirm(nv)}><${Ic} n="trash" z=${13} s="#dc2626"/></button>
+            </div>
+          </div>`;
+        })}
+    </div>
+
+    ${confirm&&html`<${Confirm}
+      msg=${"¿Eliminar nota <b>"+confirm.id+"</b>?"}
+      onOk=${()=>{onDelNota(confirm.id);setConfirm(null);}}
+      onCancel=${()=>setConfirm(null)}/>`}
+  </div>`;
+}
+
+function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,notas,session,config,onAddPago,onCorte,onDelPago,onAddGasto,onDelGasto,onDelNota,onPrintNota}){
   const [tab,setTab]   = useState("cobrar");
   const [confirm,setConfirm] = useState(null);
   const [showCorteModal,setShowCorteModal] = useState(false);
@@ -6725,7 +6858,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,
   const totalGastosHoy = gastosHoy.reduce((s,g)=>s+g.monto,0);
   const utilidadHoy = totHoy.total - totalGastosHoy;
 
-  const TABS=[["cobrar","💰","Cobrar"],["pos","🛒","Venta"],["gastos","💸","Gastos"],["historial","📋","Historial"],["cortes","✂️","Cortes"]];
+  const TABS=[["cobrar","💰","Cobrar"],["pos","🛒","Venta"],["gastos","💸","Gastos"],["historial","📋","Historial"],["notas","🧾","Notas de Venta"],["cortes","✂️","Cortes"]];
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",background:"var(--mac-surface)"}}>
 
@@ -6757,6 +6890,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,
           ${k==="cobrar"&&ordsPend.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${ordsPend.length}</span>`}
           ${k==="historial"&&pagosHoy.length>0&&html`<span style=${{background:"#1d4ed8",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${pagosHoy.length}</span>`}
           ${k==="gastos"&&gastosHoy.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${gastosHoy.length}</span>`}
+          ${k==="notas"&&(notas||[]).length>0&&html`<span style=${{background:"#7c3aed",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${(notas||[]).length}</span>`}
         </button>`)}
       <div style=${{marginLeft:"auto",display:"flex",alignItems:"center"}}>
         <button class="btn btn-primary btn-sm" onClick=${()=>setShowCorteModal(true)} style=${{fontSize:11}}>
@@ -6771,6 +6905,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,
       ${tab==="pos"        &&html`<${CajaPOSTab} inv=${inv} session=${session} config=${config} onAddPago=${onAddPago}/>`}
       ${tab==="gastos"     &&html`<${CajaGastosTab} gastos=${gastos||[]} session=${session} onAddGasto=${onAddGasto} onDelGasto=${onDelGasto}/>`}
       ${tab==="historial"&&html`<${CajaHistorialTab} pagos=${pagos} ords=${ords} cls=${cls} config=${config} onDel=${(id)=>onDelPago(id)}/>`}
+      ${tab==="notas"      &&html`<${DashNVTab} notas=${notas||[]} onDelNota=${onDelNota} onPrintNota=${onPrintNota}/>`}
       ${tab==="cortes"     &&html`<${CajaCortesTab} cortes=${cortes}/>`}
     </div>
 
@@ -7855,16 +7990,49 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
 }
 
 function UserModal({edit,tecs,onSave,onClose}){
-  const [f,setF]=useState(edit||{username:"",password:"",nombre:"",rol:"tecnico",tecId:"",activo:true});
+  const [f,setF]=useState(edit||{username:"",password:"",nombre:"",rol:"tecnico",tecId:"",activo:true,firmaBase64:""});
   const s=k=>e=>setF(p=>({...p,[k]:e.target.value}));
   const [showPwd,setShowPwd]=useState(false);
+  const [tab,setTab]=useState("datos");
+  const canvasRef=React.useRef();
+  const [drawing,setDrawing]=useState(false);
+  const [hasTrazos,setHasTrazos]=useState(false);
+
+  React.useEffect(()=>{
+    if(tab==="firma"){
+      setHasTrazos(false);
+      if(f.firmaBase64&&canvasRef.current){
+        const img=new Image();
+        img.onload=()=>{
+          const c=canvasRef.current;
+          if(c){c.getContext("2d").clearRect(0,0,c.width,c.height);c.getContext("2d").drawImage(img,0,0,c.width,c.height);}
+        };
+        img.src=f.firmaBase64;
+      }
+    }
+  },[tab]);
+
+  function getPos(e,c){
+    const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    if(e.touches) return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
+    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};
+  }
+  function startDraw(e){e.preventDefault();const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.beginPath();ctx.moveTo(p.x,p.y);setDrawing(true);}
+  function draw(e){e.preventDefault();if(!drawing)return;const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.lineWidth=2.2;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1d4ed8";ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);setHasTrazos(true);}
+  function endDraw(e){e.preventDefault();setDrawing(false);}
+  function clearCanvas(){const c=canvasRef.current;if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height);setHasTrazos(false);}
+
   function save(){
     if(!f.username.trim()||!f.password.trim()||!f.nombre.trim()){alert("Completa usuario, contraseña y nombre.");return;}
-    onSave({...f,id:edit?.id||`U${++USERSEQ}`});
+    let firmaFinal=f.firmaBase64||"";
+    if(tab==="firma"&&hasTrazos&&canvasRef.current){firmaFinal=canvasRef.current.toDataURL("image/png");}
+    onSave({...f,firmaBase64:firmaFinal,id:edit?.id||`U${++USERSEQ}`});
   }
   const techList=tecs.filter(t=>t.rol!=="Sistema");
+
   return html`<div class="modal-bg" onClick=${onClose}>
-    <div class="modal fade-in" style=${{maxWidth:460}} onClick=${e=>e.stopPropagation()}>
+    <div class="modal fade-in" style=${{maxWidth:480}} onClick=${e=>e.stopPropagation()}>
+
       <div style=${{padding:"18px 24px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style=${{display:"flex",alignItems:"center",gap:8}}>
           <${Ic} n="shield" z=${18} s="#1d4ed8"/>
@@ -7872,7 +8040,21 @@ function UserModal({edit,tecs,onSave,onClose}){
         </div>
         <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
       </div>
-      <div style=${{padding:"20px 24px",display:"grid",gap:12}}>
+
+      <div style=${{display:"flex",borderBottom:"1px solid #e2e8f0",background:"#f8fafc"}}>
+        ${[["datos","👤","Datos"],["firma","✍️","Mi firma"]].map(([k,ic,lbl])=>html`
+          <button key=${k} onClick=${()=>setTab(k)} style=${{
+            flex:1,padding:"10px 0",border:"none",cursor:"pointer",fontFamily:"inherit",
+            fontSize:12,fontWeight:700,background:"transparent",
+            display:"flex",alignItems:"center",justifyContent:"center",gap:6,
+            color:tab===k?"#1d4ed8":"#64748b",
+            borderBottom:tab===k?"2px solid #1d4ed8":"2px solid transparent"}}>
+            ${ic} ${lbl}
+            ${k==="firma"&&f.firmaBase64&&html`<span style=${{width:7,height:7,borderRadius:"50%",background:"#059669",flexShrink:0,display:"inline-block"}}/>`}
+          </button>`)}
+      </div>
+
+      ${tab==="datos"&&html`<div style=${{padding:"20px 24px",display:"grid",gap:12}}>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div><label>Nombre completo *</label><input value=${f.nombre} onChange=${s("nombre")} placeholder="ej. Carlos Mendoza"/></div>
           <div><label>Rol</label>
@@ -7916,10 +8098,47 @@ function UserModal({edit,tecs,onSave,onClose}){
             </button>`)}
           </div>
         </div>
-      </div>
-      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
-        <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
-        <button class="btn btn-primary" onClick=${save}><${Ic} n="ok" z=${14} s="#fff"/> ${edit?"Guardar":"Crear usuario"}</button>
+      </div>`}
+
+      ${tab==="firma"&&html`<div style=${{padding:"20px 24px",display:"grid",gap:14}}>
+        <div style=${{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"11px 14px",fontSize:12,color:"#1e40af",lineHeight:1.6}}>
+          ✍️ Dibuja tu firma. Se guardará al hacer clic en <b>Guardar cambios</b> y aparecerá en los presupuestos que imprimas.
+        </div>
+        ${f.firmaBase64&&!hasTrazos&&html`
+          <div style=${{textAlign:"center",background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"12px"}}>
+            <div style=${{fontSize:10,fontWeight:700,color:"#059669",marginBottom:8,textTransform:"uppercase",letterSpacing:.8}}>✓ Firma guardada actualmente</div>
+            <img src=${f.firmaBase64} style=${{maxWidth:300,maxHeight:80,objectFit:"contain",display:"block",margin:"0 auto"}}/>
+          </div>`}
+        <div>
+          <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
+            <label style=${{margin:0,fontWeight:700,fontSize:11,color:"#475569"}}>
+              ${f.firmaBase64&&!hasTrazos?"Redibujar firma":"Dibuja tu firma aquí"}
+            </label>
+            <button class="btn btn-ghost btn-sm" onClick=${clearCanvas} style=${{fontSize:10,color:"#dc2626",border:"1px solid #fca5a5"}}>✕ Limpiar</button>
+          </div>
+          <canvas ref=${canvasRef} width=${440} height=${170}
+            style=${{width:"100%",height:170,border:"2px solid #bfdbfe",borderRadius:10,
+              background:"#fff",cursor:"crosshair",touchAction:"none",display:"block",
+              boxShadow:"inset 0 1px 4px rgba(0,0,0,.06)"}}
+            onMouseDown=${startDraw} onMouseMove=${draw} onMouseUp=${endDraw} onMouseLeave=${endDraw}
+            onTouchStart=${startDraw} onTouchMove=${draw} onTouchEnd=${endDraw}/>
+          <div style=${{fontSize:10,color:"#94a3b8",marginTop:5,textAlign:"center"}}>Traza con mouse o dedo · Fondo blanco · Trazo azul</div>
+        </div>
+      </div>`}
+
+      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style=${{fontSize:11}}>
+          ${f.firmaBase64
+            ?html`<span style=${{color:"#059669",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
+                <span style=${{width:7,height:7,borderRadius:"50%",background:"#059669",display:"inline-block"}}></span>
+                Firma digital activa
+              </span>`
+            :html`<span style=${{color:"#94a3b8"}}>Sin firma digital aún</span>`}
+        </div>
+        <div style=${{display:"flex",gap:8}}>
+          <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
+          <button class="btn btn-primary" onClick=${save}><${Ic} n="ok" z=${14} s="#fff"/> ${edit?"Guardar cambios":"Crear usuario"}</button>
+        </div>
       </div>
     </div>
   </div>`;
@@ -8637,7 +8856,7 @@ function buildCalcWAMsg(calc, tot, sub, iva, config){
   return L.join("\n");
 }
 
-function printCalcInstalacion(calc,cfg){
+function printCalcInstalacion(calc,cfg,session){
   cfg=cfg||{};
   const empresa=cfg.empresa||"Redcom";
   const tel=cfg.tel||"";
@@ -8646,6 +8865,7 @@ function printCalcInstalacion(calc,cfg){
   const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const terminos=cfg.terminos||"";
+  const firmaDigital=session?.firmaBase64||"";
 
   const allItems=calc.items||[];
   const sub=allItems.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
@@ -8700,8 +8920,8 @@ function printCalcInstalacion(calc,cfg){
     /* TABLE */
     .tbl-wrap{padding:0 28px 0}
     table{width:100%;border-collapse:collapse}
-    thead tr{background:#104E8D}
-    thead th{padding:8px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
+    thead tr{background:#104E8D;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    thead th{padding:11px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#fff;text-align:left}
     thead th.r{text-align:right}thead th.c{text-align:center}
     tbody tr:last-child td{border-bottom:1px solid #e2e8f0}
 
@@ -8728,9 +8948,11 @@ function printCalcInstalacion(calc,cfg){
     .terms-list{font-size:10px;color:#64748b;line-height:1.7;padding-left:14px}
 
     /* FIRMA */
-    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 28px 20px;border-top:none}
+    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 28px 32px;border-top:none}
     .firma-col{text-align:center}
-    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:70%;margin-left:auto;margin-right:auto}
+    .firma-espacio{height:72px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+    .firma-img{max-width:180px;max-height:64px;object-fit:contain;display:block;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:72%;margin-left:auto;margin-right:auto}
     .firma-nombre{font-size:12px;font-weight:600;color:#1e293b}
     .firma-rol{font-size:10px;color:#94a3b8;margin-top:2px}
 
@@ -8739,6 +8961,8 @@ function printCalcInstalacion(calc,cfg){
       body{background:#fff;padding:0}
       .doc{box-shadow:none;border:none;border-radius:0;max-width:100%}
       .no-print{display:none!important}
+      thead tr{background:#104E8D!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+      thead th{color:#fff!important}
       @page{margin:8mm;size:A4}
     }
   </style></head><body>
@@ -8831,11 +9055,15 @@ function printCalcInstalacion(calc,cfg){
     <!-- FIRMAS -->
     <div class="firma">
       <div class="firma-col">
+        <div class="firma-espacio">
+          ${firmaDigital?`<img src="${firmaDigital}" class="firma-img" alt="Firma"/>`:`<span></span>`}
+        </div>
         <div class="firma-line"></div>
         <div class="firma-nombre">Elaboró: ${calc.elaboro||"—"}</div>
         <div class="firma-rol">Representante</div>
       </div>
       <div class="firma-col">
+        <div class="firma-espacio"></div>
         <div class="firma-line"></div>
         <div class="firma-nombre">Autoriza cliente</div>
         <div class="firma-rol">Firma y nombre</div>
@@ -9011,9 +9239,6 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
     <!-- Header -->
     <div style=${{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"14px 24px",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
       <div style=${{display:"flex",alignItems:"center",gap:12}}>
-        <div style=${{width:38,height:38,borderRadius:10,background:"linear-gradient(135deg,#0f2158,#1d4ed8)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <${Ic} n="calc" z=${20} s="#fff"/>
-        </div>
         <div>
           <div style=${{fontSize:16,fontWeight:700}}>Cotizaciones</div>
           <div style=${{fontSize:11,color:"#64748b"}}>Crea y gestiona cotizaciones profesionales</div>
@@ -9323,7 +9548,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
 
           <!-- Primario: Imprimir -->
           <button class="btn btn-primary" style=${{justifyContent:"center",padding:"10px"}}
-            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config)}
+            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config,session)}
             disabled=${calc.items.length===0}>
             <${Ic} n="print" z=${15} s="#fff"/> Imprimir / Vista previa
           </button>
@@ -9353,6 +9578,51 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
               </button>`;
             })()}
           </div>
+          <!-- Firma link WA -->
+          ${calc.id&&(()=>{
+            const cli=cls.find(x=>x.id===calc.cliId);
+            const tel=cli?.tel;
+            const hasTel=tel&&tel.replace(/\D/g,"").length>=10;
+            return html`<button class="btn btn-sm" style=${{justifyContent:"center",
+                background:hasTel?"#eff6ff":"#f8fafc",
+                color:hasTel?"#1d4ed8":"#94a3b8",
+                border:"1.5px solid "+(hasTel?"#bfdbfe":"#e2e8f0"),
+                fontWeight:700,gap:6}}
+              disabled=${!hasTel}
+              title=${!hasTel?"El cliente no tiene teléfono":"Enviar link de firma digital por WhatsApp"}
+              onClick=${()=>{
+                let token=calc.token;
+                if(!token){
+                  token=genToken();
+                  // Guardar token en localStorage
+                  const saved=JSON.parse(localStorage.getItem("redcom_calcs")||"[]");
+                  const updated=saved.map(c=>c.id===calc.id?{...c,token}:c);
+                  localStorage.setItem("redcom_calcs",JSON.stringify(updated));
+                  setCalc(p=>({...p,token}));
+                }
+                const url=portalCotURL(token);
+                const num=(tel||"").replace(/\D/g,"");
+                const num52=num.length===10?"52"+num:num;
+                const empresa=(config&&config.empresa)||"Redcom";
+                const msgLines=[
+                  "✍️ *"+empresa+"* — Firma de cotización",
+                  "─────────────────────",
+                  "📋 *"+(calc.descripcion||calc.id)+"*",
+                  "💰 Total: *"+mxn(tot)+"*",
+                  "",
+                  "Hola *"+(cli?.nombre||"Cliente")+"*, aquí está el enlace para revisar y *firmar digitalmente* tu cotización:",
+                  "",
+                  "🔗 "+url,
+                  "",
+                  "Este enlace es exclusivo para ti. Al firmar confirmas la aceptación.",
+                  "🙏 ¡Gracias por tu preferencia!"
+                ];
+                const msg=msgLines.join("\n");
+                window.open("https://wa.me/"+num52+"?text="+encodeURIComponent(msg),"_blank");
+              }}>
+              <${Ic} n="link" z=${13} s=${hasTel?"#1d4ed8":"#94a3b8"}/> Link firma WA
+            </button>`;
+          })()}
           <!-- Divisor -->
           <div style=${{borderTop:"1px solid #f1f5f9",margin:"2px 0"}}/>
           <!-- Secundarios -->
@@ -9435,7 +9705,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
               <div style=${{fontSize:14,fontWeight:700,color:"#1d4ed8",whiteSpace:"nowrap"}}>${mxn(s.tot||0)}</div>
               <div style=${{display:"flex",gap:4}}>
                 <button class="btn btn-ghost btn-sm" onClick=${()=>loadCalc(s)} title="Cargar"><${Ic} n="edit" z=${13}/></button>
-                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
+                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config,session)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
                 <button class="btn btn-danger btn-sm" onClick=${()=>delCalc(s.id)} title="Eliminar"><${Ic} n="trash" z=${13} s="#dc2626"/></button>
               </div>
             </div>`)}
@@ -9454,6 +9724,7 @@ function App(){
   const [showFotos,setShowFotos]=useState(null);   // ordId
   const [showFirma,setShowFirma]=useState(null);   // ordId
   const [portalOrd,setPortalOrd]=useState(null);   // ord object for portal preview
+  const [portalCot,setPortalCot]=useState(null);   // cot object for firma portal
   const [provs,setProvs]=useState(()=>lsGet("redcom_provs",PROVS0));
   const [ocs,setOcs]=useState(()=>lsGet("redcom_ocs",OCMPS0));
   const [citas,setCitas]=useState(()=>lsGet("redcom_citas",[]));
@@ -9692,8 +9963,10 @@ function App(){
   }
   function saveFotos(ordId,fotos){setOrds(p=>{const n=p.map(o=>o.id===ordId?{...o,fotos}:o);lsSet("redcom_ords",n);return n;});setShowFotos(null);}
   function saveFirma(ordId,firma){
+    const nowF=new Date();
+    const entryF={fecha:nowF.toISOString().slice(0,10),hora:nowF.toTimeString().slice(0,5),estado:"Entregado",user:session?.nombre||"—",nota:"Firma: "+firma.nombre};
     setOrds(p=>{
-      const n=p.map(o=>o.id===ordId?{...o,firma,est:"Entregado"}:o);
+      const n=p.map(o=>o.id===ordId?{...o,firma,est:"Entregado",fechaEntrega:nowF.toISOString().slice(0,10),log:[entryF,...(o.log||[])]}:o);
       lsSet("redcom_ords",n);
       return n;
     });
@@ -9730,8 +10003,9 @@ function App(){
       });
     }
     setBuds(p=>{const n={...p,[b.id]:b};lsSet("redcom_buds",n);saveSeqs();return n;});
-    setOrds(p=>{const n=p.map(o=>o.id===b.oid?{...o,pid:b.id}:o);lsSet("redcom_ords",n);return n;});
+    setOrds(p=>{const n=p.map(o=>o.id===b.oid?{...o,pid:b.id,total:b.tot||0}:o);lsSet("redcom_ords",n);return n;});
     setBudOrd(null);
+    toast("Presupuesto guardado","ok");
   }
   function saveSvc(s){setSvcs(p=>{const n=p.find(x=>x.id===s.id)?p.map(x=>x.id===s.id?s:x):[...p,s];lsSet("redcom_svcs",n);saveSeqs();return n;});setNewSvc(false);setEditSvc(null);}
   function delSvc(id){setSvcs(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_svcs",n);return n;});}
@@ -9825,19 +10099,27 @@ function App(){
   function delCot(id){setCots(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_cots",n);return n;});}
   function login(u){setSession(u);try{sessionStorage.setItem("redcom_session",JSON.stringify(u));}catch(e){}}
   function logout(){setSession(null);try{sessionStorage.removeItem("redcom_session");}catch(e){}}
-  function saveUser(u){setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});setNewUser(false);setEditUser(null);}
+  function saveUser(u){
+    setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});
+    if(u.id===session?.id){
+      const updated={...session,...u};
+      setSession(updated);
+      try{sessionStorage.setItem("redcom_session",JSON.stringify(updated));}catch(e){}
+    }
+    setNewUser(false);setEditUser(null);
+  }
   function delUser(id){setUsers(p=>{const n=p.filter(u=>u.id!==id);lsSet("redcom_users",n);return n;});}
   function addNota(nv){
     setNotas(p=>{
       const next=[nv,...p];
-      try{localStorage.setItem("redcom_notas",JSON.stringify(next));}catch(e){}
+      lsSet("redcom_notas",next);
       return next;
     });
   }
   function delNota(id){
     setNotas(p=>{
       const next=p.filter(n=>n.id!==id);
-      try{localStorage.setItem("redcom_notas",JSON.stringify(next));}catch(e){}
+      lsSet("redcom_notas",next);
       return next;
     });
   }
@@ -9872,9 +10154,16 @@ function App(){
       if(changed){lsSet("redcom_ords",updated);}
       return changed?updated:prev;
     });
+    // Migrate: add token to cots that don't have one
+    setCots(prev=>{
+      let changed=false;
+      const updated=prev.map(c=>{if(!c.token){changed=true;return{...c,token:genToken()};}return c;});
+      if(changed){lsSet("redcom_cots",updated);}
+      return changed?updated:prev;
+    });
   },[]);
 
-  // Portal intercept — check URL for ?portal=TOKEN
+  // Portal intercept — check URL for ?portal=TOKEN or ?cotfirma=TOKEN
   React.useEffect(()=>{
     const params=new URLSearchParams(window.location.search);
     const tok=params.get("portal");
@@ -9882,9 +10171,28 @@ function App(){
       const found=ords.find(o=>o.token===tok);
       if(found) setPortalOrd(found);
     }
+    const ctok=params.get("cotfirma");
+    if(ctok){
+      const found=cots.find(c=>c.token===ctok);
+      if(found) setPortalCot(found);
+    }
   },[]);
 
   // Portal view (no login required)
+  if(portalCot){
+    const pCot=cots.find(c=>c.id===portalCot.id)||portalCot;
+    const pCli=cls.find(c=>c.id===pCot.cid);
+    const pTec=tecs.find(t=>t.id===pCot.tec);
+    return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
+      onFirmada=${(cotId,firma)=>{
+        setCots(p=>{
+          const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);
+          lsSet("redcom_cots",n);
+          return n;
+        });
+        setPortalCot(prev=>({...prev,firma,est:"Firmada"}));
+      }}/>`;
+  }
   if(portalOrd){
     const pOrd=ords.find(o=>o.id===portalOrd.id)||portalOrd;
     const pCli=cls.find(c=>c.id===pOrd.cid);
@@ -10199,7 +10507,23 @@ function App(){
                   </div>`;
                 })}
               </div>`
-            :html`<${Kanban} ords=${filt} cls=${cls} tecs=${tecs} buds=${buds} sel=${sel} onSel=${id=>setSel(sel===id?null:id)} onMv=${(id,st)=>setOrds(p=>{const n=p.map(o=>o.id===id?{...o,est:st}:o);lsSet("redcom_ords",n);return n;})}/>`}
+            :html`<${Kanban} ords=${filt} cls=${cls} tecs=${tecs} buds=${buds} sel=${sel} onSel=${id=>setSel(sel===id?null:id)} onMv=${(id,st)=>{
+                  const now=new Date();
+                  const entry={fecha:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),estado:st,user:session?.nombre||"—",nota:""};
+                  setOrds(p=>{const n=p.map(o=>o.id===id?{...o,est:st,log:[entry,...(o.log||[])]}:o);lsSet("redcom_ords",n);return n;});
+                  // auto-garantía si pasa a Entregado
+                  if(st==="Entregado"){
+                    const ord=ords.find(o=>o.id===id);
+                    if(ord){setGars(prev=>{
+                      if(prev.find(g=>g.ordId===id)) return prev;
+                      const vence=new Date();vence.setDate(vence.getDate()+90);
+                      const g={id:`GAR${String(++GARSEQ).padStart(4,"0")}`,ordId:id,cliId:ord.cid,equipo:ord.equipo,
+                        fechaEntrega:now.toISOString().slice(0,10),fechaVence:vence.toISOString().slice(0,10),dias:90,
+                        estado:"Vigente",reclamoNotas:"",reclamoFecha:""};
+                      const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();return n;
+                    });}
+                  }
+                }}/>`}
           </div>
           ${sOrd&&html`<div style=${{
               width:isMobile?"100%":"355px",
@@ -10211,9 +10535,13 @@ function App(){
               zIndex:isMobile?40:"auto",
               background:"#fff"
             }}>
-            <${Detail} ord=${sOrd} cli=${sCli} tec=${sTec} bud=${sBud} invItems=${inv}
+            <${Detail} ord=${sOrd} cli=${sCli} tec=${sTec} bud=${sBud} invItems=${inv} cfg=${config}
               onEdit=${o=>setEditOrd(o)} onDel=${delOrd} onBud=${o=>setBudOrd(o)}
               onNotaVenta=${()=>{
+                if(!sBud||!sBud.items||sBud.items.length===0){
+                  alert("⚠️ Esta orden no tiene presupuesto. Crea un presupuesto antes de generar la Nota de Venta.");
+                  return;
+                }
                 const nv={id:newNVId(),ord:sOrd,cli:sCli,bud:sBud,tecNombre:sTec?.nombre||"—",fecha:new Date().toLocaleDateString("es-MX")};
                 addNota(nv);
                 printNotaVenta(nv,config);
@@ -10222,6 +10550,17 @@ function App(){
                 const now=new Date();
                 const entry={fecha:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),estado:st,user:session?.nombre||"—",nota:""};
                 setOrds(p=>{const n=p.map(o=>o.id===id?{...o,est:st,log:[entry,...(o.log||[])]}:o);lsSet("redcom_ords",n);return n;});
+                if(st==="Entregado"){
+                  const ord=ords.find(o=>o.id===id);
+                  if(ord){setGars(prev=>{
+                    if(prev.find(g=>g.ordId===id)) return prev;
+                    const vence=new Date();vence.setDate(vence.getDate()+90);
+                    const g={id:`GAR${String(++GARSEQ).padStart(4,"0")}`,ordId:id,cliId:ord.cid,equipo:ord.equipo,
+                      fechaEntrega:now.toISOString().slice(0,10),fechaVence:vence.toISOString().slice(0,10),dias:90,
+                      estado:"Vigente",reclamoNotas:"",reclamoFecha:""};
+                    const n=[g,...prev];lsSet("redcom_gars",n);saveSeqs();return n;
+                  });}
+                }
               }}
               onSaveDiag=${(id,diag,diagCosto)=>{
                 const now=new Date();
@@ -10288,6 +10627,42 @@ Gracias por su preferencia 🙏`;
           const tel=fmtTelWA(cli.tel);
           window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
         }}
+        onFirmaLink=${ct=>{
+          // Asegurar token en la cotización
+          let token=ct.token;
+          if(!token){
+            token=genToken();
+            setCots(p=>{const n=p.map(c=>c.id===ct.id?{...c,token}:c);lsSet("redcom_cots",n);return n;});
+          }
+          const url=portalCotURL(token);
+          const cli=cls.find(x=>x.id===ct.cid);
+          const tel=cli?.tel?fmtTelWA(cli.tel):"";
+          // Armar mensaje WA con el link
+          const empresa=(config&&config.empresa)||"Redcom";
+          const msgLines=[
+            "✍️ *"+empresa+"* — Firma de cotización",
+            "─────────────────────",
+            "📋 Cotización: *"+ct.id+"*",
+            "💰 Total: *"+mxn(ct.tot||0)+"*",
+            "",
+            "Hola *"+(cli?.nombre||"Cliente")+"*, aquí está el enlace para revisar y *firmar digitalmente* tu cotización:",
+            "",
+            "🔗 "+url,
+            "",
+            "Este enlace es exclusivo para ti. Al firmar confirmas la aceptación.",
+            "🙏 ¡Gracias por tu preferencia!"
+          ];
+          const msg=msgLines.join("\n");
+          if(tel&&tel.length>=10){
+            window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
+          } else {
+            if(navigator.clipboard){
+              navigator.clipboard.writeText(url).then(()=>alert("🔗 Link copiado al portapapeles.\n\nPégalo en WhatsApp o envíalo por correo."));
+            } else {
+              alert("🔗 Link para firma:\n"+url);
+            }
+          }
+        }}
       />`}
       ${sec==="provs"&&isAdmin&&html`<${ProveedoresSection}
         provs=${provs} inv=${inv}
@@ -10305,8 +10680,10 @@ Gracias por su preferencia 🙏`;
         ords=${ords} cls=${cls} inv=${inv} tecs=${tecs} svcs=${svcs}
         pagos=${pagos} cots=${cots} gars=${gars} gastos=${gastos} onImportInv=${importInv}/>`}
       ${sec==="caja"&&isAdmin&&html`<${CajaSection}
-        pagos=${pagos} cortes=${cortes} ords=${ords} cls=${cls} inv=${inv} buds=${buds} cots=${cots} gastos=${gastos} session=${session} config=${config}
-        onAddPago=${addPago} onCorte=${addCorte} onDelPago=${delPago} onAddGasto=${addGasto} onDelGasto=${delGasto}/>`}
+        pagos=${pagos} cortes=${cortes} ords=${ords} cls=${cls} inv=${inv} buds=${buds} cots=${cots} gastos=${gastos}
+        notas=${notas} session=${session} config=${config}
+        onAddPago=${addPago} onCorte=${addCorte} onDelPago=${delPago} onAddGasto=${addGasto} onDelGasto=${delGasto}
+        onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
       ${sec==="garantias"&&isAdmin&&html`<${GarantiasSection}
         gars=${gars} ords=${ords} cls=${cls} tecs=${tecs}
         onAdd=${addGar} onReclamo=${reclamoGar} onDel=${delGar}/>`}
@@ -10314,7 +10691,7 @@ Gracias por su preferencia 🙏`;
       ${sec==="calc"&&html`<${CalcInstalacionSection} inv=${inv} svcs=${svcs} cls=${cls} tecs=${tecs} session=${session} config=${config} onSaveCot=${ct=>{saveCot({...ct,id:`COT-${String(++COTSEQ).padStart(4,"0")}`});}}/>`}
       ${sec==="servicios"&&isAdmin&&html`<${ServiciosSection} svcs=${svcs} onAdd=${()=>setNewSvc(true)} onEdit=${s=>setEditSvc(s)} onDel=${delSvc}/>`}
       ${sec==="users"&&isAdmin&&html`<${UsersSection} users=${users} tecs=${tecs} session=${session} onAdd=${()=>setNewUser(true)} onEdit=${u=>setEditUser(u)} onDel=${delUser}/>`}
-      ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} notas=${notas} pagos=${pagos} svcs=${svcs} onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
+      ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} pagos=${pagos} svcs=${svcs} cots=${cots} gars=${gars}/>`}
       ${false&&html`<${CalendarioSection}/>`}
       </div>
     </main>
