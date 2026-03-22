@@ -9499,40 +9499,27 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
               title=${!hasTel?"El cliente no tiene teléfono":"Enviar link de firma digital por WhatsApp"}
               onClick=${()=>{
                 let token=calc.token;
-                // Siempre regenerar si no tiene token o forzar guardado
                 if(!token){ token=genToken(); setCalc(p=>({...p,token})); }
                 // Guardar en localStorage
                 const saved=JSON.parse(localStorage.getItem("redcom_calcs")||"[]");
-                const updated=saved.find(c=>c.id===calc.id)
+                const updatedSaved=saved.find(c=>c.id===calc.id)
                   ?saved.map(c=>c.id===calc.id?{...c,token}:c)
                   :[{...calc,token},...saved];
-                localStorage.setItem("redcom_calcs",JSON.stringify(updated));
-                // Guardar cotización en doc propio en Firestore: portal_TOKEN
-                // El cliente lo leerá directamente sin buscar en el array completo
+                localStorage.setItem("redcom_calcs",JSON.stringify(updatedSaved));
+                // Guardar cotización en doc propio en Firestore — clave portal_TOKEN
                 const cliObj=cls.find(x=>x.id===calc.cliId)||{nombre:calc.cliente||"Cliente"};
                 const portalData={
-                  token,
-                  id:calc.id||token,
-                  descripcion:calc.descripcion||"",
-                  cliente:cliObj.nombre,
-                  cliId:calc.cliId||"",
-                  validez:Number(calc.validez)||15,
-                  iva:!!calc.conIva,
-                  est:calc.est||"Borrador",
+                  token, id:calc.id||token,
+                  descripcion:calc.descripcion||"", cliente:cliObj.nombre,
+                  cliId:calc.cliId||"", validez:Number(calc.validez)||15,
+                  iva:!!calc.conIva, est:calc.est||"Borrador",
                   fecha:calc.fecha||new Date().toISOString().slice(0,10),
-                  notas:calc.notas||"",
-                  sub:sub,
-                  tot:tot,
+                  notas:calc.notas||"", sub:sub, tot:tot,
                   items:(calc.items||[]).map(i=>({
-                    id:String(i.id||""),
-                    nombre:i.nombre||"",
-                    cat:i.cat||"",
-                    desc:i.desc||"",
-                    precio:Number(i.precio)||0,
-                    qty:Number(i.qty)||1
+                    id:String(i.id||""), nombre:i.nombre||"", cat:i.cat||"",
+                    desc:i.desc||"", precio:Number(i.precio)||0, qty:Number(i.qty)||1
                   }))
                 };
-                // Guardar con clave única por token — lectura instantánea del cliente
                 fbSet("portal_"+token, portalData);
                 const url=portalCotURL(token);
                 const num=(tel||"").replace(/\D/g,"");
@@ -10089,8 +10076,7 @@ function App(){
     });
   },[]);
 
-  // ── PORTAL DEL CLIENTE ─────────────────────────────────────────────
-  // Leer token de la URL al instante (síncrono)
+  // ── PORTAL DEL CLIENTE — leer directamente de Firestore ─────────────
   const [_cotToken]=useState(()=>{
     try{return new URLSearchParams(window.location.search).get("cotfirma")||"";}catch(e){return "";}
   });
@@ -10107,60 +10093,54 @@ function App(){
       _setPortalLoad(true);
       try{
         if(_cotToken){
-          // 1. Buscar en doc propio portal_TOKEN (guardado al enviar el link)
           let data=null;
+          // Buscar en doc propio portal_TOKEN (guardado al generar link)
           if(window.fbDb){
             const snap=await window.fbDb.collection(FB_COL).doc("portal_"+_cotToken).get();
             if(snap.exists) data=snap.data().data;
           }
-          // 2. Fallback: buscar en array cots cargado
+          // Fallback: buscar en array cots
           if(!data) data=cots.find(c=>c.token===_cotToken)||null;
-          if(data){ _setPortalData({tipo:"cot",cot:data}); }
-          else { _setPortalErr("Cotización no encontrada. Pide al taller que reenvíe el enlace."); }
-        } else if(_ordToken){
+          if(data) _setPortalData({tipo:"cot",cot:data});
+          else _setPortalErr("Cotización no encontrada. Pide al taller que reenvíe el enlace.");
+        } else {
           let data=null;
           if(window.fbDb){
             const snap=await window.fbDb.collection(FB_COL).doc("portal_ord_"+_ordToken).get();
             if(snap.exists) data=snap.data().data;
           }
           if(!data) data=ords.find(o=>o.token===_ordToken)||null;
-          if(data){ _setPortalData({tipo:"ord",ord:data}); }
-          else { _setPortalErr("Orden no encontrada. Pide al taller que reenvíe el enlace."); }
+          if(data) _setPortalData({tipo:"ord",ord:data});
+          else _setPortalErr("Orden no encontrada. Pide al taller que reenvíe el enlace.");
         }
       }catch(e){
-        // Fallback en caso de error de red
-        if(_cotToken){const f=cots.find(c=>c.token===_cotToken);if(f){_setPortalData({tipo:"cot",cot:f});_setPortalLoad(false);return;}}
-        if(_ordToken){const f=ords.find(o=>o.token===_ordToken);if(f){_setPortalData({tipo:"ord",ord:f});_setPortalLoad(false);return;}}
-        _setPortalErr("Sin conexión. Verifica tu internet e intenta de nuevo.");
+        const fc=cots.find(c=>c.token===_cotToken);
+        const fo=ords.find(o=>o.token===_ordToken);
+        if(fc) _setPortalData({tipo:"cot",cot:fc});
+        else if(fo) _setPortalData({tipo:"ord",ord:fo});
+        else _setPortalErr("Sin conexión. Verifica tu internet e intenta de nuevo.");
       }
       _setPortalLoad(false);
     }
     cargar();
   },[]);
 
-  // Renderizar portal ANTES del check de sesión
   if(_cotToken||_ordToken){
-    const SPIN=html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",
-        background:"linear-gradient(160deg,#1e3a8a,#1d4ed8)",fontFamily:"'Segoe UI',sans-serif"}}>
+    if(_portalLoad) return html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(160deg,#1e3a8a,#1d4ed8)",fontFamily:"'Segoe UI',sans-serif"}}>
       <div style=${{textAlign:"center",color:"#fff"}}>
-        <div style=${{width:52,height:52,border:"4px solid rgba(255,255,255,.3)",borderTopColor:"#fff",
-          borderRadius:"50%",animation:"spin 0.7s linear infinite",margin:"0 auto 20px"}}/>
+        <div style=${{width:52,height:52,border:"4px solid rgba(255,255,255,.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite",margin:"0 auto 20px"}}/>
         <div style=${{fontSize:17,fontWeight:700,marginBottom:6}}>Cargando...</div>
         <div style=${{fontSize:13,opacity:.65}}>Un momento por favor</div>
       </div>
     </div>`;
-    const ERR=html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",
-        background:"#f1f5f9",fontFamily:"'Segoe UI',sans-serif",padding:24}}>
+
+    if(_portalErr) return html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#f1f5f9",fontFamily:"'Segoe UI',sans-serif",padding:24}}>
       <div style=${{textAlign:"center",maxWidth:340}}>
         <div style=${{fontSize:52,marginBottom:16}}>🔗</div>
         <div style=${{fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:10}}>Enlace no válido</div>
         <div style=${{fontSize:14,color:"#64748b",lineHeight:1.7}}>${_portalErr}</div>
-        <div style=${{marginTop:16,fontSize:12,color:"#94a3b8"}}>Si el problema persiste, contacta al taller.</div>
       </div>
     </div>`;
-
-    if(_portalLoad) return SPIN;
-    if(_portalErr)  return ERR;
 
     if(_portalData?.tipo==="cot"){
       const pCot=_portalData.cot;
@@ -10168,10 +10148,15 @@ function App(){
       const pTec=tecs.find(t=>t.id===pCot.tec);
       return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
         onFirmada=${(cotId,firma)=>{
-          // Guardar firma en el doc del portal y en cots
-          fbSet("portal_"+_cotToken,{..._portalData.cot,firma,est:"Firmada"});
-          setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);lsSet("redcom_cots",n);return n;});
-          _setPortalData(prev=>({...prev,cot:{...prev.cot,firma,est:"Firmada"}}));
+          // Actualizar a Aceptada en Firestore y en cots local
+          const fechaFirma=new Date().toISOString().slice(0,10);
+          fbSet("portal_"+_cotToken,{..._portalData.cot,firma,est:"Aceptada",fechaFirma});
+          setCots(p=>{
+            const n=p.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma}:c);
+            lsSet("redcom_cots",n);
+            return n;
+          });
+          _setPortalData(prev=>({...prev,cot:{...prev.cot,firma,est:"Aceptada"}}));
         }}/>`;
     }
     if(_portalData?.tipo==="ord"){
@@ -10180,7 +10165,7 @@ function App(){
       const pTec=tecs.find(t=>t.id===pOrd.tec);
       return html`<${PortalCliente} ord=${pOrd} cli=${pCli} tec=${pTec}/>`;
     }
-    return SPIN;
+    return html`<div/>`; // mientras carga
   }
 
   // Legacy fallback
@@ -10190,8 +10175,9 @@ function App(){
     const pTec=tecs.find(t=>t.id===pCot.tec);
     return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
       onFirmada=${(cotId,firma)=>{
-        setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);lsSet("redcom_cots",n);return n;});
-        setPortalCot(prev=>({...prev,firma,est:"Firmada"}));
+        const fechaFirma=new Date().toISOString().slice(0,10);
+        setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma}:c);lsSet("redcom_cots",n);return n;});
+        setPortalCot(prev=>({...prev,firma,est:"Aceptada"}));
       }}/>`;
   }
   if(portalOrd){
