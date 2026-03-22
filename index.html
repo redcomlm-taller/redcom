@@ -10186,8 +10186,25 @@ function App(){
       return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
         onFirmada=${(cotId,firma)=>{
           const ff=new Date().toISOString().slice(0,10);
-          fbSet("portal_"+_cotToken,{..._pd.cot,firma,est:"Aceptada",fechaFirma:ff});
-          setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma:ff}:c);lsSet("redcom_cots",n);return n;});
+          const cotActualizada={..._pd.cot,firma,est:"Aceptada",fechaFirma:ff};
+          // 1. Actualizar doc del portal (para que el cliente vea la confirmación)
+          fbSet("portal_"+_cotToken, cotActualizada);
+          // 2. Actualizar redcom_cots en Firestore leyendo el array actual
+          if(window.fbDb){
+            window.fbDb.collection(FB_COL).doc("redcom_cots").get().then(snap=>{
+              let arr=[];
+              if(snap.exists) arr=snap.data().data||[];
+              const idx=arr.findIndex(c=>c.id===cotId);
+              if(idx>=0){
+                arr=arr.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma:ff}:c);
+              } else {
+                // Si fue creada desde Calc y no está en redcom_cots, agregarla
+                arr=[cotActualizada,...arr];
+              }
+              window.fbDb.collection(FB_COL).doc("redcom_cots").set({data:arr,ts:Date.now()});
+            }).catch(e=>console.warn("Error guardando firma en Firestore:",e));
+          }
+          // 3. Actualizar estado local del portal para mostrar pantalla "gracias"
           _setPd(prev=>({...prev,cot:{...prev.cot,firma,est:"Aceptada"}}));
         }}/>`;
     }
