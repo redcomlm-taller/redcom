@@ -8823,6 +8823,8 @@ function printCalcInstalacion(calc,cfg,session){
   const logo=cfg.logo||"";
   const terminos=cfg.terminos||"";
   const firmaDigital=session?.firmaBase64||"";
+  const firmaCliente=calc.firma?.base64||"";
+  const firmaClienteNombre=calc.firma?.nombre||"";
 
   const allItems=calc.items||[];
   const sub=allItems.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
@@ -9018,10 +9020,10 @@ function printCalcInstalacion(calc,cfg,session){
         <div class="firma-rol">Representante</div>
       </div>
       <div class="firma-col">
-        <div class="firma-espacio"></div>
+        <div class="firma-espacio">${firmaCliente?`<img src="${firmaCliente}" class="firma-img" alt="Firma cliente"/>`:`<div style="font-size:9px;color:#94a3b8;font-style:italic;padding-bottom:8px">Pendiente de firma</div>`}</div>
         <div class="firma-line"></div>
-        <div class="firma-nombre">Autoriza cliente</div>
-        <div class="firma-rol">Firma y nombre</div>
+        <div class="firma-nombre">${firmaClienteNombre?firmaClienteNombre:"Autoriza cliente"}</div>
+        <div class="firma-rol">${firmaCliente?"✓ Firmado digitalmente":"Firma y nombre"}</div>
       </div>
     </div>
 
@@ -9503,7 +9505,11 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
 
           <!-- Primario: Imprimir -->
           <button class="btn btn-primary" style=${{justifyContent:"center",padding:"10px"}}
-            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config,session)}
+            onClick=${()=>{
+              // Buscar la cotización guardada en cots para obtener firma del cliente
+              const cotGuardada=cots.find(c=>c.id===calc.id)||{};
+              printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad,firma:cotGuardada.firma||calc.firma},config,session);
+            }}
             disabled=${calc.items.length===0}>
             <${Ic} n="print" z=${15} s="#fff"/> Imprimir / Vista previa
           </button>
@@ -10186,25 +10192,8 @@ function App(){
       return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
         onFirmada=${(cotId,firma)=>{
           const ff=new Date().toISOString().slice(0,10);
-          const cotActualizada={..._pd.cot,firma,est:"Aceptada",fechaFirma:ff};
-          // 1. Actualizar doc del portal (para que el cliente vea la confirmación)
-          fbSet("portal_"+_cotToken, cotActualizada);
-          // 2. Actualizar redcom_cots en Firestore leyendo el array actual
-          if(window.fbDb){
-            window.fbDb.collection(FB_COL).doc("redcom_cots").get().then(snap=>{
-              let arr=[];
-              if(snap.exists) arr=snap.data().data||[];
-              const idx=arr.findIndex(c=>c.id===cotId);
-              if(idx>=0){
-                arr=arr.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma:ff}:c);
-              } else {
-                // Si fue creada desde Calc y no está en redcom_cots, agregarla
-                arr=[cotActualizada,...arr];
-              }
-              window.fbDb.collection(FB_COL).doc("redcom_cots").set({data:arr,ts:Date.now()});
-            }).catch(e=>console.warn("Error guardando firma en Firestore:",e));
-          }
-          // 3. Actualizar estado local del portal para mostrar pantalla "gracias"
+          fbSet("portal_"+_cotToken,{..._pd.cot,firma,est:"Aceptada",fechaFirma:ff});
+          setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma:ff}:c);lsSet("redcom_cots",n);return n;});
           _setPd(prev=>({...prev,cot:{...prev.cot,firma,est:"Aceptada"}}));
         }}/>`;
     }
