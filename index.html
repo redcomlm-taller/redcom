@@ -1465,54 +1465,9 @@ function ToastStack({toasts}){
 }
 function today(){return new Date().toISOString().slice(0,10)}
 
-/* ══ TICKET ════════════════════════════════════════════════════════════ */
-function printTicket(o,c){
-  const now=new Date();
-  const ds=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
-  const ts=`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-  const u=gur(o.urg);
-  const w=window.open("","_blank","width=440,height=660");
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#f1f5f9;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;font-family:'IBM Plex Sans',sans-serif}
-  .t{width:80mm;background:#fff;border:2px solid #1e293b;border-radius:10px;overflow:hidden}
-  .h{background:#1d4ed8;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
-  .logo{font-size:20px;font-weight:800;letter-spacing:2px}.logo span{color:#93c5fd}
-  .sub{font-size:9px;letter-spacing:1px;opacity:.75;margin-top:1px}
-  .folio{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;text-align:center;padding:14px;border-bottom:2px dashed #e2e8f0;letter-spacing:3px;color:#1e293b}
-  .s{padding:8px 14px;border-bottom:1px solid #f1f5f9}
-  .st{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:3px}
-  .v{font-size:13px;font-weight:600;color:#1e293b}.v2{font-size:10px;color:#64748b;margin-top:1px}
-  .bd{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${u.bg};color:${u.c};border:1px solid ${u.c}40}
-  .row{display:flex;justify-content:space-between;align-items:flex-start}
-  .bc{text-align:center;padding:10px 14px;border-top:1px dashed #e2e8f0}
-  .bg{font-size:28px;line-height:1;color:#1e293b;letter-spacing:-1px;font-family:monospace}
-  .bi{font-size:9px;color:#94a3b8;margin-top:3px;letter-spacing:2px}
-  .ft{background:#f8fafc;padding:7px 14px;font-size:9px;color:#94a3b8;text-align:center;line-height:1.5}
-  @media print{body{background:#fff;padding:0}@page{margin:4mm}}
-  </style></head><body><div class="t">
-  <div class="h"><div><div class="logo">RED<span>COM</span></div><div class="sub">SERVICIO TÉCNICO EN CÓMPUTO</div></div><div style="text-align:right;font-size:9px;opacity:.8;font-family:'IBM Plex Mono'">${ds}<br/>${ts}</div></div>
-  <div class="folio">${o.id}</div>
-  <div class="s"><div class="st">Cliente</div><div class="v">${c.nombre}</div>${c.empresa?`<div class="v2">${c.empresa}</div>`:""}<div class="v2">${c.tel}</div></div>
-  <div class="s"><div class="st">Equipo recibido</div><div class="v">${o.equipo}</div>${o.serie&&o.serie!=="N/A"?`<div class="v2" style="font-family:'IBM Plex Mono';font-size:10px">S/N: ${o.serie}</div>`:""}</div>
-  <div class="s"><div class="st">Falla reportada</div><div style="font-size:11px;color:#334155;line-height:1.45">${o.prob}</div></div>
-  <div class="s"><div class="row"><div><div class="st">Técnico</div><div class="v" style="font-size:11px">${o.tecNombre||"Por asignar"}</div></div><div style="text-align:right"><div class="st">Urgencia</div><div class="bd">${o.urg}</div></div></div></div>
-  ${o.ent?`<div class="s"><div class="st">Entrega estimada</div><div class="v">${fmtD(o.ent)}</div></div>`:""}
-  ${o.notas?`<div class="s"><div class="st">Notas</div><div style="font-size:10px;color:#64748b">${o.notas}</div></div>`:""}
-  <div class="bc"><div class="bg">||| || ||| | || ||| |||| || |</div><div class="bi">${o.id} · REDCOM</div></div>
-  <div class="ft">Al recoger su equipo presente este comprobante<br/>Redcom — Redes · Cómputo · Videovigilancia · Gracias por su preferencia</div>
-  </div><div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
-    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
-    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
-  </div></body></html>`);
-  w.document.close();
-}
-
 /* ══ ICONS ═════════════════════════════════════════════════════════════ */
 function Ic({n,z=16,s="#64748b"}){
   const a={width:z,height:z,viewBox:"0 0 24 24",fill:"none",stroke:s,strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round"};
-  const p=(d)=>html`<svg ...${a}><path d=${d}/></svg>`;
   if(n==="orders")   return html`<svg ...${a}><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg>`;
   if(n==="clients")  return html`<svg ...${a}><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a7 7 0 0 1 7-7h0a7 7 0 0 1 7 7v2"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
   if(n==="inv")      return html`<svg ...${a}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
@@ -1535,8 +1490,8 @@ function Ic({n,z=16,s="#64748b"}){
   if(n==="box")      return html`<svg ...${a}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`;
   if(n==="toggle")   return html`<svg ...${a}><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="16" cy="12" r="3"/></svg>`;
   if(n==="warn")     return html`<svg ...${a}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-  if(n==="wa") return html`<svg ...${a}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
-    if(n==="receipt")  return html`<svg ...${a}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+  if(n==="wa")       return html`<svg ...${a}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
+  if(n==="receipt")  return html`<svg ...${a}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
   if(n==="camera")   return html`<svg ...${a}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
   if(n==="sign")     return html`<svg ...${a}><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
   if(n==="link")     return html`<svg ...${a}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
@@ -1555,227 +1510,423 @@ function Ic({n,z=16,s="#64748b"}){
   if(n==="cloudok")  return html`<svg ...${a}><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="9 16 12 19 15 16"/></svg>`;
   if(n==="cloudno")  return html`<svg ...${a}><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
   if(n==="shield")   return html`<svg ...${a}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-  if(n==="calc")     return html`<svg ...${a}><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg>`;
-  if(n==="wa")       return html`<svg ...${a}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
-return null;
+  return null;
 }
 
-/* ══ NOTA DE VENTA ══════════════════════════════════════════════════════ */
-let NV_SEQ=(()=>{try{const s=localStorage.getItem("redcom_notas");if(s){const a=JSON.parse(s);if(a.length>0){const last=a[0].id.replace("NV-","");const n=parseInt(last,10);if(!isNaN(n))return n;}}return 0;}catch(e){return 0;}})();
-function newNVId(){NV_SEQ++;localStorage.setItem("redcom_nvseq",NV_SEQ);return`NV-${String(NV_SEQ).padStart(4,"0")}`;}
 
-function printNotaVenta(nv, cfg){
+/* ══ TICKET ════════════════════════════════════════════════════════════ */
+function printTicket(o,c,cfg){
   cfg=cfg||{};
-  const cfgEmpresa=cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
-  const cfgTel=cfg.tel??""; const cfgEmail=cfg.email??""; const cfgDir=(cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||cfg.estado||"Los Mochis")+", "+cfg.estado):"Los Mochis, Sinaloa");
-  const cfgLogo=cfg.logo||"";
-  const cfgWeb=cfg.web||"";
+  const empresa=cfg.empresa||"Redcom";
+  const tel=cfg.tel||"";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const logo=cfg.logo||"";
+  const now=new Date();
+  const ds=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
+  const ts=`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+  const u=gur(o.urg);
+  const w=window.open("","_blank","width=480,height=700");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <title>Ticket ${o.id}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh}
+    .doc{width:100%;max-width:360px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
 
-  const w=window.open("","_blank","width=520,height=760");
-  const cv=nv.bud?calc(nv.bud.items):{s:0,iv:0,tot:0};
-  const items=nv.bud?.items||[];
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#f1f5f9;display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:24px;font-family:'IBM Plex Sans',sans-serif}
-  .nv{width:100%;max-width:420px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.10)}
-  .hdr{background:#1d4ed8;color:#fff;padding:16px 20px}
-  .logo{font-size:22px;font-weight:800;letter-spacing:2px}.logo span{color:#93c5fd}
-  .sub{font-size:9px;letter-spacing:1.5px;opacity:.75;margin-top:2px;text-transform:uppercase}
-  .nv-id{font-family:'JetBrains Mono',monospace;font-size:13px;opacity:.85;margin-top:6px}
-  .meta{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #e2e8f0}
-  .meta-cell{padding:10px 16px;border-right:1px solid #e2e8f0}
-  .meta-cell:nth-child(even){border-right:none}
-  .cell-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:3px}
-  .cell-val{font-size:12px;font-weight:600;color:#1e293b}
-  .cell-sub{font-size:10px;color:#64748b;margin-top:1px}
-  .items-hdr{display:grid;grid-template-columns:1fr 60px 90px;gap:0;background:#f8fafc;border-bottom:1px solid #e2e8f0}
-  .items-hdr>div{padding:7px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8}
-  .item-row{display:grid;grid-template-columns:1fr 60px 90px;border-bottom:1px solid #f1f5f9}
-  .item-row>div{padding:8px 14px;font-size:12px;color:#1e293b}
-  .item-sub{font-size:10px;color:#94a3b8;margin-top:1px}
-  .totals{padding:12px 16px;background:#f8fafc;border-top:2px solid #e2e8f0}
-  .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px}
-  .tot-final{display:flex;justify-content:space-between;font-size:17px;font-weight:800;color:#1d4ed8;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0}
-  .footer{padding:12px 16px;text-align:center;font-size:10px;color:#94a3b8;line-height:1.6;border-top:1px solid #f1f5f9}
-  .badge{display:inline-flex;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #bbf7d0}
-  @media print{body{background:#fff;padding:0}.nv{box-shadow:none;border:1px solid #e2e8f0}@page{margin:6mm}}
-  </style></head><body><div class="nv">
-  <div class="hdr" style="display:flex;align-items:center;gap:14px;justify-content:space-between">
-    <div style="display:flex;align-items:center;gap:12px">
-      ${cfgLogo?`<img src="${cfgLogo}" style="height:48px;max-width:100px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,.15);padding:3px"/>`:`<div class="logo">RED<span>COM</span></div>`}
+    /* HEADER */
+    .hdr{padding:12px 20px 10px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #e2e8f0}
+    .doc-title{font-size:18px;font-weight:800;color:#1e293b;letter-spacing:-.3px}
+    .doc-id{font-family:'JetBrains Mono',monospace;font-size:16px;color:#1d4ed8;font-weight:700;margin-top:3px;letter-spacing:1px}
+    .doc-fecha{font-size:10px;color:#94a3b8;margin-top:2px}
+    .logo-img{height:64px;max-width:140px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:16px;font-weight:800;color:#1d4ed8}
+
+    /* SECCIONES */
+    .sec{padding:9px 20px;border-bottom:1px solid #f1f5f9}
+    .sec-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:3px}
+    .sec-val{font-size:13px;font-weight:600;color:#1e293b;line-height:1.4}
+    .sec-sub{font-size:10px;color:#64748b;margin-top:1px;font-family:'JetBrains Mono',monospace}
+
+    /* URG + TEC row */
+    .meta-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #f1f5f9}
+    .meta-cell{padding:9px 20px;border-right:1px solid #f1f5f9}
+    .meta-cell:last-child{border-right:none}
+
+    /* URGENCIA BADGE */
+    .urg{display:inline-block;padding:2px 10px;border-radius:99px;font-size:10px;font-weight:700}
+
+    /* CÓDIGO DE BARRAS */
+    .barcode{padding:12px 20px 10px;text-align:center;border-top:1px dashed #e2e8f0;border-bottom:1px solid #f1f5f9}
+    .bar-lines{font-size:26px;letter-spacing:-2px;color:#1e293b;font-family:monospace;line-height:1}
+    .bar-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:#94a3b8;margin-top:3px;letter-spacing:2px}
+
+    /* FOOTER */
+    .ft{padding:9px 20px;font-size:9px;color:#94a3b8;text-align:center;line-height:1.6}
+
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:none;border-radius:0;max-width:100%}.no-print{display:none!important}@page{margin:4mm;size:80mm auto}}
+  </style></head><body>
+  <div class="doc">
+
+    <!-- HEADER -->
+    <div class="hdr">
       <div>
-        <div style="font-size:15px;font-weight:800;letter-spacing:.5px">${cfgEmpresa}</div>
-        ${cfgDir?`<div class="sub" style="margin-top:3px">📍 ${cfgDir}</div>`:""}
-        ${cfgTel?`<div class="sub" style="margin-top:2px">📞 ${cfgTel}</div>`:""}
-        ${cfgEmail?`<div class="sub" style="margin-top:2px">✉️ ${cfgEmail}</div>`:""}
+        <div class="doc-title">ORDEN DE SERVICIO</div>
+        <div class="doc-id">${o.id}</div>
+        <div class="doc-fecha">${ds} &nbsp; ${ts}</div>
+      </div>
+      <div>${logo?`<img src="${logo}" class="logo-img"/>`:`<span class="logo-ini">${empresa.split(" ")[0]}</span>`}</div>
+    </div>
+
+    <!-- CLIENTE -->
+    <div class="sec">
+      <div class="sec-lbl">Cliente</div>
+      <div class="sec-val">${c.nombre}</div>
+      ${c.empresa?`<div style="font-size:11px;color:#64748b">${c.empresa}</div>`:""}
+      <div style="font-size:10px;color:#64748b;margin-top:1px">${c.tel}</div>
+    </div>
+
+    <!-- EQUIPO -->
+    <div class="sec">
+      <div class="sec-lbl">Equipo recibido</div>
+      <div class="sec-val">${o.equipo}</div>
+      ${o.serie&&o.serie!=="N/A"?`<div class="sec-sub">S/N: ${o.serie}</div>`:""}
+    </div>
+
+    <!-- FALLA -->
+    <div class="sec">
+      <div class="sec-lbl">Falla reportada</div>
+      <div style="font-size:12px;color:#334155;line-height:1.5">${o.prob}</div>
+    </div>
+
+    <!-- TÉCNICO + URGENCIA -->
+    <div class="meta-row">
+      <div class="meta-cell">
+        <div class="sec-lbl">Técnico</div>
+        <div style="font-size:12px;font-weight:600;color:#1e293b">${o.tecNombre||"Por asignar"}</div>
+      </div>
+      <div class="meta-cell">
+        <div class="sec-lbl">Urgencia</div>
+        <span class="urg" style="background:${u.bg};color:${u.c};border:1px solid ${u.c}44">${o.urg}</span>
       </div>
     </div>
-    <div style="text-align:right">
-      <div class="sub" style="opacity:.6;font-size:8px;letter-spacing:1.5px;text-transform:uppercase">Nota de Venta</div>
-      <div class="nv-id" style="margin-top:4px">${nv.id} · ${nv.fecha}</div>
-    </div>
-  </div>
-  <div class="meta">
-    <div class="meta-cell"><div class="cell-lbl">Cliente</div><div class="cell-val">${nv.cli.nombre}</div>${nv.cli.empresa?`<div class="cell-sub">${nv.cli.empresa}</div>`:""}<div class="cell-sub">${nv.cli.tel}</div></div>
-    <div class="meta-cell"><div class="cell-lbl">Equipo</div><div class="cell-val">${nv.ord.equipo}</div>${nv.ord.serie&&nv.ord.serie!=="N/A"?`<div class="cell-sub" style="font-family:'IBM Plex Mono';font-size:10px">S/N: ${nv.ord.serie}</div>`:""}</div>
-    <div class="meta-cell"><div class="cell-lbl">Orden de trabajo</div><div class="cell-val" style="font-family:'IBM Plex Mono';font-size:12px">${nv.ord.id}</div></div>
-    <div class="meta-cell"><div class="cell-lbl">Técnico</div><div class="cell-val">${nv.tecNombre}</div></div>
-  </div>
-  <div class="items-hdr"><div>Descripción</div><div style="text-align:center">Cant.</div><div style="text-align:right">Importe</div></div>
-  ${items.map(it=>it.t==="r"
-    ?`<div class="item-row"><div><div>${it.n}</div><div class="item-sub">Refacción</div></div><div style="text-align:center;color:#475569">${it.q}</div><div style="text-align:right;font-weight:600">${mxn(it.q*it.p)}</div></div>`
-    :it.t==="s"?`<div class="item-row"><div><div>${it.n}</div><div class="item-sub">Servicio · ${it.q} × ${mxn(it.p)}/serv.</div></div><div style="text-align:center;color:#475569">${it.q}</div><div style="text-align:right;font-weight:600">${mxn(it.q*it.p)}</div></div>`:`<div class="item-row"><div><div>${it.n}</div><div class="item-sub">Servicio · ${it.h} × ${mxn(it.ph)}/serv.</div></div><div style="text-align:center;color:#475569">${it.h}</div><div style="text-align:right;font-weight:600">${mxn(it.h*it.ph)}</div></div>`
-  ).join("")}
-  <div class="totals">
-    <div class="tot-row"><span>Subtotal</span><span>${mxn(cv.s)}</span></div>
-    <div class="tot-row"><span>IVA (16%)</span><span>${mxn(cv.iv)}</span></div>
-    <div class="tot-final"><span>TOTAL</span><span>${mxn(cv.tot)}</span></div>
-  </div>
-  <div class="footer">
-    <div style="margin-bottom:4px"><span class="badge">✓ PAGADO</span></div>
-    Equipo entregado al cliente el ${nv.fecha}<br/>
-    Redcom — Redes · Cómputo · Videovigilancia · Conserve este documento como comprobante
-  </div>
-  </div><div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
-    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
-    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
-  </div></body></html>`);
-  w.document.close();
-}
 
-/* ── Ticket de cobro (impresión térmica 80mm) ────────────────────────── */
-function printTicketCobro(pago, ord, cli, cfg, bud){
-  cfg = cfg||{};
-  const empresa = cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
-  const tel     = cfg.tel||"";
-  const dir     = cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+cfg.cp+" "+cfg.estado):"";
-  const web     = cfg.web||"";
-  const logo    = cfg.logo||"";
-  const METODO_LABEL = {efectivo:"💵 Efectivo",transferencia:"🏦 Transferencia",tarjeta:"💳 Tarjeta"};
-  const METODO_COLOR = {efectivo:"#059669",transferencia:"#1d4ed8",tarjeta:"#9333ea"};
-  const col = METODO_COLOR[pago.metodo]||"#1d4ed8";
-  const items = bud?.items||[];
-  const cv = items.length>0 ? calc(items) : null;
-
-  const itemsHTML = items.length>0 ? `
-  <div class="section" style="padding:0">
-    <div style="background:#f8fafc;padding:6px 18px;border-bottom:1px dashed #e2e8f0">
-      <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8">Desglose — Presupuesto ${bud.id}</span>
-    </div>
-    ${items.map(it=>{
-      const desc = it.t==="r" ? `${it.n} × ${it.q}` : it.t==="s" ? `${it.n} × ${it.q}` : `${it.n} (${it.h}h)`;
-      const imp  = it.t==="m" ? it.h*it.ph : it.q*it.p;
-      return `<div style="display:flex;justify-content:space-between;padding:5px 18px;border-bottom:1px solid #f8fafc;font-size:11px">
-        <span style="color:#475569;flex:1;padding-right:8px">${desc}</span>
-        <span style="font-weight:600;color:#1e293b;white-space:nowrap">${mxn(imp)}</span>
-      </div>`;
-    }).join("")}
-    ${cv?`<div style="display:flex;justify-content:space-between;padding:6px 18px;font-size:11px;background:#f8fafc">
-      <span style="color:#94a3b8">Subtotal</span><span style="font-weight:600">${mxn(cv.s)}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:4px 18px;font-size:11px">
-      <span style="color:#94a3b8">IVA (16%)</span><span style="color:#64748b">${mxn(cv.iv)}</span>
+    <!-- ENTREGA -->
+    ${o.ent?`<div class="sec">
+      <div class="sec-lbl">Entrega estimada</div>
+      <div style="font-size:13px;font-weight:600;color:#1d4ed8">${fmtD(o.ent)}</div>
     </div>`:""}
-  </div>` : "";
 
-  const w = window.open("","_blank","width=380,height=680");
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
-  <title>Recibo ${pago.id}</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700;800&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#f1f5f9;font-family:'IBM Plex Sans',sans-serif;display:flex;justify-content:center;padding:20px}
-    .ticket{width:100%;max-width:320px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12)}
-    .hdr{background:linear-gradient(135deg,#1e3a8a,#1d4ed8);padding:16px 18px;color:#fff;text-align:center}
-    .hdr-logo{max-height:50px;max-width:140px;object-fit:contain;margin-bottom:8px}
-    .hdr-empresa{font-size:15px;font-weight:800;letter-spacing:.5px}
-    .hdr-sub{font-size:9px;opacity:.65;margin-top:3px;letter-spacing:.5px}
-    .folio-bar{background:#f8fafc;border-bottom:1px dashed #e2e8f0;padding:10px 18px;display:flex;justify-content:space-between;align-items:center}
-    .folio{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#1d4ed8;letter-spacing:1px}
-    .fecha{font-size:10px;color:#94a3b8;font-family:'JetBrains Mono',monospace}
-    .section{padding:12px 18px;border-bottom:1px dashed #f1f5f9}
-    .lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:3px}
-    .val{font-size:12px;font-weight:600;color:#1e293b}
-    .val-sub{font-size:10px;color:#64748b;margin-top:2px}
-    .monto-section{padding:14px 18px;text-align:center;background:#f8fafc;border-bottom:1px dashed #e2e8f0}
-    .monto-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:6px}
-    .monto{font-size:32px;font-weight:800;line-height:1;letter-spacing:-1px}
-    .metodo-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;border:1.5px solid}
-    .footer{padding:14px 18px;text-align:center}
-    .gracias{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:4px}
-    .footer-sub{font-size:9px;color:#94a3b8;line-height:1.7}
-    .cut-line{border:none;border-top:2px dashed #e2e8f0;margin:2px 0}
-    .pagado{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#059669;border:1.5px solid #bbf7d0;border-radius:99px;padding:3px 12px;font-size:11px;font-weight:800;margin-bottom:8px}
-    @media print{body{background:#fff;padding:0}.ticket{box-shadow:none;border-radius:0;max-width:100%}@page{margin:0;size:80mm auto}}
-  </style>
-  </head><body><div class="ticket">
+    ${o.notas?`<div class="sec">
+      <div class="sec-lbl">Notas</div>
+      <div style="font-size:11px;color:#64748b">${o.notas}</div>
+    </div>`:""}
 
-  <div class="hdr">
-    ${logo?`<img src="${logo}" class="hdr-logo"/><br/>`:""}
-    <div class="hdr-empresa">${empresa}</div>
-    ${tel?`<div class="hdr-sub">${tel}</div>`:""}
-    ${dir?`<div class="hdr-sub">${dir}</div>`:""}
-    ${web?`<div class="hdr-sub">${web}</div>`:""}
-  </div>
-
-  <div class="folio-bar">
-    <div class="folio">${pago.id}</div>
-    <div class="fecha">${pago.fecha} ${pago.hora||""}</div>
-  </div>
-
-  ${ord?`
-  <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div><div class="lbl">Orden</div><div class="val" style="font-family:'JetBrains Mono',monospace;font-size:12px">${ord.id}</div></div>
-    <div><div class="lbl">Equipo</div><div class="val">${ord.equipo}</div></div>
-  </div>`:""}
-
-  ${cli?`
-  <div class="section">
-    <div class="lbl">Cliente</div>
-    <div class="val">${cli.nombre}</div>
-    ${cli.tel?`<div class="val-sub">${cli.tel}</div>`:""}
-  </div>`:""}
-
-  ${itemsHTML}
-
-  ${!itemsHTML?`<div class="section">
-    <div class="lbl">Concepto</div>
-    <div class="val">${pago.concepto}</div>
-    ${pago.nota?`<div class="val-sub" style="font-style:italic;margin-top:3px">${pago.nota}</div>`:""}
-  </div>`:""}
-
-  <div class="monto-section">
-    <div class="monto-lbl">Total cobrado</div>
-    <div class="monto" style="color:${col}">${mxn(pago.monto)}</div>
-    <div>
-      <span class="metodo-badge" style="color:${col};border-color:${col}33;background:${col}11">
-        ${METODO_LABEL[pago.metodo]||pago.metodo}
-      </span>
+    <!-- CÓDIGO DE BARRAS -->
+    <div class="barcode">
+      <div class="bar-lines">||| || ||| | || ||| |||| || |</div>
+      <div class="bar-id">${o.id} · ${empresa.split(" ")[0].toUpperCase()}</div>
     </div>
-  </div>
 
-  <hr class="cut-line"/>
-
-  <div class="footer">
-    <div class="pagado">✓ PAGADO</div>
-    <div class="gracias">¡Gracias por su preferencia!</div>
-    <div class="footer-sub">
-      Conserve este comprobante<br/>
-      ${empresa} · ${new Date().getFullYear()}
+    <!-- FOOTER -->
+    <div class="ft">
+      Presente este comprobante al recoger su equipo<br/>
+      ${empresa} · ${tel||dir}
     </div>
-  </div>
 
   </div>
-  <div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
-    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
-    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#104E8D;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir</button>
   </div>
   </body></html>`);
   w.document.close();
 }
+function printNotaVenta(nv, cfg){
+  cfg=cfg||{};
+  const empresa=cfg.empresa||"Redcom";
+  const tel=cfg.tel||""; const email=cfg.email||""; const web=cfg.web||"";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const logo=cfg.logo||"";
+  const cv=nv.bud?calc(nv.bud.items):{s:0,iv:0,tot:0};
+  const items=nv.bud?.items||[];
 
-/* ══ WHATSAPP UTILS ════════════════════════════════════════════════════ */
+  const svgPin=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+  const svgTel=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.6 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.12 4.18 2 2 0 0 1 5.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 9a16 16 0 0 0 6 6l.44-.44a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+  const svgMail=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
+  const svgWeb=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+  const w=window.open("","_blank","width=640,height=860");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${nv.id} — Nota de Venta</title>
+  <style>    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh;color:#1e293b}
+    .doc{width:100%;max-width:620px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+    /* HEADER ESTÁNDAR */
+    .hdr{padding:10px 28px 12px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #e2e8f0}
+    .hdr-left{}
+    .doc-title{font-size:22px;font-weight:800;color:#1e293b;letter-spacing:-.3px;line-height:1}
+    .doc-id{font-family:'JetBrains Mono',monospace;font-size:13px;color:#1d4ed8;font-weight:600;margin-top:4px}
+    .doc-fecha{font-size:11px;color:#94a3b8;margin-top:2px}
+    .doc-sub{font-size:11px;color:#475569;margin-top:2px}
+    .doc-sub b{color:#1d4ed8}
+    .logo-img{height:90px;max-width:220px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:20px;font-weight:800;color:#1d4ed8}
+    /* CONTACTO PIE */
+    .contact-row{display:flex;flex-wrap:wrap;gap:5px 16px}
+    .ci{display:flex;align-items:center;gap:4px;font-size:10px;color:#64748b}
+    /* INFO GRID 2 cols */
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0}
+    .info-cell{padding:11px 20px;border-right:1px solid #f1f5f9}
+    .info-cell:last-child{border-right:none}
+    .cell-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:4px}
+    .cell-val{font-size:13px;font-weight:600;color:#1e293b}
+    .cell-sub{font-size:11px;color:#64748b;margin-top:2px;line-height:1.5}
+    .cell-mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:#1d4ed8;font-weight:600}
+    /* TABLA */
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:#104E8D}
+    thead th{padding:8px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
+    thead th.r{text-align:right}thead th.c{text-align:center}
+    tbody td{padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+    tbody tr:last-child td{border-bottom:1px solid #e2e8f0}
+    /* TOTALES */
+    .tot-sect{display:flex;justify-content:flex-end;padding:10px 20px 4px}
+    .tot-box{min-width:260px}
+    .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#64748b;padding:3px 0}
+    .tot-row b{color:#1e293b;font-weight:500}
+    /* TOTAL FINAL AZUL */
+    .tot-final{display:flex;justify-content:space-between;align-items:baseline;padding:8px 20px;border-top:1px solid #e2e8f0}
+    .tot-final-lbl{font-size:10px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase}
+    .tot-final-val{font-size:26px;font-weight:800;color:#104E8D;font-family:'JetBrains Mono',monospace;letter-spacing:-1px}
+    /* FOOTER 2 cols */
+    .footer{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 20px;border-top:1px solid #e2e8f0}
+    .footer-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:6px}
+    .footer-val{font-size:11px;color:#475569;line-height:1.8}
+    .footer-val b{color:#1e293b;font-weight:600}
+    /* BADGE */
+    .badge-paid{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#059669;border:1px solid #bbf7d0;border-radius:99px;padding:3px 12px;font-size:11px;font-weight:700}
+    /* NO PRINT */
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:none;border-radius:0;max-width:100%}.no-print{display:none!important}@page{margin:8mm;size:A4}}</style></head><body>
+  <div class="doc">
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="doc-title">NOTA DE VENTA</div>
+        <div class="doc-id">${nv.id}</div>
+        <div class="doc-fecha">${nv.fecha}</div>
+      </div>
+      <div>${logo?`<img src="${logo}" class="logo-img"/>`:`<span class="logo-ini">${empresa}</span>`}</div>
+    </div>
+
+    <!-- CLIENTE + ORDEN -->
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="cell-lbl">Cliente</div>
+        <div class="cell-val">${nv.cli.nombre}</div>
+        <div class="cell-sub">${nv.cli.empresa?nv.cli.empresa+"<br/>":""}${nv.cli.tel||""}</div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-lbl">Orden de trabajo</div>
+        <div class="cell-mono">${nv.ord.id}</div>
+        <div class="cell-sub">${nv.ord.equipo}${nv.ord.serie&&nv.ord.serie!=="N/A"?"<br/>S/N: "+nv.ord.serie:""}</div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-lbl">Técnico</div>
+        <div class="cell-val">${nv.tecNombre}</div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-lbl">Fecha entrega</div>
+        <div class="cell-val">${nv.fecha}</div>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <table>
+      <thead><tr>
+        <th>Descripción</th>
+        <th class="c" style="width:56px">Cant.</th>
+        <th class="r" style="width:100px">P. Unit.</th>
+        <th class="r" style="width:100px">Total</th>
+      </tr></thead>
+      <tbody>
+        ${items.map(it=>{
+          const tipo=it.t==="r"?"Refacción":it.t==="s"?"Servicio":"Mano de obra";
+          const qty=it.t==="r"?it.q:it.t==="s"?it.q+" serv.":it.h+" serv.";
+          const pu=it.t==="r"?mxn(it.p):it.t==="s"?mxn(it.p):mxn(it.ph);
+          const tot=it.t==="r"?mxn(it.q*it.p):it.t==="s"?mxn(it.q*it.p):mxn(it.h*it.ph);
+          return `<tr>
+            <td><div style="font-weight:500">${it.n}</div><div style="font-size:10px;color:#94a3b8;margin-top:2px">${tipo}</div></td>
+            <td style="text-align:center;color:#475569">${qty}</td>
+            <td style="text-align:right;color:#475569">${pu}</td>
+            <td style="text-align:right;font-weight:700">${tot}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+
+    <!-- TOTALES -->
+    <div class="tot-sect">
+      <div class="tot-box">
+        <div class="tot-row"><span>Subtotal</span><b>${mxn(cv.s)}</b></div>
+        <div class="tot-row"><span>IVA (16%)</span><b>${mxn(cv.iv)}</b></div>
+      </div>
+    </div>
+    <div class="tot-final">
+      <div class="tot-final-lbl">Total pagado</div>
+      <div class="tot-final-val">${mxn(cv.tot)}</div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div>
+        <div class="footer-lbl">Estado</div>
+        <div><span class="badge-paid">✓ PAGADO</span></div>
+        <div class="footer-val" style="margin-top:6px;font-size:10px;color:#94a3b8">Conserve este documento como comprobante</div>
+      </div>
+      <div>
+        <div class="footer-lbl">Datos de contacto</div>
+        <div class="footer-val">
+          ${empresa?`<div><b>${empresa}</b></div>`:""}
+          <div>${dir}</div>
+          ${tel?`<div>${tel}</div>`:""}
+          ${email?`<div>${email}</div>`:""}
+          ${web?`<div>${web}</div>`:""}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#104E8D;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir / PDF</button>
+  </div>
+  </body></html>`);
+  w.document.close();
+}
+function printTicketCobro(pago, ord, cli, cfg, bud){
+  cfg=cfg||{};
+  const empresa=(cfg.empresa)||"Redcom";
+  const tel=cfg.tel||"";
+  const email=cfg.email||"";
+  const web=cfg.web||"";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"";
+  const logo=cfg.logo||"";
+  const METODO_C={efectivo:"#059669",transferencia:"#1d4ed8",tarjeta:"#9333ea"};
+  const METODO_L={efectivo:"💵 Efectivo",transferencia:"🏦 Transferencia",tarjeta:"💳 Tarjeta"};
+  const col=METODO_C[pago.metodo]||"#1d4ed8";
+  const now=new Date();
+  const ds=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
+
+  const w=window.open("","_blank","width=560,height=720");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <title>Recibo ${pago.id}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh}
+    .doc{width:100%;max-width:460px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+
+    /* HEADER */
+    .hdr{padding:14px 24px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0}
+    .doc-title{font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-.3px}
+    .doc-id{font-family:'JetBrains Mono',monospace;font-size:13px;color:#1d4ed8;font-weight:600;margin-top:3px}
+    .doc-fecha{font-size:11px;color:#94a3b8;margin-top:2px;font-family:'JetBrains Mono',monospace}
+    .logo-img{height:70px;max-width:160px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:18px;font-weight:800;color:#1d4ed8}
+
+    /* INFO GRID */
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0}
+    .info-cell{padding:10px 20px;border-right:1px solid #f1f5f9}
+    .info-cell:last-child{border-right:none}
+    .info-cell.full{grid-column:1/-1;border-right:none}
+    .cell-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:4px}
+    .cell-val{font-size:13px;font-weight:600;color:#1e293b;line-height:1.4}
+    .cell-sub{font-size:11px;color:#64748b;margin-top:2px}
+    .cell-mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:#1d4ed8;font-weight:600}
+
+    /* TOTAL */
+    .tot-section{padding:16px 24px;text-align:center;border-bottom:1px solid #e2e8f0}
+    .tot-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase;margin-bottom:6px}
+    .tot-val{font-size:36px;font-weight:900;color:#104E8D;font-family:'JetBrains Mono',monospace;letter-spacing:-2px;line-height:1}
+
+    /* MÉTODO */
+    .metodo{margin:0 24px 16px;text-align:center}
+    .metodo-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 18px;border-radius:99px;font-size:12px;font-weight:700;border:1.5px solid}
+
+    /* FOOTER */
+    .footer{padding:12px 24px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between}
+    .badge-paid{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#059669;border:1px solid #bbf7d0;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+    .footer-note{font-size:9px;color:#94a3b8;line-height:1.6;text-align:right}
+
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:none;border-radius:0;max-width:100%}.no-print{display:none!important}@page{margin:8mm;size:A5}}
+  </style></head><body>
+  <div class="doc">
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div>
+        <div class="doc-title">RECIBO DE COBRO</div>
+        <div class="doc-id">${pago.id}</div>
+        <div class="doc-fecha">${pago.fecha||ds} &nbsp; ${pago.hora||""}</div>
+      </div>
+      <div>${logo?`<img src="${logo}" class="logo-img"/>`:`<span class="logo-ini">${empresa.split(" ").map(w=>w[0]).join("").slice(0,3)}</span>`}</div>
+    </div>
+
+    <!-- INFO -->
+    <div class="info-grid">
+      ${cli?`
+      <div class="info-cell">
+        <div class="cell-lbl">Cliente</div>
+        <div class="cell-val">${cli.nombre}</div>
+        ${cli.tel?`<div class="cell-sub">${cli.tel}</div>`:""}
+      </div>`:""}
+      ${ord?`
+      <div class="info-cell">
+        <div class="cell-lbl">Orden</div>
+        <div class="cell-mono">${ord.id}</div>
+        <div class="cell-sub">${ord.equipo}</div>
+      </div>`:""}
+      <div class="info-cell full">
+        <div class="cell-lbl">Concepto</div>
+        <div class="cell-val">${pago.concepto}</div>
+        ${pago.nota?`<div class="cell-sub" style="font-style:italic">${pago.nota}</div>`:""}
+      </div>
+    </div>
+
+    <!-- TOTAL GRANDE -->
+    <div class="tot-section">
+      <div class="tot-lbl">Total cobrado</div>
+      <div class="tot-val">$${Number(pago.monto).toLocaleString("es-MX",{minimumFractionDigits:2})}</div>
+    </div>
+
+    <!-- MÉTODO -->
+    <div class="metodo" style="margin-top:14px">
+      <span class="metodo-badge" style="color:${col};border-color:${col}44;background:${col}11">
+        ${METODO_L[pago.metodo]||pago.metodo}
+      </span>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span class="badge-paid">✓ PAGADO</span>
+      <div class="footer-note">
+        ${empresa}<br/>
+        Conserve este comprobante
+      </div>
+    </div>
+
+  </div>
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#104E8D;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir</button>
+  </div>
+  </body></html>`);
+  w.document.close();
+}
 function fmtTelWA(tel){
   // Strip non-digits, prepend Mexico country code 52 if not present
   let d=tel.replace(/\D/g,"");
@@ -2177,66 +2328,133 @@ function portalURL(token){return window.location.origin+window.location.pathname
 
 /* ══ IMPRIMIR COTIZACIÓN ════════════════════════════════════════════════ */
 function printTicketPOS(items, total, metodo, recibido, cambio, config, folio){
+  const empresa=(config&&config.empresa)||"REDCOM";
+  const tel=(config&&config.tel)||"";
+  const dir=config&&config.calle?(config.calle+(config.numExt?" "+config.numExt:"")+", "+(config.ciudad||config.estado||"Los Mochis")+", "+(config.estado||"Sinaloa")):"";
+  const logo=(config&&config.logo)||"";
   const now=new Date();
   const ds=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
   const ts=`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-  const empresa=(config&&config.empresa)||"REDCOM";
-  const calle=config&&config.calle?config.calle+(config.numExt?" "+config.numExt:"")+", "+(config.ciudad||config.estado||"Los Mochis")+", "+(config.estado||"Sinaloa"):"Los Mochis, Sinaloa";
-  const tel=(config&&config.tel)||"";
-  const metLabels={"efectivo":"EFECTIVO","transferencia":"TRANSFERENCIA","tarjeta":"TARJETA"};
-  const rows=items.map(it=>`
-    <tr>
-      <td style="padding:3px 4px;font-size:11px;border-bottom:1px dashed #e2e8f0">${it.nombre}</td>
-      <td style="padding:3px 4px;font-size:11px;text-align:center;border-bottom:1px dashed #e2e8f0">${it.qty}</td>
-      <td style="padding:3px 4px;font-size:11px;text-align:right;border-bottom:1px dashed #e2e8f0">$${Number(it.precio).toLocaleString("es-MX",{minimumFractionDigits:2})}</td>
-      <td style="padding:3px 4px;font-size:11px;text-align:right;font-weight:700;border-bottom:1px dashed #e2e8f0">$${(it.qty*it.precio).toLocaleString("es-MX",{minimumFractionDigits:2})}</td>
-    </tr>`).join("");
-  const w=window.open("","_blank","width=380,height=700");
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#f1f5f9;display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:16px;font-family:'IBM Plex Sans',sans-serif}
-  .t{width:80mm;background:#fff;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden}
-  .h{background:#1d4ed8;color:#fff;padding:10px 12px;text-align:center}
-  .logo{font-size:18px;font-weight:800;letter-spacing:2px}
-  .sub{font-size:8px;letter-spacing:1px;opacity:.8;margin-top:2px}
-  .folio{font-family:'JetBrains Mono',monospace;font-size:11px;text-align:center;padding:6px 12px;background:#f8fafc;border-bottom:1px dashed #e2e8f0;color:#64748b;letter-spacing:1px}
-  table{width:100%;border-collapse:collapse;margin:8px 0}
-  thead th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;padding:3px 4px;border-bottom:2px solid #e2e8f0;text-align:left}
-  thead th:nth-child(2){text-align:center}thead th:nth-child(3),thead th:nth-child(4){text-align:right}
-  .totrow{display:flex;justify-content:space-between;padding:3px 12px;font-size:12px;color:#334155}
-  .totrow.total{font-size:16px;font-weight:800;color:#1d4ed8;padding:6px 12px;border-top:2px solid #1d4ed8;margin-top:4px}
-  .metodo{text-align:center;padding:8px;background:#f0fdf4;font-size:11px;font-weight:700;color:#059669;border-top:1px dashed #e2e8f0}
-  .cambio{text-align:center;padding:6px;background:#fffbeb;font-size:12px;font-weight:700;color:#d97706}
-  .ft{background:#f8fafc;padding:6px 12px;font-size:8px;color:#94a3b8;text-align:center;line-height:1.6;border-top:1px solid #e2e8f0}
-  @media print{body{background:#fff;padding:0}.no-print{display:none}@page{margin:2mm;size:80mm auto}}
-  </style></head><body><div class="t">
-  <div class="h">
-    <div class="logo">${empresa}</div>
-    <div class="sub">📍 ${calle}</div>
-    ${tel?`<div class="sub">📞 ${tel}</div>`:""}
-    <div class="sub" style="margin-top:4px;opacity:.6">${ds} &nbsp; ${ts}</div>
-  </div>
-  <div class="folio">VENTA DIRECTA &nbsp;·&nbsp; ${folio}</div>
-  <div style="padding:0 8px">
+  const METODO_C={efectivo:"#059669",transferencia:"#1d4ed8",tarjeta:"#9333ea"};
+  const METODO_L={efectivo:"EFECTIVO",transferencia:"TRANSFERENCIA",tarjeta:"TARJETA"};
+  const col=METODO_C[metodo]||"#1d4ed8";
+  const rows=items.map(it=>`<tr>
+    <td style="padding:7px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:500;color:#1e293b">${it.nombre}</td>
+    <td style="padding:7px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;text-align:center;color:#475569">${it.qty}</td>
+    <td style="padding:7px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;text-align:right;color:#475569">$${Number(it.precio).toLocaleString("es-MX",{minimumFractionDigits:2})}</td>
+    <td style="padding:7px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;text-align:right;font-weight:700">$${(it.qty*it.precio).toLocaleString("es-MX",{minimumFractionDigits:2})}</td>
+  </tr>`).join("");
+
+  const w=window.open("","_blank","width=520,height=700");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh}
+    .doc{width:100%;max-width:420px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+
+    /* HEADER */
+    .hdr{padding:16px 20px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0}
+    .doc-title{font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-.3px}
+    .doc-sub{font-size:9px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-top:3px}
+    .doc-fecha{font-size:11px;color:#94a3b8;margin-top:3px;font-family:'JetBrains Mono',monospace}
+    .logo-img{height:70px;max-width:160px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:18px;font-weight:800;color:#1d4ed8}
+
+    /* FOLIO */
+    .folio-bar{padding:8px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+    .folio-lbl{font-size:9px;color:#94a3b8;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    .folio-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#1d4ed8}
+
+    /* TABLA */
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:#104E8D}
+    thead th{padding:7px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
+    thead th.r{text-align:right}thead th.c{text-align:center}
+    tbody tr:last-child td{border-bottom:1px solid #e2e8f0}
+
+    /* TOTAL */
+    .tot-final{display:flex;justify-content:space-between;align-items:baseline;padding:10px 20px;background:#f8fafc;border-top:1px solid #e2e8f0}
+    .tot-lbl{font-size:10px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase}
+    .tot-val{font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#104E8D;letter-spacing:-1px}
+
+    /* MÉTODO */
+    .metodo{padding:8px 20px;text-align:center;border-top:1px solid #f1f5f9}
+    .metodo-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:99px;font-size:12px;font-weight:700;border:1.5px solid}
+
+    /* CAMBIO */
+    .cambio{padding:8px 20px;text-align:center;background:#fffbeb;border-top:1px solid #fde68a;font-size:13px;font-weight:700;color:#d97706}
+
+    /* FOOTER */
+    .footer{padding:12px 20px;text-align:center;border-top:1px solid #f1f5f9}
+    .footer-empresa{font-size:11px;font-weight:700;color:#1e293b;margin-bottom:3px}
+    .footer-sub{font-size:9px;color:#94a3b8;line-height:1.6}
+
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:none;border-radius:0;max-width:100%}.no-print{display:none!important}@page{margin:4mm;size:80mm auto}}
+  </style></head><body>
+  <div class="doc">
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div>
+        <div class="doc-title">VENTA DIRECTA</div>
+        <div class="doc-sub">${empresa}</div>
+        <div class="doc-fecha">${ds} &nbsp; ${ts}</div>
+        ${dir?`<div style="font-size:9px;color:#94a3b8;margin-top:2px">📍 ${dir}</div>`:""}
+        ${tel?`<div style="font-size:9px;color:#94a3b8;margin-top:1px">📞 ${tel}</div>`:""}
+      </div>
+      <div>${logo?`<img src="${logo}" class="logo-img"/>`:`<span class="logo-ini">${empresa.split(" ").map(w=>w[0]).join("").slice(0,3)}</span>`}</div>
+    </div>
+
+    <!-- FOLIO -->
+    <div class="folio-bar">
+      <span class="folio-lbl">Folio</span>
+      <span class="folio-val">${folio}</span>
+    </div>
+
+    <!-- TABLA -->
     <table>
-      <thead><tr><th>Artículo</th><th>Qty</th><th>P.U.</th><th>Total</th></tr></thead>
+      <thead><tr>
+        <th>Artículo</th>
+        <th class="c" style="width:40px">Qty</th>
+        <th class="r" style="width:80px">P.U.</th>
+        <th class="r" style="width:90px">Total</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table>
+
+    <!-- TOTAL -->
+    <div class="tot-final">
+      <div class="tot-lbl">Total</div>
+      <div class="tot-val">$${Number(total).toLocaleString("es-MX",{minimumFractionDigits:2})}</div>
+    </div>
+
+    <!-- MÉTODO DE PAGO -->
+    <div class="metodo">
+      <span class="metodo-badge" style="color:${col};border-color:${col}44;background:${col}11">
+        Pago: ${METODO_L[metodo]||metodo}
+        ${recibido>0&&metodo==="efectivo"?' · Recibido: $'+Number(recibido).toLocaleString("es-MX",{minimumFractionDigits:2}):""}
+      </span>
+    </div>
+
+    <!-- CAMBIO -->
+    ${cambio>0?`<div class="cambio">💵 Cambio: $${Number(cambio).toLocaleString("es-MX",{minimumFractionDigits:2})}</div>`:""}
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-empresa">${empresa}</div>
+      <div class="footer-sub">Gracias por su compra<br/>Conserve este ticket como comprobante</div>
+    </div>
+
   </div>
-  <div class="totrow total"><span>TOTAL</span><span>$${Number(total).toLocaleString("es-MX",{minimumFractionDigits:2})}</span></div>
-  <div class="metodo">Pago: ${metLabels[metodo]||metodo}${recibido>0&&metodo==="efectivo"?` · Recibido: $${Number(recibido).toLocaleString("es-MX",{minimumFractionDigits:2})}`:""}  </div>
-  ${cambio>0?`<div class="cambio">💵 Cambio: $${Number(cambio).toLocaleString("es-MX",{minimumFractionDigits:2})}</div>`:""}
-  <div class="ft">${empresa} — Gracias por su compra<br/>Conserve este ticket como comprobante</div>
-  </div>
-  <div class="no-print" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
-    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
-    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#104E8D;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir</button>
   </div>
   </body></html>`);
   w.document.close();
 }
-
 function printCotizacion(cot, cli, tec, cfg){
   const calc2=items=>items.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
   const sub=calc2(cot.items);
@@ -2260,110 +2478,218 @@ function printCotizacion(cot, cli, tec, cfg){
       <td style="padding:7px 10px;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:700;font-size:13px">${mxn(it.qty*it.precio)}</td>
     </tr>`).join("");
 
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  const htmlDoc=`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#1e293b;padding:32px;max-width:720px;margin:0 auto}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #1d4ed8}
-    .logo-block{display:flex;flex-direction:column;gap:4px}
-    .logo-box{width:48px;height:48px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px}
-    .folio-block{text-align:right}
-    .folio{font-size:22px;font-weight:900;color:#1d4ed8}
-    .badge{display:inline-block;padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700;background:#eff6ff;color:#1d4ed8;margin-top:4px}
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-    .info-card{background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid #e2e8f0}
-    .info-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:6px}
-    .info-val{font-size:13px;font-weight:600;color:#1e293b}
-    .info-sub{font-size:11px;color:#64748b;margin-top:2px}
-    table{width:100%;border-collapse:collapse;margin-bottom:16px}
-    thead tr{background:#1d4ed8;color:#fff}
-    thead th{padding:9px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left}
-    thead th:nth-child(2),thead th:nth-child(3),thead th:nth-child(4){text-align:center}
-    thead th:nth-child(4){text-align:right}
-    .totales{display:flex;justify-content:flex-end;margin-bottom:24px}
-    .tot-box{background:#f8fafc;border-radius:10px;padding:14px 20px;border:1px solid #e2e8f0;min-width:240px}
-    .tot-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:#475569}
-    .tot-total{display:flex;justify-content:space-between;font-size:18px;font-weight:900;color:#1d4ed8;padding-top:8px;margin-top:6px;border-top:2px solid #1d4ed8}
-    .validez{background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:10px 16px;font-size:12px;color:#713f12;margin-bottom:20px;display:flex;gap:8px;align-items:center}
-    .terms{background:#f8fafc;border-radius:8px;padding:12px 16px;border:1px solid #e2e8f0;font-size:11px;color:#64748b;line-height:1.7}
-    @media print{body{padding:16px}.no-print{display:none}}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh}
+    .doc{width:100%;max-width:640px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+
+    /* HEADER */
+    .hdr{padding:12px 28px 10px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .hdr-left{}
+    .presupuesto-title{font-size:26px;font-weight:800;color:#1e293b;letter-spacing:-.5px;line-height:1}
+    .presupuesto-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:#1d4ed8;font-weight:600;margin-top:4px}
+    .presupuesto-fecha{font-size:11px;color:#94a3b8;margin-top:2px}
+    .hdr-right{text-align:right;flex-shrink:0}
+    .logo-img{height:135px;max-width:280px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:22px;font-weight:800;color:#1d4ed8}
+    .logo-sub{font-size:9px;color:#94a3b8;margin-top:3px;text-align:right}
+
+    /* CLIENTE */
+    .cli-section{padding:16px 28px;border-bottom:1px solid #f1f5f9}
+    .cli-titulo{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:8px}
+    .cli-nombre{font-size:16px;font-weight:700;color:#1e293b}
+    .cli-sub{font-size:12px;color:#64748b;margin-top:2px;line-height:1.6}
+
+    /* META linea */
+    .meta-bar{display:flex;gap:20px;padding:10px 28px;background:#f8fafc;border-bottom:1px solid #f1f5f9;flex-wrap:wrap}
+    .meta-item{font-size:11px;color:#64748b}
+    .meta-item b{color:#1e293b}
+
+    /* TABLE */
+    .tbl-wrap{padding:0}
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:#104E8D}
+    thead th{padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
+    thead th.r{text-align:right}thead th.c{text-align:center}
+    tbody tr:last-child td{border-bottom:none}
+    tbody td{padding:7px 14px!important}
+    tbody td{padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+    .it-cat{font-size:10px;color:#94a3b8;margin-top:2px}
+    .it-desc{font-size:11px;color:#64748b;margin-top:2px}
+
+    /* TOTALES */
+    .tot-section{display:flex;justify-content:flex-end;padding:12px 28px 4px}
+    .tot-box{min-width:260px}
+    .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#64748b;padding:3px 0}
+    .tot-row b{color:#1e293b;font-weight:500}
+    .tot-bar{background:#104E8D;padding:14px 28px;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .tot-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.55);text-transform:uppercase}
+    .tot-val{font-size:24px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
+
+    /* FOOTER 2 columnas */
+    .footer{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 28px;border-top:1px solid #f1f5f9;margin-top:10px}
+    .footer-col-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:8px}
+    .footer-col-val{font-size:11px;color:#475569;line-height:1.8}
+    .footer-col-val b{color:#1e293b;font-weight:600}
+
+    /* VALIDEZ */
+    .validez{margin:12px 28px 0;background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:9px 14px;font-size:11px;color:#713f12}
+
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{
+      body{background:#fff;padding:0}
+      .doc{box-shadow:none;border:none;border-radius:0;max-width:100%}
+      .no-print{display:none!important}
+      @page{margin:8mm;size:A4}
+    }
   </style></head><body>
-  <div class="no-print" style="text-align:right;margin-bottom:16px">
-    <button onclick="window.print()" style="background:#1d4ed8;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
-  </div>
-  <div class="header">
-    <div class="logo-block">
-      ${(cfg&&cfg.logo)
-        ? `<img src="${cfg.logo}" style="height:55px;max-width:180px;object-fit:contain;object-position:left;margin-bottom:6px"/>`
-        : `<div style="font-size:24px;font-weight:900;letter-spacing:.5px;color:#1e293b;margin-bottom:6px">${((cfg&&cfg.empresa)||"REDCOM").toUpperCase()}</div>`
-      }
-      <div style="display:flex;flex-direction:column;gap:3px">
-        ${(cfg&&cfg.calle)?`<div style="font-size:11px;color:#64748b">📍 ${cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")}</div>`:`<div style="font-size:11px;color:#64748b">📍 Los Mochis, Sinaloa</div>`}
-        ${(cfg&&cfg.tel)?`<div style="font-size:11px;color:#64748b">📞 ${cfg.tel}</div>`:""}
-        ${(cfg&&cfg.email)?`<div style="font-size:11px;color:#64748b">✉️ ${cfg.email}</div>`:""}
-        ${(cfg&&cfg.web)?`<div style="font-size:11px;color:#64748b">🌐 ${cfg.web}</div>`:""}
+  <div class="doc">
+
+    <!-- HEADER: PRESUPUESTO izq | LOGO der -->
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="presupuesto-title">PRESUPUESTO</div>
+        <div class="presupuesto-num">N° ${cot.id}</div>
+        <div class="presupuesto-fecha">${fmtD(cot.fecha)}</div>
+      </div>
+      <div class="hdr-right">
+        ${(cfg&&cfg.logo)
+          ?`<img src="${cfg&&cfg.logo}" class="logo-img"/>`
+          :`<span class="logo-ini">${((cfg&&cfg.empresa)||"RC").split(" ").map(w=>w[0]).join("").slice(0,3)}</span>`
+        }
+        <div class="logo-sub">${(cfg&&cfg.empresa)||""}</div>
       </div>
     </div>
-    <div class="folio-block">
-      <div class="folio">${cot.id}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px">Cotización</div>
-      <div class="badge">${cot.est||"Borrador"}</div>
+
+    <!-- CLIENTE -->
+    <div class="cli-section">
+      <div class="cli-titulo">Datos del cliente:</div>
+      <div class="cli-nombre">${cli.nombre}</div>
+      <div class="cli-sub">
+        ${cli.empresa?cli.empresa+"<br/>":""}
+        ${cli.tel?cli.tel+"<br/>":""}
+        ${cli.email?cli.email+"<br/>":""}
+        ${cli.dir?cli.dir:""}
+      </div>
     </div>
+
+    <!-- META -->
+    <div class="meta-bar">
+      ${tec?`<div class="meta-item">Asesor: <b>${tec.nombre}</b></div>`:""}
+      ${cot.ref?`<div class="meta-item">Ref: <b>${cot.ref}</b></div>`:""}
+      <div class="meta-item">Estado: <b>${cot.est||"Borrador"}</b></div>
+      <div class="meta-item">Válida: <b>${validez} días</b> (hasta ${fV})</div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Descripción</th>
+          <th class="c" style="width:56px">Cant.</th>
+          <th class="r" style="width:110px">Precio u.</th>
+          <th class="r" style="width:110px">Total</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+
+    <!-- TOTALES -->
+    <div class="tot-section">
+      <div class="tot-box">
+        <div class="tot-row"><span>Subtotal</span><b>${mxn(sub)}</b></div>
+        ${cot.iva?`<div class="tot-row"><span>Impuesto (16%)</span><b>${mxn(iva)}</b></div>`:""}
+      </div>
+    </div>
+    <div class="tot-bar">
+      <div class="tot-lbl">Total</div>
+      <div class="tot-val">${mxn(tot)}</div>
+    </div>
+
+    <!-- VALIDEZ -->
+    <div class="validez">⏳ Tiempo estimado de trabajo: <b>${cot.diasHabil||"A convenir"}</b> &nbsp;·&nbsp; Forma de pago: <b>${(cfg&&cfg.bancoPago)||"Efectivo / Transferencia"}</b></div>
+
+    <!-- FOOTER 2 columnas: banco | contacto -->
+    <div class="footer">
+      <div>
+        <div class="footer-col-lbl">Información para el pago</div>
+        <div class="footer-col-val">
+          ${(cfg&&cfg.bancoNombre)?`<div><b>Beneficiario:</b> ${cfg.bancoNombre}</div>`:""}
+          ${(cfg&&cfg.bancoBanco)?`<div><b>Banco:</b> ${cfg.bancoBanco}</div>`:""}
+          ${(cfg&&cfg.bancoCuenta)?`<div><b>Cuenta:</b> ${cfg.bancoCuenta}</div>`:""}
+          ${(cfg&&cfg.bancoClabe)?`<div><b>CLABE:</b> ${cfg.bancoClabe}</div>`:""}
+          ${(cfg&&cfg.bancoRef)?`<div><b>Ref:</b> ${cfg.bancoRef}</div>`:""}
+          ${!(cfg&&(cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta))?`<div style="color:#94a3b8;font-style:italic">Configura tus datos bancarios en Preferencias → Datos bancarios</div>`:""}
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-lbl">Datos de contacto</div>
+        <div class="footer-col-val">
+          ${(cfg&&cfg.empresa)?`<div><b>${cfg.empresa}</b></div>`:""}
+          ${(cfg&&cfg.calle)?`<div>${cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")}</div>`:`<div>Los Mochis, Sinaloa</div>`}
+          ${(cfg&&cfg.tel)?`<div>${cfg.tel}</div>`:""}
+          ${(cfg&&cfg.email)?`<div>${cfg.email}</div>`:""}
+          ${(cfg&&cfg.web)?`<div>${cfg.web}</div>`:""}
+        </div>
+      </div>
+    </div>
+
+    ${(cfg&&cfg.terminos)?`
+    <div style="margin:0 28px 16px;background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #e2e8f0;font-size:10px;color:#64748b;line-height:1.7">
+      <b style="color:#1e293b">Términos y condiciones:</b><br/>
+      ${(cfg.terminos||'').split('\n').filter(l=>l.trim()).join('<br/>')}
+    </div>`:''}
+
   </div>
-  <div class="info-grid">
-    <div class="info-card">
-      <div class="info-label">Cliente</div>
-      <div class="info-val">${cli.nombre}</div>
-      ${cli.empresa?`<div class="info-sub">${cli.empresa}</div>`:""}
-      ${cli.tel?`<div class="info-sub">📞 ${cli.tel}</div>`:""}
-      ${cli.email?`<div class="info-sub">✉️ ${cli.email}</div>`:""}
-    </div>
-    <div class="info-card">
-      <div class="info-label">Detalles</div>
-      <div class="info-val">Fecha: ${fmtD(cot.fecha)}</div>
-      ${tec?`<div class="info-sub">Asesor: ${tec.nombre}</div>`:""}
-      ${cot.ref?`<div class="info-sub">Ref: ${cot.ref}</div>`:""}
-      ${cot.notas?`<div class="info-sub" style="margin-top:4px">${cot.notas}</div>`:""}
-    </div>
+
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#1e293b;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir</button>
   </div>
-  <table>
-    <thead><tr>
-      <th>Descripción</th><th style="width:60px;text-align:center">Cant.</th>
-      <th style="width:110px;text-align:right">Precio u.</th>
-      <th style="width:110px;text-align:right">Total</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-  <div class="totales"><div class="tot-box">
-    <div class="tot-row"><span>Subtotal</span><span>${mxn(sub)}</span></div>
-    ${cot.iva?`<div class="tot-row"><span>IVA 16%</span><span>${mxn(iva)}</span></div>`:""}
-    <div class="tot-total"><span>TOTAL</span><span>${mxn(tot)}</span></div>
-  </div></div>
-  <div class="validez">⚠️ Cotización válida hasta el <b>${fV}</b> (${validez} días a partir de la fecha de emisión). Precios sujetos a cambio sin previo aviso.</div>
-  ${(cfg&&cfg.terminos)?`<div class="terms"><b>Términos y condiciones:</b><br/>${(cfg.terminos||'').split('\n').filter(l=>l.trim()).join('<br/>')}</div>`:''}
   </body></html>`;
   const w=window.open("","_blank","width=780,height=900");
-  if(w){w.document.write(html);w.document.close();}
+  if(w){w.document.write(htmlDoc);w.document.close();}
 }
 
 /* ══ WHATSAPP COTIZACIÓN ════════════════════════════════════════════════ */
-function buildCotWAMsg(cot, cli, tec){
+function buildCotWAMsg(cot, cli, tec, cfg){
+  cfg=cfg||{};
   const sub=cot.items.reduce((a,i)=>a+(i.qty*i.precio),0);
   const tot=cot.iva?+(sub*1.16).toFixed(2):sub;
-  let msg=`*REDCOM* — Redes · Cómputo · Videovigilancia\n`;
-  msg+=`_Los Mochis, Sinaloa_\n\n`;
-  msg+=`📋 *Cotización ${cot.id}*\n`;
+  const empresa=cfg.empresa||"Redcom";
+  const tel=cfg.tel||"";
+  let msg=`🏢 *${empresa}*\n`;
+  if(tel) msg+=`📞 ${tel}\n`;
+  msg+=`\n`;
+  msg+=`📋 *PRESUPUESTO ${cot.id}*\n`;
   msg+=`📅 Fecha: ${fmtD(cot.fecha)}\n`;
   if(tec) msg+=`👤 Asesor: ${tec.nombre}\n`;
-  msg+=`\nEstimado/a *${cli.nombre}*,\nAdjuntamos la cotización solicitada:\n\n`;
+  msg+=`\nEstimado/a *${cli.nombre}*,\nLe compartimos la cotización solicitada:\n\n`;
+  msg+=`─────────────────────\n`;
   cot.items.forEach(it=>{
-    msg+=`• ${it.nombre} × ${it.qty} — ${mxn(it.qty*it.precio)}\n`;
+    msg+=`• ${it.nombre}\n  ${it.qty} × ${mxn(it.precio)} = *${mxn(it.qty*it.precio)}*\n`;
   });
-  msg+=`\n`;
-  if(cot.iva) msg+=`Subtotal: ${mxn(sub)}\nIVA 16%: ${mxn(+(sub*0.16).toFixed(2))}\n`;
+  msg+=`─────────────────────\n`;
+  if(cot.iva){
+    msg+=`Subtotal: ${mxn(sub)}\n`;
+    msg+=`IVA 16%: ${mxn(+(sub*0.16).toFixed(2))}\n`;
+  }
   msg+=`*TOTAL: ${mxn(tot)}*\n\n`;
-  msg+=`⏳ Válida por ${cot.validez||15} días.\n`;
-  msg+=`\nQuedamos a sus órdenes para cualquier duda. 😊`;
+  msg+=`⏳ Válida por ${cot.validez||15} días\n`;
+  if(cfg.bancoPago) msg+=`💳 Forma de pago: ${cfg.bancoPago}\n`;
+  // Datos bancarios si existen
+  const hasBanco=cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta;
+  if(hasBanco){
+    msg+=`\n🏦 *Datos para transferencia:*\n`;
+    if(cfg.bancoNombre) msg+=`Beneficiario: ${cfg.bancoNombre}\n`;
+    if(cfg.bancoBanco)  msg+=`Banco: ${cfg.bancoBanco}\n`;
+    if(cfg.bancoCuenta) msg+=`Cuenta: ${cfg.bancoCuenta}\n`;
+    if(cfg.bancoClabe)  msg+=`CLABE: ${cfg.bancoClabe}\n`;
+    if(cfg.bancoRef)    msg+=`Referencia: ${cfg.bancoRef}\n`;
+  }
+  msg+=`\nQuedamos a sus órdenes. ¡Gracias! 🙏`;
   return msg;
 }
 
@@ -4671,7 +4997,7 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
       <!-- Footer -->
       <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
         <div style=${{display:"flex",gap:6}}>
-          ${f.items.length>0&&cli&&html`<button class="btn btn-ghost" onClick=${()=>printCotizacion({...f,sub,tot},cli,tec)}>
+          ${f.items.length>0&&cli&&html`<button class="btn btn-ghost" onClick=${()=>printCotizacion({...f,sub,tot},cli,tec,config)}>
             <${Ic} n="print" z=${14}/> Vista previa
           </button>`}
           ${f.items.length>0&&cli?.tel&&html`<button class="btn btn-success" onClick=${()=>setShowWA(true)}>
@@ -4694,13 +5020,13 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
           </div>
           <div style=${{padding:"16px 24px"}}>
             <div style=${{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:12,fontSize:11,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"pre-wrap",lineHeight:1.6,maxHeight:220,overflowY:"auto"}}>
-              ${buildCotWAMsg({...f,sub,tot},cli,tec)}
+              ${buildCotWAMsg({...f,sub,tot},cli,tec,config)}
             </div>
           </div>
           <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
             <button class="btn btn-ghost" onClick=${()=>setShowWA(false)}>Cancelar</button>
             <button class="btn btn-success" onClick=${()=>{
-              const msg=buildCotWAMsg({...f,sub,tot},cli,tec);
+              const msg=buildCotWAMsg({...f,sub,tot},cli,tec,config);
               const tel=fmtTelWA(cli.tel);
               window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
               setShowWA(false);
@@ -4713,7 +5039,7 @@ function CotModal({edit,cls,inv,svcs,tecs,session,config,onSave,onClose}){
 }
 
 /* ══ SECCIÓN COTIZACIONES ═══════════════════════════════════════════════ */
-function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit,onDel,onPrint}){
+function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit,onDel,onPrint,onWA}){
   const [q,setQ]=useState("");
   const [estF,setEstF]=useState("Todos");
   const [confirm,setConfirm]=useState(null);
@@ -4774,7 +5100,11 @@ function CotizacionesSection({cots,cls,inv,svcs,tecs,session,config,onAdd,onEdit
               <div style=${{fontWeight:700,fontSize:13,color:"#1e293b"}}>${mxn(ct.tot)}</div>
               <div><span style=${{background:ec[0],color:ec[1],padding:"2px 10px",borderRadius:99,fontSize:11,fontWeight:700}}>${ct.est}</span></div>
               <div style=${{display:"flex",gap:3,padding:"9px 6px",justifyContent:"flex-end"}}>
-<button class="btn btn-ghost btn-sm" title="Imprimir" onClick=${()=>onPrint(ct)}><${Ic} n="print" z=${12}/></button>
+                <button class="btn btn-ghost btn-sm" title="Imprimir" onClick=${()=>onPrint(ct)}><${Ic} n="print" z=${12}/></button>
+                <button class="btn btn-sm btn-success" title="Enviar por WhatsApp" onClick=${()=>onWA(ct)}
+                  style=${{background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",padding:"4px 8px"}}>
+                  <${Ic} n="wa" z=${13} s="#16a34a"/>
+                </button>
                 <button class="btn btn-ghost btn-sm" title="Editar" onClick=${()=>onEdit(ct)}><${Ic} n="edit" z=${12}/></button>
                 <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirm(ct)}><${Ic} n="trash" z=${12} s="#dc2626"/></button>
               </div>
@@ -5378,41 +5708,118 @@ function OCModal({edit,prvInit,provs,inv,session,onSave,onClose}){
 }
 
 /* print OC */
-function printOC(oc, pv){
+function printOC(oc, pv, cfg){
+  cfg=cfg||{};
+  const empresa=cfg.empresa||"Redcom";
+  const tel=cfg.tel||""; const email=cfg.email||""; const web=cfg.web||"";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const logo=cfg.logo||"";
   const tot=oc.items.reduce((a,i)=>a+(i.qty*(i.precCosto||0)),0);
-  const rows=oc.items.map(it=>`<tr>
-    <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9">${it.nombre}<br/><span style="font-size:10px;color:#94a3b8">${it.cat||""}</span></td>
-    <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:center">${it.qty}</td>
-    <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:right">${mxn(it.precCosto||0)}</td>
-    <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:700">${mxn(it.qty*(it.precCosto||0))}</td>
-  </tr>`).join("");
-  const html2=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
-    *{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;padding:32px;max-width:680px;margin:0 auto;color:#1e293b}
-    .header{display:flex;justify-content:space-between;padding-bottom:16px;border-bottom:3px solid #1d4ed8;margin-bottom:24px}
-    table{width:100%;border-collapse:collapse}thead tr{background:#1d4ed8;color:#fff}thead th{padding:9px 10px;font-size:11px;text-transform:uppercase;text-align:left}
-    .total{text-align:right;font-size:20px;font-weight:800;color:#1d4ed8;margin-top:12px}
-    @media print{body{padding:16px}.noprint{display:none}}
-  </style></head><body>
-  <div class="noprint" style="text-align:right;margin-bottom:16px"><button onclick="window.print()" style="background:#1d4ed8;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer">🖨️ Imprimir</button></div>
-  <div class="header">
-    <div><div style="font-size:20px;font-weight:900">REDCOM</div><div style="font-size:11px;color:#64748b">Orden de Compra</div></div>
-    <div style="text-align:right"><div style="font-size:20px;font-weight:700;color:#1d4ed8">${oc.id}</div><div style="font-size:11px;color:#64748b">${oc.fecha}</div></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-    <div style="background:#f8fafc;border-radius:10px;padding:14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Proveedor</div>
-      <div style="font-weight:700">${pv?.nombre||"—"}</div>${pv?.tel?`<div style="font-size:12px;color:#64748b">📞 ${pv.tel}</div>`:""}${pv?.email?`<div style="font-size:12px;color:#64748b">✉️ ${pv.email}</div>`:""}${pv?.condPago?`<div style="font-size:12px;color:#64748b;margin-top:4px">💳 ${pv.condPago}</div>`:""}
-    </div>
-    <div style="background:#f8fafc;border-radius:10px;padding:14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Detalles</div>
-      <div style="font-size:13px">Fecha: <b>${oc.fecha}</b></div><div style="font-size:13px;margin-top:4px">Estado: <b>${oc.est}</b></div>${oc.notas?`<div style="font-size:12px;color:#64748b;margin-top:4px">${oc.notas}</div>`:""}
-    </div>
-  </div>
-  <table><thead><tr><th>Artículo</th><th style="width:60px;text-align:center">Cant.</th><th style="width:110px;text-align:right">P. Costo</th><th style="width:110px;text-align:right">Total</th></tr></thead><tbody>${rows}</tbody></table>
-  <div class="total">TOTAL: ${mxn(tot)}</div>
-  </body></html>`;
-  const w=window.open("","_blank","width=720,height=800");
-  if(w){w.document.write(html2);w.document.close();}
-}
+  const rows=oc.items.map(it=>`
+    <tr>
+      <td><div style="font-weight:500;font-size:13px">${it.nombre}</div><div style="font-size:10px;color:#94a3b8;margin-top:2px">${it.cat||""}</div></td>
+      <td style="text-align:center;color:#475569">${it.qty}</td>
+      <td style="text-align:right;color:#475569">${mxn(it.precCosto||0)}</td>
+      <td style="text-align:right;font-weight:700">${mxn(it.qty*(it.precCosto||0))}</td>
+    </tr>`).join("");
+  const EST_C={Borrador:["#f8fafc","#64748b"],Enviada:["#eff6ff","#1d4ed8"],Recibida:["#f0fdf4","#059669"],Cancelada:["#fef2f2","#dc2626"]};
+  const ec=EST_C[oc.est]||EST_C["Borrador"];
+  const w=window.open("","_blank","width=640,height=820");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${oc.id} — Orden de Compra</title>
+  <style>    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh;color:#1e293b}
+    .doc{width:100%;max-width:620px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+    .hdr{padding:10px 28px 12px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #e2e8f0}
+    .doc-title{font-size:22px;font-weight:800;color:#1e293b;letter-spacing:-.3px;line-height:1}
+    .doc-id{font-family:'JetBrains Mono',monospace;font-size:13px;color:#1d4ed8;font-weight:600;margin-top:4px}
+    .doc-fecha{font-size:11px;color:#94a3b8;margin-top:2px}
+    .logo-img{height:90px;max-width:220px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:20px;font-weight:800;color:#1d4ed8}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0}
+    .info-cell{padding:11px 20px;border-right:1px solid #f1f5f9}
+    .info-cell:last-child{border-right:none}
+    .cell-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:4px}
+    .cell-val{font-size:13px;font-weight:600;color:#1e293b}
+    .cell-sub{font-size:11px;color:#64748b;margin-top:2px;line-height:1.5}
+    .cell-mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:#1d4ed8;font-weight:600}
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:#104E8D}
+    thead th{padding:8px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
+    thead th.r{text-align:right}thead th.c{text-align:center}
+    tbody td{padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+    tbody tr:last-child td{border-bottom:1px solid #e2e8f0}
+    .tot-sect{display:flex;justify-content:flex-end;padding:10px 20px 4px}
+    .tot-box{min-width:260px}
+    .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#64748b;padding:3px 0}
+    .tot-row b{color:#1e293b;font-weight:500}
+    .tot-final{display:flex;justify-content:space-between;align-items:baseline;padding:8px 20px;border-top:1px solid #e2e8f0}
+    .tot-final-lbl{font-size:10px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase}
+    .tot-final-val{font-size:26px;font-weight:800;color:#104E8D;font-family:'JetBrains Mono',monospace;letter-spacing:-1px}
+    .footer{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 20px;border-top:1px solid #e2e8f0}
+    .footer-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:6px}
+    .footer-val{font-size:11px;color:#475569;line-height:1.8}
+    .footer-val b{color:#1e293b;font-weight:600}
+    .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:10px;font-weight:700}
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:none;border-radius:0;max-width:100%}.no-print{display:none!important}@page{margin:8mm;size:A4}}</style></head><body>
+  <div class="doc">
 
+    <!-- HEADER -->
+    <div class="hdr">
+      <div>
+        <div class="doc-title">ORDEN DE COMPRA</div>
+        <div class="doc-id">${oc.id}</div>
+        <div class="doc-fecha">${oc.fecha}</div>
+        <div style="margin-top:4px"><span class="pill" style="background:${ec[0]};color:${ec[1]};border:1px solid ${ec[1]}44">${oc.est}</span></div>
+      </div>
+      <div>${logo?`<img src="${logo}" class="logo-img"/>`:`<span class="logo-ini">${empresa}</span>`}</div>
+    </div>
+
+    <!-- PROVEEDOR + DETALLES -->
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="cell-lbl">Proveedor</div>
+        <div class="cell-val">${pv?.nombre||"—"}</div>
+        <div class="cell-sub">
+          ${pv?.tel?"📞 "+pv.tel+"<br/>":""}
+          ${pv?.email?"✉️ "+pv.email+"<br/>":""}
+          ${pv?.condPago?"💳 "+pv.condPago:""}
+        </div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-lbl">Nuestra empresa</div>
+        <div class="cell-val">${empresa}</div>
+        <div class="cell-sub">${dir}${tel?"<br/>"+tel:""}${email?"<br/>"+email:""}</div>
+      </div>
+    </div>
+    ${oc.notas?`<div style="padding:9px 20px;background:#fffbeb;border-bottom:1px solid #fde68a;font-size:11px;color:#92400e">📝 ${oc.notas}</div>`:""}
+
+    <!-- TABLA -->
+    <table>
+      <thead><tr>
+        <th>Artículo</th>
+        <th class="c" style="width:56px">Cant.</th>
+        <th class="r" style="width:110px">P. Unitario</th>
+        <th class="r" style="width:110px">Total</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <!-- TOTAL -->
+    <div class="tot-final">
+      <div class="tot-final-lbl">Total de la orden</div>
+      <div class="tot-final-val">${mxn(tot)}</div>
+    </div>
+
+  </div>
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#104E8D;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir / PDF</button>
+  </div>
+  </body></html>`);
+  w.document.close();
+}
 
 /* ══ MÓDULO CAJA ════════════════════════════════════════════════════════ */
 
@@ -5492,9 +5899,8 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago,buds,cots}){
   function selectCot(ct){
     setCotId(ct.id); setOrdId("");
     const cl=cls.find(x=>x.id===ct.cid);
-    setConcepto((ct.descripcion||ct.ref||"Cotización")+" — "+(cl?.nombre||""));
-    setMonto(String(ct.tot||0));
-   
+    setConcepto((ct.descripcion||ct.ref||ct.id||"Cotización")+" — "+(cl?.nombre||""));
+    if(ct.tot>0) setMonto(String(ct.tot));
   }
 
   function pad(v){
@@ -5523,11 +5929,28 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago,buds,cots}){
     const cotRel=selCotDir||((!budRel&&cliRel)
       ?(cots||[]).filter(ct=>ct.cid===cliRel.id&&ct.est==="Aceptada")
           .sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""))[0]:null);
-    const fuenteTicket=budRel||(cotRel?{
-      id:cotRel.id,
-      items:(cotRel.items||[]).map(it=>({t:"r",n:it.nombre,q:it.qty||1,p:it.precio||0}))
-    }:null);
-    printTicketCobro(nuevoPago,ordRel||null,cliRel||null,config||{},fuenteTicket||null);
+    // Construir fuente del ticket con formato correcto para calc()
+    let fuenteTicket=null;
+    if(budRel){
+      fuenteTicket=budRel;
+    } else if(cotRel && (cotRel.items||[]).length>0){
+      fuenteTicket={
+        id:cotRel.id,
+        items:(cotRel.items||[]).map(it=>({
+          t:"r",
+          n:it.nombre||it.n||"",
+          q:Number(it.qty||it.q||1),
+          p:Number(it.precio||it.p||0)
+        })).filter(it=>it.n&&it.p>0)
+      };
+    }
+    try{
+      printTicketCobro(nuevoPago,ordRel||null,cliRel||null,config||{},fuenteTicket||null);
+    }catch(e){
+      console.warn("printTicketCobro error:",e);
+      // Mostrar ticket básico sin desglose de items
+      printTicketCobro(nuevoPago,ordRel||null,cliRel||null,config||{},null);
+    }
     setMonto(""); setConcepto(""); setOrdId(""); setCotId(""); setNota(""); setOrdSearch("");
   }
 
@@ -5740,43 +6163,8 @@ function CajaCobrarTab({ords,cls,pagos,session,config,onAddPago,buds,cots}){
 }
 
 function CajaMovimientosTab({pagosHoy,ords,cls,totHoy,onDel}){
-  const BADGE={efectivo:["#f0fdf4","#059669"],transferencia:["#eff6ff","#1d4ed8"],tarjeta:["#fdf4ff","#9333ea"]};
-  if(pagosHoy.length===0) return html`
-    <div class="empty-state">
-      <div style=${{fontSize:36,marginBottom:10}}>📭</div>
-      <div style=${{fontWeight:600,color:"var(--mac-ink2)"}}>Sin movimientos hoy</div>
-      <div style=${{fontSize:12,color:"var(--mac-ink4)",marginTop:4}}>Los cobros aparecerán aquí</div>
-    </div>`;
-  const sorted=[...pagosHoy].sort((a,b)=>b.hora?.localeCompare(a.hora||"")||0);
-  return html`<div style=${{flex:1,overflowY:"auto"}}>
-    <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"76px 90px 1fr 130px 110px 110px 44px",padding:"10px 20px"}}>
-      ${["Hora","Orden","Concepto","Método","Monto","Registró",""].map(h=>html`<div key=${h}>${h}</div>`)}
-    </div>
-    ${sorted.map(p=>{
-      const mc=BADGE[p.metodo]||["#f8fafc","#64748b"];
-      const ord=ords.find(o=>o.id===p.ordId);
-      const cl=cls.find(x=>x.id===ord?.cid);
-      return html`<div key=${p.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"76px 90px 1fr 130px 110px 110px 44px",padding:"10px 20px",alignItems:"center"}}>
-        <div style=${{fontFamily:"monospace",fontSize:11,color:"var(--mac-ink4)"}}>${p.hora||"—"}</div>
-        <div style=${{fontSize:11,fontWeight:700,color:"#1d4ed8",fontFamily:"monospace"}}>${p.ordId||"—"}</div>
-        <div>
-          <div style=${{fontWeight:600,fontSize:12,color:"var(--mac-ink)"}}>${p.concepto}</div>
-          ${cl&&html`<div style=${{fontSize:10,color:"var(--mac-ink4)"}}>${cl.nombre}</div>`}
-          ${p.nota&&html`<div style=${{fontSize:10,color:"var(--mac-ink4)",fontStyle:"italic"}}>${p.nota}</div>`}
-        </div>
-        <div><span style=${{background:mc[0],color:mc[1],padding:"3px 10px",borderRadius:99,fontSize:10,fontWeight:700,textTransform:"capitalize"}}>${p.metodo}</span></div>
-        <div style=${{fontWeight:800,fontSize:14,color:"#059669"}}>${mxn(p.monto)}</div>
-        <div style=${{fontSize:11,color:"var(--mac-ink3)"}}>${p.user||"—"}</div>
-        <div><button class="btn btn-danger btn-sm" onClick=${()=>onDel(p)} style=${{padding:"4px 6px"}}><${Ic} n="trash" z=${11} s="#dc2626"/></button></div>
-      </div>`;
-    })}
-    <div style=${{padding:"12px 20px",borderTop:"2px solid var(--mac-rim)",display:"grid",gridTemplateColumns:"76px 90px 1fr 130px 110px",alignItems:"center"}}>
-      <div/><div/>
-      <div style=${{fontWeight:700,fontSize:11,color:"var(--mac-ink2)"}}>TOTAL (${pagosHoy.length} mov.)</div>
-      <div/>
-      <div style=${{fontWeight:800,fontSize:15,color:"#1d4ed8"}}>${mxn(totHoy.total)}</div>
-    </div>
-  </div>`;
+  // Alias — redirige al historial unificado (ya no se usa directamente)
+  return null;
 }
 
 function CorteModal({totHoy,hoy,session,onCorte,onClose}){
@@ -5817,8 +6205,10 @@ function CorteModal({totHoy,hoy,session,onCorte,onClose}){
   </div>`;
 }
 
-function CajaHistorialTab({pagos}){
-  const [filtFecha,setFiltFecha]=useState("");
+function CajaHistorialTab({pagos,ords,cls,config,onDel}){
+  const hoy = new Date().toISOString().slice(0,10);
+  const [filtFecha,setFiltFecha]=useState(hoy);
+  const [confirmDel,setConfirmDel]=useState(null);
   const BADGE={efectivo:["#f0fdf4","#059669"],transferencia:["#eff6ff","#1d4ed8"],tarjeta:["#fdf4ff","#9333ea"]};
   const tot=arr=>({
     efectivo:arr.filter(p=>p.metodo==="efectivo").reduce((s,p)=>s+p.monto,0),
@@ -5826,14 +6216,28 @@ function CajaHistorialTab({pagos}){
     tarjeta:arr.filter(p=>p.metodo==="tarjeta").reduce((s,p)=>s+p.monto,0),
     total:arr.reduce((s,p)=>s+p.monto,0),
   });
-  const lista=filtFecha
-    ? pagos.filter(p=>p.fecha===filtFecha)
-    : [...pagos].sort((a,b)=>(b.fecha+b.hora).localeCompare(a.fecha+a.hora)).slice(0,100);
+  const lista = filtFecha
+    ? [...pagos].filter(p=>p.fecha===filtFecha).sort((a,b)=>b.hora?.localeCompare(a.hora||"")||0)
+    : [...pagos].sort((a,b)=>(b.fecha+b.hora).localeCompare(a.fecha+a.hora)).slice(0,200);
   const totales=tot(lista);
+
+  function reimprimir(p){
+    const ord=ords.find(o=>o.id===p.ordId);
+    const cli=cls.find(x=>x.id===ord?.cid);
+    printTicketCobro(p, ord||null, cli||null, config||{}, null);
+  }
+
   return html`<div style=${{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+    <!-- Toolbar -->
     <div style=${{padding:"10px 20px",background:"var(--mac-bg)",borderBottom:"1px solid var(--mac-rim)",display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",flexShrink:0}}>
-      <input type="date" value=${filtFecha} onChange=${e=>setFiltFecha(e.target.value)} style=${{fontSize:12,padding:"5px 10px",width:160}}/>
-      ${filtFecha&&html`<button class="btn btn-ghost btn-sm" onClick=${()=>setFiltFecha("")}>✕ Limpiar</button>`}
+      <div style=${{display:"flex",gap:6,alignItems:"center"}}>
+        <input type="date" value=${filtFecha} onChange=${e=>setFiltFecha(e.target.value)} style=${{fontSize:12,padding:"5px 10px",width:160}}/>
+        ${filtFecha&&filtFecha!==hoy&&html`<button class="btn btn-ghost btn-sm" onClick=${()=>setFiltFecha(hoy)}>Hoy</button>`}
+        ${filtFecha&&html`<button class="btn btn-ghost btn-sm" onClick=${()=>setFiltFecha("")}>Todos</button>`}
+      </div>
+      <div style=${{fontSize:11,color:"var(--mac-ink4)"}}>
+        ${filtFecha===hoy?"Hoy":filtFecha?"":""} · ${lista.length} cobro${lista.length!==1?"s":""}
+      </div>
       <div style=${{marginLeft:"auto",display:"flex",gap:14}}>
         ${[["💵",totales.efectivo,"#059669"],["🏦",totales.transferencia,"#1d4ed8"],["💳",totales.tarjeta,"#9333ea"],["TOTAL",totales.total,"#1e293b"]].map(([ic,v,col])=>html`
           <div key=${ic} style=${{textAlign:"right"}}>
@@ -5842,26 +6246,43 @@ function CajaHistorialTab({pagos}){
           </div>`)}
       </div>
     </div>
+
+    <!-- Tabla -->
     <div style=${{flex:1,overflowY:"auto"}}>
       ${lista.length===0
-        ?html`<div class="empty-state"><div style=${{fontSize:32,marginBottom:8}}>📅</div><div>Sin movimientos</div></div>`
+        ?html`<div class="empty-state"><div style=${{fontSize:32,marginBottom:8}}>📅</div><div>Sin cobros en esta fecha</div></div>`
         :html`
-          <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"100px 72px 90px 1fr 130px 110px 110px",padding:"10px 20px"}}>
-            ${["Fecha","Hora","Orden","Concepto","Método","Monto","Registró"].map(h=>html`<div key=${h}>${h}</div>`)}
+          <div class="tbl-hdr" style=${{display:"grid",gridTemplateColumns:"90px 70px 90px 1fr 120px 100px 80px",padding:"10px 20px"}}>
+            ${["Fecha","Hora","Folio","Concepto","Método","Monto",""].map(h=>html`<div key=${h}>${h}</div>`)}
           </div>
           ${lista.map(p=>{
             const mc=BADGE[p.metodo]||["#f8fafc","#64748b"];
-            return html`<div key=${p.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"100px 72px 90px 1fr 130px 110px 110px",padding:"10px 20px",alignItems:"center"}}>
+            return html`<div key=${p.id} class="tbl-row" style=${{display:"grid",gridTemplateColumns:"90px 70px 90px 1fr 120px 100px 80px",padding:"9px 20px",alignItems:"center"}}>
               <div style=${{fontSize:11,color:"var(--mac-ink3)"}}>${fmtD(p.fecha)}</div>
               <div style=${{fontFamily:"monospace",fontSize:11,color:"var(--mac-ink4)"}}>${p.hora||"—"}</div>
-              <div style=${{fontSize:11,fontWeight:700,color:"#1d4ed8",fontFamily:"monospace"}}>${p.ordId||"—"}</div>
-              <div style=${{fontSize:12,color:"var(--mac-ink)"}}>${p.concepto}</div>
+              <div style=${{fontSize:11,fontWeight:700,color:"#1d4ed8",fontFamily:"monospace"}}>${p.ordId||p.id}</div>
+              <div>
+                <div style=${{fontSize:12,fontWeight:500,color:"var(--mac-ink)"}}>${p.concepto}</div>
+                ${p.user&&html`<div style=${{fontSize:10,color:"var(--mac-ink4)"}}>${p.user}</div>`}
+              </div>
               <div><span style=${{background:mc[0],color:mc[1],padding:"2px 9px",borderRadius:99,fontSize:10,fontWeight:700,textTransform:"capitalize"}}>${p.metodo}</span></div>
-              <div style=${{fontWeight:700,color:"#059669"}}>${mxn(p.monto)}</div>
-              <div style=${{fontSize:11,color:"var(--mac-ink3)"}}>${p.user||"—"}</div>
+              <div style=${{fontWeight:800,fontSize:13,color:"#059669"}}>${mxn(p.monto)}</div>
+              <div style=${{display:"flex",gap:4}}>
+                <button class="btn btn-ghost btn-sm" title="Reimprimir ticket" onClick=${()=>reimprimir(p)} style=${{padding:"4px 6px"}}>
+                  <${Ic} n="print" z=${12} s="#1d4ed8"/>
+                </button>
+                <button class="btn btn-danger btn-sm" title="Eliminar" onClick=${()=>setConfirmDel(p)} style=${{padding:"4px 6px"}}>
+                  <${Ic} n="trash" z=${11} s="#dc2626"/>
+                </button>
+              </div>
             </div>`;
           })}`}
     </div>
+
+    ${confirmDel&&html`<${Confirm}
+      msg=${"¿Eliminar cobro de <b>"+mxn(confirmDel.monto)+"</b>?"}
+      onOk=${()=>{onDel(confirmDel.id);setConfirmDel(null);}}
+      onCancel=${()=>setConfirmDel(null)}/>`}
   </div>`;
 }
 
@@ -6224,7 +6645,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,
   const totalGastosHoy = gastosHoy.reduce((s,g)=>s+g.monto,0);
   const utilidadHoy = totHoy.total - totalGastosHoy;
 
-  const TABS=[["cobrar","💰","Cobrar"],["pos","🛒","Venta"],["gastos","💸","Gastos"],["movimientos","📋","Movimientos"],["historial","🗓️","Historial"],["cortes","✂️","Cortes"]];
+  const TABS=[["cobrar","💰","Cobrar"],["pos","🛒","Venta"],["gastos","💸","Gastos"],["historial","📋","Historial"],["cortes","✂️","Cortes"]];
 
   return html`<div style=${{height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",background:"var(--mac-surface)"}}>
 
@@ -6254,7 +6675,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,
           borderBottom:tab===k?"2px solid #1d4ed8":"2px solid transparent"}}>
           ${ic} ${lbl}
           ${k==="cobrar"&&ordsPend.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${ordsPend.length}</span>`}
-          ${k==="movimientos"&&pagosHoy.length>0&&html`<span style=${{background:"#1d4ed8",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${pagosHoy.length}</span>`}
+          ${k==="historial"&&pagosHoy.length>0&&html`<span style=${{background:"#1d4ed8",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${pagosHoy.length}</span>`}
           ${k==="gastos"&&gastosHoy.length>0&&html`<span style=${{background:"#dc2626",color:"#fff",fontSize:9,padding:"1px 5px",borderRadius:99}}>${gastosHoy.length}</span>`}
         </button>`)}
       <div style=${{marginLeft:"auto",display:"flex",alignItems:"center"}}>
@@ -6269,8 +6690,7 @@ function CajaSection({pagos,cortes,ords,cls,inv,buds,cots,gastos,session,config,
       ${tab==="cobrar"     &&html`<${CajaCobrarTab} ords=${ords} cls=${cls} pagos=${pagos} buds=${buds} cots=${cots} session=${session} config=${config} onAddPago=${onAddPago}/>`}
       ${tab==="pos"        &&html`<${CajaPOSTab} inv=${inv} session=${session} config=${config} onAddPago=${onAddPago}/>`}
       ${tab==="gastos"     &&html`<${CajaGastosTab} gastos=${gastos||[]} session=${session} onAddGasto=${onAddGasto} onDelGasto=${onDelGasto}/>`}
-      ${tab==="movimientos"&&html`<${CajaMovimientosTab} pagosHoy=${pagosHoy} ords=${ords} cls=${cls} totHoy=${totHoy} onDel=${setConfirm}/>`}
-      ${tab==="historial"  &&html`<${CajaHistorialTab} pagos=${pagos}/>`}
+      ${tab==="historial"&&html`<${CajaHistorialTab} pagos=${pagos} ords=${ords} cls=${cls} config=${config} onDel=${(id)=>onDelPago(id)}/>`}
       ${tab==="cortes"     &&html`<${CajaCortesTab} cortes=${cortes}/>`}
     </div>
 
@@ -7093,6 +7513,7 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
   const TABS=[
     ["tienda","🏪","Mi tienda"],
     ["contacto","📍","Contacto"],
+    ["banco","🏦","Datos bancarios"],
     ["usuario","👤","Mi usuario"],
     ["apariencia","🎨","Apariencia"],
   ];
@@ -7259,6 +7680,41 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
           })}
         </div>
       </div>
+    </div>`;
+    if(tab==="banco") return html`<div style=${{display:"grid",gap:16}}>
+      <div style=${{background:"var(--mac-surface2)",border:"1px solid var(--mac-rim)",borderRadius:10,padding:"16px",display:"grid",gap:12}}>
+        <div style=${{fontWeight:700,fontSize:12,color:"var(--mac-ink)",marginBottom:2}}>🏦 Datos bancarios para cobros</div>
+        <div style=${{fontSize:11,color:"var(--mac-ink4)",marginBottom:4}}>Aparecen al pie de cada cotización impresa e incluidos en el mensaje de WhatsApp</div>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div><label>Nombre del beneficiario</label>
+            <input value=${f.bancoNombre||""} onChange=${sf("bancoNombre")} placeholder="ej. Jhoan Gonzalez Redcom SA"/></div>
+          <div><label>Banco</label>
+            <input value=${f.bancoBanco||""} onChange=${sf("bancoBanco")} placeholder="ej. BBVA / Banorte / HSBC"/></div>
+        </div>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div><label>Número de cuenta</label>
+            <input value=${f.bancoCuenta||""} onChange=${sf("bancoCuenta")} placeholder="ej. 012 3456 7890"/></div>
+          <div><label>CLABE interbancaria (18 dígitos)</label>
+            <input value=${f.bancoClabe||""} onChange=${sf("bancoClabe")} placeholder="ej. 012 345 678 901 234 56"/></div>
+        </div>
+        <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div><label>Forma de pago aceptada</label>
+            <input value=${f.bancoPago||""} onChange=${sf("bancoPago")} placeholder="ej. Transferencia / Efectivo / Tarjeta"/></div>
+          <div><label>Referencia sugerida</label>
+            <input value=${f.bancoRef||""} onChange=${sf("bancoRef")} placeholder="ej. Folio cotización o nombre cliente"/></div>
+        </div>
+      </div>
+      ${(f.bancoNombre||f.bancoBanco||f.bancoCuenta)&&html`
+        <div style=${{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"14px 16px"}}>
+          <div style=${{fontSize:11,fontWeight:700,color:"#059669",marginBottom:8}}>Vista previa — como aparecerá en la cotización:</div>
+          <div style=${{fontSize:11,color:"#1e293b",lineHeight:1.8}}>
+            ${f.bancoNombre?html`<div><b>Beneficiario:</b> ${f.bancoNombre}</div>`:""}
+            ${f.bancoBanco?html`<div><b>Banco:</b> ${f.bancoBanco}</div>`:""}
+            ${f.bancoCuenta?html`<div><b>Cuenta:</b> ${f.bancoCuenta}</div>`:""}
+            ${f.bancoClabe?html`<div><b>CLABE:</b> ${f.bancoClabe}</div>`:""}
+            ${f.bancoPago?html`<div><b>Pago:</b> ${f.bancoPago}</div>`:""}
+          </div>
+        </div>`}
     </div>`;
     return null;
   };
@@ -7537,7 +7993,7 @@ function GlobalSearch({ords,cls,inv,cots,onNav,onClose}){
             <div style=${{fontSize:13,fontWeight:600,color:"var(--mac-ink2)"}}>Escribe para buscar</div>
             <div style=${{fontSize:11,color:"var(--mac-ink4)",marginTop:4}}>Órdenes · Clientes · Inventario · Cotizaciones</div>
             <div style=${{display:"flex",gap:8,justifyContent:"center",marginTop:14,flexWrap:"wrap"}}>
-              ${[["🔧","Órdenes","orders"],["👤","Clientes","clients"],["📦","Inventario","inv"],["📋","Cotizaciones","cots"]].map(([ic,lbl,nav])=>html`
+              ${[["🔧","Órdenes","orders"],["👤","Clientes","clients"],["📦","Inventario","inv"],["🧮","Calculadora","calc"]].map(([ic,lbl,nav])=>html`
                 <button key=${nav} onClick=${()=>{onNav(nav);onClose();}} style=${{
                   padding:"6px 12px",borderRadius:8,border:"1px solid var(--mac-rim)",
                   background:"var(--mac-surface)",cursor:"pointer",fontFamily:"inherit",
@@ -8001,7 +8457,7 @@ function CalendarioSection({ords,cls,tecs,citas,recs,session,config,onSaveCita,o
 
 /* ══ CALC INSTALACIONES ════════════════════════════════════════════════ */
 let CALCSEQ=(()=>{try{return parseInt(localStorage.getItem("redcom_calcseq")||"0",10);}catch(e){return 0;}})();
-function newCalcId(){CALCSEQ++;try{localStorage.setItem("redcom_calcseq",CALCSEQ);}catch(e){}return`INS-${String(CALCSEQ).padStart(4,"0")}`;}
+function newCalcId(){CALCSEQ++;try{localStorage.setItem("redcom_calcseq",CALCSEQ);}catch(e){}return`COT-${String(CALCSEQ).padStart(4,"0")}`;}
 
 const CALC_PRESETS=[
   {nombre:"1 Nodo red Cat6 entuber 17m",items:[
@@ -8051,119 +8507,252 @@ const CAT_COLOR_CALC={
 };
 function catColorCalc(cat){return CAT_COLOR_CALC[cat]||["#f8fafc","#475569"];}
 
-function printCalcInstalacion(calc,cfg){
-  cfg=cfg||{};
-  const empresa=cfg.empresa||"Redcom — Redes · Cómputo · Videovigilancia";
-  const tel=cfg.tel||""; const email=cfg.email||""; const dir=cfg.calle?(cfg.calle+", "+(cfg.ciudad||"Los Mochis")+", "+cfg.estado):"Los Mochis, Sinaloa";
-  const logo=cfg.logo||"";
+function buildCalcWAMsg(calc, tot, sub, iva, config){
+  const empresa=(config&&config.empresa)||"REDCOM";
+  const tel=(config&&config.tel)||"";
+  const L=[];
+  L.push(`*${empresa}*`);
+  if(tel) L.push(`📞 ${tel}`);
+  L.push(`──────────────────────`);
+  L.push(`📋 *Cotización ${calc.id||""}*`);
+  if(calc.descripcion) L.push(`📌 ${calc.descripcion}`);
+  if(calc.cliente) L.push(`👤 Cliente: ${calc.cliente}`);
+  L.push(``);
   const mats=calc.items.filter(i=>i.cat!=="Mano de Obra");
   const mos=calc.items.filter(i=>i.cat==="Mano de Obra");
-  const subtotalMat=mats.reduce((a,i)=>a+(i.qty*i.precio),0);
-  const subtotalMO=mos.reduce((a,i)=>a+(i.qty*i.precio),0);
-  const sub=subtotalMat+subtotalMO;
+  if(mats.length>0){
+    L.push(`*Materiales:*`);
+    mats.forEach(i=>L.push(`  • ${i.nombre} × ${i.qty} ${i.unidad||""} — ${mxn(i.qty*i.precio)}`));
+    L.push(``);
+  }
+  if(mos.length>0){
+    L.push(`*Mano de obra:*`);
+    mos.forEach(i=>L.push(`  • ${i.nombre} — ${mxn(i.qty*i.precio)}`));
+    L.push(``);
+  }
+  if(calc.conIva){
+    L.push(`Subtotal: ${mxn(sub)}`);
+    L.push(`IVA 16%: ${mxn(iva)}`);
+  }
+  L.push(`*TOTAL: ${mxn(tot)}*`);
+  L.push(``);
+  L.push(`⏳ Válida por ${calc.validez||15} días`);
+  if(calc.notas) L.push(`📝 ${calc.notas}`);
+  L.push(``);
+  L.push(`¡Gracias por su preferencia! 🙏`);
+  return L.join("\n");
+}
+
+function printCalcInstalacion(calc,cfg){
+  cfg=cfg||{};
+  const empresa=cfg.empresa||"Redcom";
+  const tel=cfg.tel||"";
+  const email=cfg.email||"";
+  const web=cfg.web||"";
+  const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+", "+(cfg.ciudad||cfg.estado||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
+  const logo=cfg.logo||"";
+  const terminos=cfg.terminos||"";
+
+  const allItems=calc.items||[];
+  const sub=allItems.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
   const iva=calc.conIva?+(sub*0.16).toFixed(2):0;
   const tot=+(sub+iva).toFixed(2);
-  const costoTotal=calc.items.reduce((a,i)=>a+(i.qty*i.costo),0);
-  const utilidad=tot-costoTotal;
+
   const now=new Date();
-  const fecha=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
-  const w=window.open("","_blank","width=660,height=860");
+  const fechaStr=`${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
+  const fechaVence=(()=>{const d=new Date();d.setDate(d.getDate()+(calc.validez||15));return d.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"});})();
+
+  const rows=allItems.map(it=>`
+    <tr>
+      <td style="padding:8px 14px;border-bottom:1px solid #f1f5f9;vertical-align:top">
+        <div style="font-size:13px;font-weight:500;color:#1e293b;line-height:1.4">${it.nombre||it.desc||""}</div>
+        ${it.cat&&it.cat!=="Mano de Obra"?`<div style="font-size:10px;color:#94a3b8;margin-top:2px">${it.cat}</div>`:""}
+      </td>
+      <td style="padding:8px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#475569">${it.qty}</td>
+      <td style="padding:8px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;color:#475569">${mxn(it.precio||0)}</td>
+      <td style="padding:8px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;font-weight:700;color:#1e293b">${mxn(it.qty*(it.precio||0))}</td>
+    </tr>`).join("");
+
+  const hasBanco=cfg.bancoNombre||cfg.bancoBanco||cfg.bancoCuenta;
+  const terminosLines=(terminos||"• Cotización válida por "+(calc.validez||15)+" días.\n• 50% de anticipo para iniciar el trabajo.\n• Garantía de 90 días en mano de obra.").split("\n").filter(l=>l.trim()).map(l=>`<li style="margin-bottom:4px">${l.replace(/^[•\-]\s*/,"")}</li>`).join("");
+
+  const w=window.open("","_blank","width=740,height=960");
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
-  <title>${calc.id}</title>
+  <title>Presupuesto ${calc.id||""}</title>
   <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#f1f5f9;font-family:'IBM Plex Sans',sans-serif;padding:24px;display:flex;justify-content:center}
-  .doc{background:#fff;border-radius:12px;width:100%;max-width:620px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.10)}
-  .hdr{background:linear-gradient(135deg,#0f2158,#1d4ed8);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
-  .logo{font-size:20px;font-weight:800;letter-spacing:2px}.logo span{color:#93c5fd}
-  .hdr-sub{font-size:9px;opacity:.65;letter-spacing:.5px;margin-top:2px}
-  .meta-strip{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e8f0}
-  .meta-cell{padding:10px 16px;border-right:1px solid #e2e8f0}
-  .meta-cell:nth-child(even){border-right:none}
-  .ml{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:2px}
-  .mv{font-size:12px;font-weight:600;color:#1e293b}
-  .sec-title{background:#f8fafc;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:7px 16px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8}
-  .tbl-hdr{display:grid;grid-template-columns:2.5fr .5fr .7fr .7fr .65fr;background:#f8fafc;border-bottom:1px solid #e2e8f0}
-  .tbl-hdr>div{padding:7px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#94a3b8}
-  .tbl-hdr>div:not(:first-child){text-align:right}
-  .tbl-row{display:grid;grid-template-columns:2.5fr .5fr .7fr .7fr .65fr;border-bottom:1px solid #f1f5f9}
-  .tbl-row>div{padding:8px 12px;font-size:11px;color:#1e293b}
-  .tbl-row>div:not(:first-child){text-align:right}
-  .cat-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:700;margin-top:2px}
-  .totals{padding:12px 16px;background:#f8fafc;border-top:2px solid #e2e8f0}
-  .tot-r{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px}
-  .tot-final{display:flex;justify-content:space-between;font-size:17px;font-weight:800;color:#1d4ed8;padding-top:8px;margin-top:4px;border-top:1px solid #e2e8f0}
-  .util-bar{background:#f0fdf4;border-top:1px solid #dcfce7;padding:8px 16px;display:flex;justify-content:space-between;font-size:11px;color:#059669;font-weight:600}
-  .footer{padding:10px 16px;text-align:center;font-size:9px;color:#94a3b8;line-height:1.6;border-top:1px solid #f1f5f9}
-  .mo-row{background:#fdf4ff}
-  @media print{body{background:#fff;padding:0}.doc{box-shadow:none;max-width:100%;border-radius:0}@page{margin:8mm}}
-  </style></head><body><div class="doc">
-  <div class="hdr">
-    <div>
-      ${logo?`<img src="${logo}" style="height:44px;max-width:110px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,.15);padding:3px"/>`:`<div class="logo">RED<span>COM</span></div>`}
-      <div class="hdr-sub">${empresa}</div>
-      ${tel?`<div class="hdr-sub">${tel}</div>`:""}
-      ${dir?`<div class="hdr-sub">📍 ${dir}</div>`:""}
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Segoe UI',sans-serif;background:#f1f5f9;display:flex;justify-content:center;padding:28px 16px 80px;min-height:100vh;color:#1e293b}
+    .doc{width:100%;max-width:650px;background:#fff;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+
+    /* HEADER */
+    .hdr{padding:8px 28px 10px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #e2e8f0}
+    .hdr-title{font-size:22px;font-weight:800;color:#1e293b;letter-spacing:-.3px;line-height:1}
+    .hdr-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:#1d4ed8;font-weight:600;margin-top:4px}
+    .hdr-fecha{font-size:11px;color:#94a3b8;margin-top:2px}
+    .hdr-validez{font-size:11px;color:#1e293b;margin-top:3px}
+    .hdr-validez b{color:#1d4ed8}
+    .logo-img{height:135px;max-width:280px;object-fit:contain;object-position:right}
+    .logo-ini{font-size:22px;font-weight:800;color:#1d4ed8}
+
+    /* CLIENTE + TRABAJO */
+    .cli-card{margin:16px 28px;border:1px solid #e2e8f0;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+    .cli-left{padding:12px 16px;border-right:1px solid #e2e8f0}
+    .cli-right{padding:12px 16px}
+    .cli-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:5px}
+    .cli-nombre{font-size:16px;font-weight:800;color:#1e293b}
+    .cli-trabajo{font-size:13px;color:#475569;margin-top:4px}
+
+    /* TABLE */
+    .tbl-wrap{padding:0 28px 0}
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:#104E8D}
+    thead th{padding:8px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-align:left}
+    thead th.r{text-align:right}thead th.c{text-align:center}
+    tbody tr:last-child td{border-bottom:1px solid #e2e8f0}
+
+    /* TOTALES */
+    .tot-sect{display:flex;justify-content:flex-end;padding:10px 28px 4px}
+    .tot-box{min-width:270px}
+    .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#64748b;padding:3px 0}
+    .tot-row b{color:#1e293b;font-weight:500}
+
+    /* TOTAL GRANDE — sin fondo */
+    .tot-final{display:flex;justify-content:space-between;align-items:baseline;padding:8px 28px;margin-top:4px;border-top:1px solid #e2e8f0}
+    .tot-final-lbl{font-size:10px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase}
+    .tot-final-val{font-size:28px;font-weight:800;color:#104E8D;font-family:'JetBrains Mono',monospace;letter-spacing:-1px}
+
+    /* FOOTER 2 cols */
+    .footer{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 28px;border-top:1px solid #e2e8f0;margin-top:8px}
+    .footer-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:7px}
+    .footer-val{font-size:11px;color:#475569;line-height:1.8}
+    .footer-val b{color:#1e293b;font-weight:600}
+
+    /* TÉRMINOS */
+    .terms{margin:0 28px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px}
+    .terms-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:8px}
+    .terms-list{font-size:10px;color:#64748b;line-height:1.7;padding-left:14px}
+
+    /* FIRMA */
+    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 28px 20px;border-top:none}
+    .firma-col{text-align:center}
+    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:70%;margin-left:auto;margin-right:auto}
+    .firma-nombre{font-size:12px;font-weight:600;color:#1e293b}
+    .firma-rol{font-size:10px;color:#94a3b8;margin-top:2px}
+
+    .no-print{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:99}
+    @media print{
+      body{background:#fff;padding:0}
+      .doc{box-shadow:none;border:none;border-radius:0;max-width:100%}
+      .no-print{display:none!important}
+      @page{margin:8mm;size:A4}
+    }
+  </style></head><body>
+  <div class="doc">
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div>
+        <div class="hdr-title">PRESUPUESTO</div>
+        <div class="hdr-num">N° ${calc.id||"—"}</div>
+        <div class="hdr-fecha">${fechaStr}</div>
+        <div class="hdr-validez">Válida hasta: <b>${fechaVence}</b></div>
+      </div>
+      <div>
+        ${logo?`<img src="${logo}" class="logo-img"/>`:`<span class="logo-ini">${empresa}</span>`}
+      </div>
     </div>
-    <div style="text-align:right">
-      <div style="font-size:9px;opacity:.6;text-transform:uppercase;letter-spacing:1px">Propuesta de instalación</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;margin-top:4px;color:#93c5fd">${calc.id}</div>
-      <div style="font-size:10px;opacity:.7;margin-top:2px">${fecha}</div>
+
+    <!-- CLIENTE + TRABAJO en card -->
+    <div class="cli-card">
+      <div class="cli-left">
+        <div class="cli-lbl">Datos del cliente:</div>
+        <div class="cli-nombre">${calc.cliente||"—"}</div>
+      </div>
+      <div class="cli-right">
+        <div class="cli-lbl">Trabajo:</div>
+        <div class="cli-trabajo">${calc.descripcion||"—"}</div>
+      </div>
     </div>
-  </div>
-  <div class="meta-strip">
-    <div class="meta-cell"><div class="ml">Descripción del trabajo</div><div class="mv">${calc.descripcion||"Instalación"}</div></div>
-    <div class="meta-cell"><div class="ml">Cliente</div><div class="mv">${calc.cliente||"—"}</div></div>
-    <div class="meta-cell"><div class="ml">Elaboró</div><div class="mv">${calc.elaboro||"Redcom"}</div></div>
-    <div class="meta-cell"><div class="ml">Validez</div><div class="mv">${calc.validez||15} días</div></div>
+
+    <!-- TABLA -->
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Descripción</th>
+          <th class="c" style="width:56px">Cant.</th>
+          <th class="r" style="width:100px">P. Unit.</th>
+          <th class="r" style="width:100px">Total</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+
+    <!-- SUBTOTAL + IVA -->
+    <div class="tot-sect">
+      <div class="tot-box">
+        <div class="tot-row"><span>Subtotal</span><b>${mxn(sub)}</b></div>
+        ${calc.conIva?`<div class="tot-row"><span>Impuesto (16%)</span><b>${mxn(iva)}</b></div>`:""}
+      </div>
+    </div>
+
+    <!-- TOTAL GRANDE SIN FONDO -->
+    <div class="tot-final">
+      <div class="tot-final-lbl">Total</div>
+      <div class="tot-final-val">${mxn(tot)}</div>
+    </div>
+
+    <!-- FOOTER: banco | contacto -->
+    <div class="footer">
+      <div>
+        <div class="footer-lbl">Información para el pago</div>
+        <div class="footer-val">
+          ${cfg.bancoNombre?`<div><b>Beneficiario:</b> ${cfg.bancoNombre}</div>`:""}
+          ${cfg.bancoBanco?`<div><b>Banco:</b> ${cfg.bancoBanco}</div>`:""}
+          ${cfg.bancoCuenta?`<div><b>Cuenta:</b> ${cfg.bancoCuenta}</div>`:""}
+          ${cfg.bancoClabe?`<div><b>CLABE:</b> ${cfg.bancoClabe}</div>`:""}
+          ${cfg.bancoPago?`<div><b>Forma de pago:</b> ${cfg.bancoPago}</div>`:""}
+          ${cfg.bancoRef?`<div><b>Referencia:</b> ${cfg.bancoRef}</div>`:""}
+          ${!hasBanco?`<div style="color:#94a3b8;font-style:italic">Configura en Preferencias → Datos bancarios</div>`:""}
+        </div>
+      </div>
+      <div>
+        <div class="footer-lbl">Datos de contacto</div>
+        <div class="footer-val">
+          ${empresa?`<div><b>${empresa}</b></div>`:""}
+          <div>${dir}</div>
+          ${tel?`<div>${tel}</div>`:""}
+          ${email?`<div>${email}</div>`:""}
+          ${web?`<div>${web}</div>`:""}
+        </div>
+      </div>
+    </div>
+
+    <!-- TÉRMINOS -->
+    <div class="terms">
+      <div class="terms-lbl">Términos y condiciones</div>
+      <ul class="terms-list">${terminosLines}</ul>
+    </div>
+
+    <!-- FIRMAS -->
+    <div class="firma">
+      <div class="firma-col">
+        <div class="firma-line"></div>
+        <div class="firma-nombre">Elaboró: ${calc.elaboro||"—"}</div>
+        <div class="firma-rol">Representante</div>
+      </div>
+      <div class="firma-col">
+        <div class="firma-line"></div>
+        <div class="firma-nombre">Autoriza cliente</div>
+        <div class="firma-rol">Firma y nombre</div>
+      </div>
+    </div>
+
   </div>
 
-  ${mats.length>0?`
-  <div class="sec-title">Materiales</div>
-  <div class="tbl-hdr"><div>Descripción</div><div>Cant.</div><div>P. unit.</div><div>Importe</div><div>Margen</div></div>
-  ${mats.map(i=>{
-    const [bg,c]=catColorCalc(i.cat);
-    const margen=i.costo>0?+(((i.precio/i.costo)-1)*100).toFixed(0):0;
-    return`<div class="tbl-row">
-      <div><div style="font-weight:500">${i.nombre}</div><span class="cat-badge" style="background:${bg};color:${c}">${i.cat}</span></div>
-      <div>${i.qty} ${i.unidad}</div>
-      <div>${mxn(i.precio)}</div>
-      <div style="font-weight:600">${mxn(i.qty*i.precio)}</div>
-      <div style="color:#059669;font-weight:600">${margen}%</div>
-    </div>`;}).join("")}`:""}
-
-  ${mos.length>0?`
-  <div class="sec-title">Mano de obra</div>
-  <div class="tbl-hdr"><div>Concepto</div><div>Cant.</div><div>Precio</div><div>Importe</div><div></div></div>
-  ${mos.map(i=>`<div class="tbl-row mo-row">
-    <div><div style="font-weight:500">${i.nombre}</div><span class="cat-badge" style="background:#fdf4ff;color:#9333ea">Mano de Obra</span></div>
-    <div>${i.qty}</div>
-    <div>${mxn(i.precio)}</div>
-    <div style="font-weight:600">${mxn(i.qty*i.precio)}</div>
-    <div></div>
-  </div>`).join("")}`:""}
-
-  <div class="totals">
-    ${mats.length>0?`<div class="tot-r"><span>Subtotal materiales</span><span>${mxn(subtotalMat)}</span></div>`:""}
-    ${mos.length>0?`<div class="tot-r"><span>Subtotal mano de obra</span><span>${mxn(subtotalMO)}</span></div>`:""}
-    ${calc.conIva?`<div class="tot-r"><span>Subtotal</span><span>${mxn(sub)}</span></div><div class="tot-r"><span>IVA (16%)</span><span>${mxn(iva)}</span></div>`:""}
-    <div class="tot-final"><span>TOTAL ${calc.conIva?"CON IVA":""}</span><span>${mxn(tot)}</span></div>
-  </div>
-  <div class="util-bar">
-    <span>✓ Utilidad estimada: ${mxn(utilidad)}</span>
-    <span>Margen sobre costo: ${costoTotal>0?Math.round(((tot-costoTotal)/costoTotal)*100):100}%</span>
-  </div>
-  ${calc.notas?`<div style="padding:10px 16px;font-size:11px;color:#475569;border-top:1px solid #e2e8f0"><b>Notas:</b> ${calc.notas}</div>`:""}
-  <div class="footer">
-    ${empresa} · Los Mochis, Sinaloa<br/>
-    Esta cotización es válida por ${calc.validez||15} días · Los precios incluyen materiales y ${mos.length>0?"mano de obra especificada":"materiales solamente"}<br/>
-    Se requiere 50% de anticipo para iniciar el trabajo
-  </div>
-  </div>
-  <div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e2e8f0;padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;box-shadow:0 -2px 8px rgba(0,0,0,.08);z-index:99">
-    <button onclick="window.close()" style="padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-size:13px;font-weight:600">✕ Cerrar</button>
-    <button onclick="window.print()" style="padding:8px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;font-size:13px;font-weight:600">🖨️ Imprimir</button>
+  <div class="no-print">
+    <button onclick="window.close()" style="padding:9px 20px;border-radius:9px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">✕ Cerrar</button>
+    <button onclick="window.print()" style="padding:9px 22px;border-radius:9px;border:none;background:#104E8D;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">🖨️ Imprimir / PDF</button>
   </div>
   </body></html>`);
   w.document.close();
@@ -8171,8 +8760,8 @@ function printCalcInstalacion(calc,cfg){
 
 function CalcInstalacionSection({inv,svcs,cls,tecs,session,config,onSaveCot}){
   const blank={
-    id:null,descripcion:"",cliente:"",elaboro:session?.nombre||"Redcom",validez:15,
-    notas:"",conIva:false,items:[]
+    id:null,descripcion:"",cliente:"",cliId:"",elaboro:session?.nombre||"Redcom",validez:15,
+    notas:"",conIva:false,items:[],est:"Borrador"
   };
   const [calc,setCalc]=useState(blank);
   const [addTab,setAddTab]=useState("inv"); // inv | custom | mo | ia
@@ -8233,24 +8822,28 @@ function CalcInstalacionSection({inv,svcs,cls,tecs,session,config,onSaveCot}){
   function saveCalc(){
     if(calc.items.length===0){alert("Agrega al menos un artículo.");return;}
     const id=calc.id||newCalcId();
-    const saved={...calc,id,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad,fecha:new Date().toISOString().slice(0,10)};
+    const saved={...calc,id,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad,fecha:new Date().toISOString().slice(0,10),est:calc.est||"Borrador"};
     setSavedList(prev=>{
       const n=prev.find(x=>x.id===id)?prev.map(x=>x.id===id?saved:x):[saved,...prev];
       try{localStorage.setItem("redcom_calcs",JSON.stringify(n));}catch(e){}
       return n;
     });
+    // Sincronizar con el sistema de cotizaciones (para Caja)
+    const cliMatch=saved.cliId?{id:saved.cliId}:cls.find(c=>c.nombre?.toLowerCase().includes((saved.cliente||"").toLowerCase()));
+    const cotItems=saved.items.map(i=>({id:i.id,nombre:i.nombre,cat:i.cat==="Mano de Obra"?"Servicio":i.cat,desc:"",precio:i.precio,qty:i.qty,src:"custom"}));
+    onSaveCot({id,cid:cliMatch?.id||"",tec:session?.tecId||"",ref:id,notas:saved.notas||"",validez:saved.validez||15,iva:saved.conIva,est:saved.est||"Borrador",items:cotItems,fecha:saved.fecha||new Date().toISOString().slice(0,10),descripcion:saved.descripcion,sub:saved.sub,tot:saved.tot});
     setCalc({...saved});
-    alert(`Guardado como ${id}`);
+    alert(`Guardado como ${id}${saved.est==="Aceptada"?" ✓ Disponible en Caja":""}`);
   }
   function loadCalc(c){setCalc(c);setViewSaved(null);}
   function delCalc(id){setSavedList(prev=>{const n=prev.filter(x=>x.id!==id);try{localStorage.setItem("redcom_calcs",JSON.stringify(n));}catch(e){}return n;});}
   function convertirCot(){
     if(calc.items.length===0){alert("Agrega artículos primero.");return;}
-    const cliMatch=cls.find(c=>c.nombre.toLowerCase().includes((calc.cliente||"").toLowerCase()));
+    const cliMatch=calc.cliId?{id:calc.cliId}:cls.find(c=>c.nombre.toLowerCase().includes((calc.cliente||"").toLowerCase()));
     const cotItems=calc.items.map(i=>({id:i.id,nombre:i.nombre,cat:i.cat==="Mano de Obra"?"Servicio":i.cat,desc:"",precio:i.precio,qty:i.qty,src:"custom"}));
     const cot={id:null,cid:cliMatch?.id||"",tec:session?.tecId||"",ref:calc.id||"",notas:calc.notas||"",validez:calc.validez||15,iva:calc.conIva,est:"Borrador",items:cotItems,fecha:new Date().toISOString().slice(0,10),descripcion:calc.descripcion};
     onSaveCot(cot);
-    alert("Convertido a cotización. Revísala en la sección Cotizaciones.");
+    alert("✅ Cotización guardada correctamente.");
   }
 
   const CAT_OPTS=["Cableado Estructurado","Videovigilancia IP","Videovigilancia Analógica","Redes","Almacenamiento","Hardware","Ferretería","Consumible","Otro"];
@@ -8328,8 +8921,8 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
           <${Ic} n="calc" z=${20} s="#fff"/>
         </div>
         <div>
-          <div style=${{fontSize:16,fontWeight:700}}>Calculadora de Instalaciones</div>
-          <div style=${{fontSize:11,color:"#64748b"}}>Arma cotizaciones de redes, CCTV y cableado</div>
+          <div style=${{fontSize:16,fontWeight:700}}>Cotizaciones</div>
+          <div style=${{fontSize:11,color:"#64748b"}}>Crea y gestiona cotizaciones profesionales</div>
         </div>
       </div>
       <div style=${{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -8339,32 +8932,39 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
       </div>
     </div>
 
-    <div style=${{flex:1,overflowY:"auto",padding:"18px 24px",display:"grid",gridTemplateColumns:"1fr 360px",gap:18,alignItems:"start"}}>
+    <div style=${{flex:1,overflowY:"auto",padding:"18px 24px",display:"grid",gridTemplateColumns:window.innerWidth<=768?"1fr":"1fr 360px",gap:18,alignItems:"start"}}>
 
       <!-- LEFT: form + items -->
       <div style=${{display:"flex",flexDirection:"column",gap:14}}>
 
         <!-- Info básica -->
-        <div class="card" style=${{padding:"16px 18px",display:"grid",gap:12}}>
-          <div style=${{display:"grid",gridTemplateColumns:"1fr 120px",gap:12}}>
-            <div>
-              <label>Descripción del trabajo *</label>
-              <input value=${calc.descripcion} onChange=${sf("descripcion")} placeholder="ej. Instalación 1 nodo red + entubar 17m cocina"/>
-            </div>
-            <div>
-              <label>Validez (días)</label>
-              <input type="number" min="1" value=${calc.validez} onChange=${sf("validez")}/>
-            </div>
-          </div>
-          <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <div><label>Cliente (opcional)</label><input value=${calc.cliente} onChange=${sf("cliente")} placeholder="Nombre del cliente"/></div>
-            <div><label>Elaboró</label><input value=${calc.elaboro} onChange=${sf("elaboro")} placeholder="Tu nombre o empresa"/></div>
-          </div>
+        <div class="card" style=${{padding:"14px 18px",display:"grid",gap:10}}>
+          <!-- Descripción full width -->
           <div>
-            <label>Notas / condiciones</label>
-            <textarea value=${calc.notas} onChange=${sf("notas")} rows=${2}
-              placeholder="ej. 50% anticipo requerido, instalación en horario de oficina"
-              style=${{resize:"none",fontSize:13,width:"100%",boxSizing:"border-box",fontFamily:"inherit",border:"1.5px solid #e2e8f0",borderRadius:8,padding:"9px 12px",background:"#fff",color:"#1e293b",outline:"none"}}/>
+            <label>Descripción del trabajo *</label>
+            <input value=${calc.descripcion} onChange=${sf("descripcion")}
+              placeholder="ej. Instalación 1 nodo red Cat6 + entubar 17m + terminaciones cocina-sala"
+              style=${{fontSize:14,fontWeight:500}}/>
+          </div>
+          <!-- Cliente · Elaboró · Validez en una fila -->
+          <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr 100px",gap:10}}>
+            <div><label>Cliente</label>
+              <select value=${calc.cliId||""} onChange=${e=>{
+                const cl=cls.find(x=>x.id===e.target.value);
+                setCalc(p=>({...p,cliId:e.target.value,cliente:cl?cl.nombre:p.cliente}));
+              }}>
+                <option value="">— Sin vincular —</option>
+                ${cls.map(cl=>html`<option key=${cl.id} value=${cl.id}>${cl.nombre}${cl.empresa?" · "+cl.empresa:""}</option>`)}
+              </select>
+            </div>
+            <div><label>Elaboró</label><input value=${calc.elaboro} onChange=${sf("elaboro")} placeholder="Tu nombre"/></div>
+            <div><label>Validez (días)</label><input type="number" min="1" value=${calc.validez} onChange=${sf("validez")}/></div>
+          </div>
+          <!-- Notas como input simple -->
+          <div>
+            <label>Notas <span style=${{fontSize:10,color:"#94a3b8",fontWeight:400}}>(opcional)</span></label>
+            <input value=${calc.notas} onChange=${sf("notas")}
+              placeholder="ej. 50% anticipo requerido · instalación en horario de oficina"/>
           </div>
         </div>
 
@@ -8434,12 +9034,20 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
             </button>`}
 
           ${addTab==="mo"&&html`
-            <div style=${{display:"grid",gridTemplateColumns:"2fr 1fr",gap:10}}>
+            <div style=${{display:"grid",gridTemplateColumns:"2fr 1fr",gap:10}}>\
               <div><label>Concepto de mano de obra *</label><input value=${moNombre} onChange=${e=>setMON(e.target.value)} placeholder="ej. Instalación + cableado + terminaciones"/></div>
               <div><label>Precio $MXN *</label><input type="number" min="0" step="50" value=${moPrecio} onChange=${e=>setMOP(e.target.value)}/></div>
             </div>
+            <div style=${{marginTop:8,display:"flex",gap:5,flexWrap:"wrap"}}>
+              <span style=${{fontSize:10,color:"#94a3b8",alignSelf:"center",marginRight:2}}>Rápido:</span>
+              ${[["½ jornada","Media jornada de trabajo",450],["1 día completo","Jornada completa (8h)",850],["Inst. 1 punto red","Instalación punto de red Cat6",450],["Inst. CCTV 4 cam","Instalación sistema CCTV 4 cámaras",1200],["Config. red WiFi","Configuración red WiFi + pruebas",400],["Diagnóstico","Diagnóstico técnico en sitio",250]].map(([lbl,nom,pr])=>html`
+                <button key=${lbl} class="btn btn-ghost btn-sm" style=${{fontSize:10,padding:"3px 8px"}}
+                  onClick=${()=>{setMON(nom);setMOP(pr);}}>
+                  ${lbl} · ${mxn(pr)}
+                </button>`)}
+            </div>
             <div style=${{marginTop:8,background:"#f0f9ff",borderRadius:7,padding:"7px 10px",fontSize:11,color:"#0891b2"}}>
-              💡 Referencia Los Mochis: ½ día = $400–$500 · 1 día = $700–$900 · Instalación CCTV completa = $1,200–$2,500
+              💡 Precios de referencia Los Mochis: ½ día $400–$500 · día completo $700–$900 · CCTV 4 cam $1,200–$2,500
             </div>
             <button class="btn btn-primary btn-sm" style=${{marginTop:10}} onClick=${addMO} disabled=${!moNombre.trim()||moPrecio<=0}>
               <${Ic} n="plus" z=${13} s="#fff"/> Agregar mano de obra
@@ -8479,36 +9087,81 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
             </div>`}
         </div>
 
-        <!-- Tabla de artículos -->
-        ${calc.items.length>0&&html`
+        <!-- Tabla de artículos o empty state -->
+        ${calc.items.length>0?html`
           <div class="card" style=${{overflow:"hidden"}}>
-            <div style=${{background:"#f8fafc",padding:"10px 16px",borderBottom:"1px solid #e2e8f0",fontWeight:700,fontSize:12}}>
-              Artículos del presupuesto (${calc.items.length})
+            <div style=${{background:"linear-gradient(90deg,#f8fafc,#f1f5f9)",padding:"9px 16px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <span style=${{fontWeight:700,fontSize:12,color:"#1e293b"}}>Artículos del presupuesto</span>
+              <span style=${{fontSize:11,fontWeight:600,color:"#64748b",background:"#e2e8f0",padding:"1px 8px",borderRadius:99}}>${calc.items.length} ítem${calc.items.length!==1?"s":""}</span>
             </div>
             <!-- Header -->
-            <div style=${{display:"grid",gridTemplateColumns:"2.5fr 70px 90px 90px 36px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0"}}>
-              ${["Descripción","Cant.","P. unit.","Importe",""].map((h,i)=>html`<div key=${i} style=${{padding:"8px 12px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:.7,textAlign:i>0?"right":"left"}}>${h}</div>`)}
+            <div style=${{display:"grid",gridTemplateColumns:"1fr 64px 90px 100px 70px",background:"linear-gradient(90deg,#f8fafc,#f1f5f9)",borderBottom:"1px solid #e2e8f0"}}>
+              ${[["Descripción","left"],["Cant.","center"],["P. unit.","right"],["Importe","right"],["Acción","center"]].map(([h,align])=>html`<div key=${h} style=${{padding:"8px 12px",fontSize:9,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:.8,textAlign:align}}>${h}</div>`)}
             </div>
-            ${calc.items.map(item=>{
+            ${calc.items.map((item,idx)=>{
               const [bg,c]=catColorCalc(item.cat);
-              return html`<div key=${item.id} style=${{display:"grid",gridTemplateColumns:"2.5fr 70px 90px 90px 36px",borderBottom:"1px solid #f1f5f9",alignItems:"center"}}>
-                <div style=${{padding:"9px 12px"}}>
-                  <div style=${{fontSize:12,fontWeight:500}}>${item.nombre}</div>
-                  <span style=${{fontSize:9,fontWeight:700,background:bg,color:c,padding:"1px 6px",borderRadius:4,display:"inline-block",marginTop:2}}>${item.cat}</span>
+              const isMO=item.cat==="Mano de Obra";
+              const importe=item.qty*item.precio;
+              return html`<div key=${item.id} style=${{
+                display:"grid",gridTemplateColumns:"1fr 64px 90px 100px 70px",
+                borderBottom:"1px solid #f1f5f9",alignItems:"center",
+                background:idx%2===0?(isMO?"#fdf4ff08":"#fff"):(isMO?"#fdf4ff":"#f8fafc"),
+                transition:"background .1s"}}
+                onMouseOver=${e=>e.currentTarget.style.background=isMO?"#f5e9ff":"#eff6ff"}
+                onMouseOut=${e=>e.currentTarget.style.background=idx%2===0?(isMO?"#fdf4ff08":"#fff"):(isMO?"#fdf4ff":"#f8fafc")}>
+                <!-- Nombre + badge -->
+                <div style=${{padding:"8px 12px",display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                  <span style=${{width:3,height:28,borderRadius:99,background:c,flexShrink:0,display:"block"}}/>
+                  <div style=${{minWidth:0}}>
+                    <div style=${{fontSize:12,fontWeight:600,color:"#1e293b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${item.nombre}</div>
+                    <span style=${{fontSize:9,fontWeight:700,background:bg,color:c,padding:"1px 6px",borderRadius:4,display:"inline-block",marginTop:1}}>${item.cat}</span>
+                  </div>
                 </div>
-                <div style=${{padding:"4px 12px",textAlign:"right"}}>
-                  <input type="number" min="0.01" step="any" value=${item.qty} onChange=${e=>updQty(item.id,e.target.value)} style=${{width:52,textAlign:"right",padding:"4px 6px",fontSize:12,border:"1px solid #e2e8f0",borderRadius:6}}/>
+                <!-- Qty -->
+                <div style=${{padding:"4px 8px"}}>
+                  <input type="number" min="0.01" step="any" value=${item.qty}
+                    onChange=${e=>updQty(item.id,e.target.value)}
+                    style=${{width:"100%",textAlign:"center",padding:"5px 4px",fontSize:13,fontWeight:600,
+                      border:"1.5px solid #e2e8f0",borderRadius:7,background:"#fff",outline:"none"}}/>
                 </div>
-                <div style=${{padding:"4px 12px",textAlign:"right"}}>
-                  <input type="number" min="0" step="0.01" value=${item.precio} onChange=${e=>updPrecio(item.id,e.target.value)} style=${{width:78,textAlign:"right",padding:"4px 6px",fontSize:12,border:"1px solid #e2e8f0",borderRadius:6}}/>
+                <!-- Precio unit -->
+                <div style=${{padding:"4px 8px"}}>
+                  <input type="number" min="0" step="0.01" value=${item.precio}
+                    onChange=${e=>updPrecio(item.id,e.target.value)}
+                    style=${{width:"100%",textAlign:"right",padding:"5px 8px",fontSize:12,
+                      border:"1.5px solid #e2e8f0",borderRadius:7,background:"#fff",outline:"none"}}/>
                 </div>
-                <div style=${{padding:"9px 12px",textAlign:"right",fontWeight:600,fontSize:13}}>${mxn(item.qty*item.precio)}</div>
-                <div style=${{padding:"9px 6px",textAlign:"center"}}>
-                  <button onClick=${()=>rmItem(item.id)} style=${{background:"transparent",border:"none",cursor:"pointer",padding:3,borderRadius:6,display:"flex",alignItems:"center"}}><${Ic} n="trash" z=${13} s="#dc2626"/></button>
+                <!-- Importe destacado -->
+                <div style=${{padding:"8px 12px",textAlign:"right"}}>
+                  <div style=${{fontSize:13,fontWeight:800,color:isMO?"#9333ea":"#1d4ed8"}}>${mxn(importe)}</div>
+                  <div style=${{fontSize:9,color:"#94a3b8"}}>${item.qty} × ${mxn(item.precio)}</div>
+                </div>
+                <!-- Acciones -->
+                <div style=${{padding:"4px 6px",display:"flex",gap:3,justifyContent:"center"}}>
+                  <button onClick=${()=>setCalc(p=>({...p,items:[...p.items,{...item,id:Date.now()+"_dup"}]}))}
+                    title="Duplicar"
+                    style=${{background:"#f8fafc",border:"1px solid #e2e8f0",cursor:"pointer",padding:"4px 6px",borderRadius:6,display:"flex",alignItems:"center",transition:"background .1s"}}
+                    onMouseOver=${e=>e.currentTarget.style.background="#e2e8f0"}
+                    onMouseOut=${e=>e.currentTarget.style.background="#f8fafc"}>
+                    <${Ic} n="ok" z=${11} s="#64748b"/></button>
+                  <button onClick=${()=>rmItem(item.id)}
+                    title="Eliminar"
+                    style=${{background:"#fef2f2",border:"1px solid #fecaca",cursor:"pointer",padding:"4px 6px",borderRadius:6,display:"flex",alignItems:"center",transition:"background .1s"}}
+                    onMouseOver=${e=>e.currentTarget.style.background="#fee2e2"}
+                    onMouseOut=${e=>e.currentTarget.style.background="#fef2f2"}>
+                    <${Ic} n="trash" z=${11} s="#dc2626"/></button>
                 </div>
               </div>`;
             })}
-          </div>`}
+          </div>`
+        :html`<div class="card" style=${{padding:"32px 20px",textAlign:"center",color:"#94a3b8"}}>
+          <div style=${{fontSize:40,marginBottom:10}}>🧮</div>
+          <div style=${{fontWeight:700,fontSize:14,color:"#475569",marginBottom:6}}>Cotización vacía</div>
+          <div style=${{fontSize:12,marginBottom:16}}>Agrega materiales, servicios o mano de obra<br/>usando las pestañas de arriba</div>
+          <button class="btn btn-ghost btn-sm" style=${{margin:"0 auto"}} onClick=${()=>setShowPresets(true)}>
+            📦 Cargar una plantilla rápida
+          </button>
+        </div>`}
       </div>
 
       <!-- RIGHT: totales + acciones -->
@@ -8551,17 +9204,69 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
 
         <!-- Acciones -->
         <div class="card" style=${{padding:"14px 16px",display:"flex",flexDirection:"column",gap:8}}>
-          <button class="btn btn-primary" style=${{justifyContent:"center"}} onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config)} disabled=${calc.items.length===0}>
-            <${Ic} n="print" z=${14} s="#fff"/> Imprimir / Vista previa
+
+          <!-- Estado de la cotización -->
+          <div>
+            <label style=${{fontSize:10,fontWeight:700,color:"#475569",textTransform:"uppercase",letterSpacing:.5,display:"block",marginBottom:5}}>Estado</label>
+            <div style=${{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:4}}>
+              ${[["Borrador","#64748b","#f1f5f9"],["Enviada","#1d4ed8","#eff6ff"],["Aceptada","#059669","#f0fdf4"],["Rechazada","#dc2626","#fef2f2"]].map(([est,col,bg])=>html`
+                <button key=${est} onClick=${()=>setCalc(p=>({...p,est}))} style=${{
+                  padding:"5px 2px",borderRadius:7,border:"2px solid",cursor:"pointer",fontFamily:"inherit",
+                  fontSize:10,fontWeight:700,textAlign:"center",
+                  borderColor:calc.est===est?col:"#e2e8f0",
+                  background:calc.est===est?bg:"#fff",
+                  color:calc.est===est?col:"#94a3b8",
+                  transition:"all .15s"}}>
+                  ${est}
+                </button>`)}
+            </div>
+            ${calc.est==="Aceptada"&&html`<div style=${{marginTop:5,fontSize:10,color:"#059669",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+              <${Ic} n="ok" z=${11} s="#059669"/> Aparecerá en Caja para cobrar
+            </div>`}
+          </div>
+
+          <div style=${{borderTop:"1px solid #f1f5f9"}}/>
+
+          <!-- Primario: Imprimir -->
+          <button class="btn btn-primary" style=${{justifyContent:"center",padding:"10px"}}
+            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config)}
+            disabled=${calc.items.length===0}>
+            <${Ic} n="print" z=${15} s="#fff"/> Imprimir / Vista previa
           </button>
-          <button class="btn btn-success" style=${{justifyContent:"center"}} onClick=${saveCalc} disabled=${calc.items.length===0}>
-            <${Ic} n="ok" z=${14} s="#059669"/> Guardar presupuesto
+          <!-- Guardar + WhatsApp en fila -->
+          <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            <button class="btn btn-success" style=${{justifyContent:"center"}} onClick=${saveCalc} disabled=${calc.items.length===0}>
+              <${Ic} n="ok" z=${13} s="#059669"/> Guardar
+            </button>
+            ${(()=>{
+              const cli=cls.find(x=>x.id===calc.cliId);
+              const tel=cli?.tel;
+              const hasTel=tel&&tel.replace(/\D/g,"").length>=10;
+              return html`<button class="btn btn-sm" style=${{justifyContent:"center",
+                  background:hasTel?"#dcfce7":"#f8fafc",
+                  color:hasTel?"#16a34a":"#94a3b8",
+                  border:`1.5px solid ${hasTel?"#86efac":"#e2e8f0"}`,
+                  fontWeight:700}}
+                disabled=${!hasTel||calc.items.length===0}
+                title=${!hasTel?"Selecciona un cliente con teléfono":"Enviar por WhatsApp"}
+                onClick=${()=>{
+                  const msg=buildCalcWAMsg({...calc,id:calc.id||"—"},tot,sub,calc.conIva?iva:0,config);
+                  const num=(tel||"").replace(/\D/g,"");
+                  const num52=num.length===10?"52"+num:num;
+                  window.open("https://wa.me/"+num52+"?text="+encodeURIComponent(msg),"_blank");
+                }}>
+                <${Ic} n="wa" z=${13} s=${hasTel?"#16a34a":"#94a3b8"}/> WhatsApp
+              </button>`;
+            })()}
+          </div>
+          <!-- Divisor -->
+          <div style=${{borderTop:"1px solid #f1f5f9",margin:"2px 0"}}/>
+          <!-- Secundarios -->
+          <button class="btn btn-ghost" style=${{justifyContent:"center",fontSize:12,color:"#7c3aed",borderColor:"#ddd6fe",background:"#faf5ff"}} onClick=${saveAsTemplate} disabled=${calc.items.length===0}>
+            📌 Guardar como plantilla
           </button>
-          <button class="btn btn-ghost" style=${{justifyContent:"center",fontSize:12,color:"#7c3aed",borderColor:"#e9d5ff",background:"#fdf4ff"}} onClick=${saveAsTemplate} disabled=${calc.items.length===0}>
-            📌 Guardar como plantilla reutilizable
-          </button>
-          <button class="btn btn-ghost" style=${{justifyContent:"center",fontSize:12}} onClick=${convertirCot} disabled=${calc.items.length===0}>
-            <${Ic} n="tag" z=${13}/> Convertir a Cotización formal
+          <button class="btn btn-ghost" style=${{justifyContent:"center",fontSize:11,color:"#64748b"}} onClick=${convertirCot} disabled=${calc.items.length===0}>
+            <${Ic} n="tag" z=${12} s="#64748b"/> Exportar a Cotización formal
           </button>
         </div>
 
@@ -9097,15 +9802,14 @@ function App(){
   if(!session) return html`<${LoginScreen} users=${users} onLogin=${login} config=${config}/>`;
 
   const NAV=[
-    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],["calc","Calc. Instalaciones","calc"],...(canCotizar?[["cots","Cotizaciones","tag"]]:[]),...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
+    {g:"GESTIÓN",items:[["orders","Órdenes de Trabajo","orders"],["ia","Asistente IA","shield"],["calc","Cotizaciones","calc"],...(isAdmin?[["caja","Caja","cash"],["garantias","Garantías","warranty"],["dash","Dashboard","dash"]]:[]) ]},
     ...(isAdmin?[{g:"CATÁLOGOS",items:[["clients","Clientes","clients"],["inv","Inventario","inv"],["techs","Técnicos","techs"],["servicios","Servicios","tag"],["users","Usuarios","shield"]]},{g:"COMPRAS",items:[["provs","Proveedores","truck"],["ocs","Órdenes de Compra","truck"],["reportes","Reportes","xls"]]}]:[]),
   ];
 
   const NAV_ITEMS=[
     {key:"orders",lbl:"Órdenes",icon:"orders"},
     {key:"ia",lbl:"IA",icon:"shield"},
-    {key:"calc",lbl:"Instalar",icon:"calc"},
-    ...(canCotizar?[{key:"cots",lbl:"Cotizar",icon:"tag"}]:[]),
+    {key:"calc",lbl:"Cotizar",icon:"calc"},
     ...(isAdmin?[
       {key:"clients",lbl:"Clientes",icon:"clients"},
       {key:"inv",lbl:"Inventario",icon:"inv"},
@@ -9228,7 +9932,7 @@ function App(){
 
         <!-- Left: section title -->
         <div style=${{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
-          <span style=${{fontSize:13,fontWeight:600,color:"#1D1D1F",letterSpacing:"-.02em"}}>${{"orders":"Órdenes","clients":"Clientes","inv":"Inventario","techs":"Técnicos","cots":"Cotizaciones","caja":"Caja","garantias":"Garantías","dash":"Dashboard","ia":"Asistente IA","servicios":"Servicios","users":"Usuarios","provs":"Proveedores","ocs":"Órd. de Compra","reportes":"Reportes","calc":"Calculadora"}[sec]||""}</span>
+          <span style=${{fontSize:13,fontWeight:600,color:"#1D1D1F",letterSpacing:"-.02em"}}>${{"orders":"Órdenes","clients":"Clientes","inv":"Inventario","techs":"Técnicos","caja":"Caja","garantias":"Garantías","dash":"Dashboard","ia":"Asistente IA","servicios":"Servicios","users":"Usuarios","provs":"Proveedores","ocs":"Órd. de Compra","reportes":"Reportes","calc":"Cotizaciones"}[sec]||""}</span>
           ${sec==="orders"&&ords.length>0&&html`<span style=${{fontSize:11,fontFamily:"'JetBrains Mono',monospace",fontWeight:500,color:"rgba(0,0,0,.35)",background:"rgba(0,0,0,.06)",padding:"1px 7px",borderRadius:99}}>${filt.length}</span>`}
         </div>
         <div style=${{display:"flex",alignItems:"center",gap:5}}>
@@ -9430,7 +10134,7 @@ function App(){
                 const entry={fecha:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),estado:"Diagnóstico guardado",user:session?.nombre||"—",nota:diag?.slice(0,60)||""};
                 setOrds(p=>{const n=p.map(o=>o.id===id?{...o,diag,diagCosto,log:[entry,...(o.log||[])]}:o);lsSet("redcom_ords",n);return n;});
               }}
-              onPrint=${printTicket}
+              onPrint=${(o,c)=>printTicket(o,c,config)}
               onFotos=${id=>setShowFotos(id)}
               onFirma=${id=>setShowFirma(id)}
               onPortal=${o=>{
@@ -9445,11 +10149,19 @@ function App(){
       ${sec==="inv"&&html`<${InvSection} inv=${inv} provs=${provs} ocs=${ocs} session=${session} onSaveOC=${saveOC} onAdd=${()=>setNewInv(true)} onEdit=${p=>setEditInv(p)} onDel=${delInv}/>`}
       ${sec==="techs"&&html`<${TecSection} tecs=${tecs} ords=${ords} onAdd=${()=>setNewTec(true)} onEdit=${t=>setEditTec(t)} onDel=${delTec}/>`}
       ${sec==="cots"&&canCotizar&&html`<${CotizacionesSection}
-        cots=${cots} cls=${cls} inv=${inv} svcs=${svcs} tecs=${tecs} session=${session}
+        cots=${cots} cls=${cls} inv=${inv} svcs=${svcs} tecs=${tecs} session=${session} config=${config}
         onAdd=${()=>setNewCot(true)}
         onEdit=${ct=>setEditCot(ct)}
         onDel=${delCot}
         onPrint=${ct=>{const cli=cls.find(x=>x.id===ct.cid);const tec=tecs.find(x=>x.id===ct.tec);printCotizacion(ct,cli||{nombre:"—"},tec,config);}}
+        onWA=${ct=>{
+          const cli=cls.find(x=>x.id===ct.cid);
+          const tec=tecs.find(x=>x.id===ct.tec);
+          if(!cli?.tel){alert("El cliente no tiene teléfono registrado.");return;}
+          const msg=buildCotWAMsg(ct,cli,tec,config);
+          const tel=fmtTelWA(cli.tel);
+          window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");
+        }}
       />`}
       ${sec==="provs"&&isAdmin&&html`<${ProveedoresSection}
         provs=${provs} inv=${inv}
@@ -9462,7 +10174,7 @@ function App(){
         onAdd=${()=>setNewOC(true)}
         onEdit=${oc=>setEditOC(oc)}
         onDel=${delOC}
-        onPrint=${(oc,pv)=>printOC(oc,pv)}/>`}
+        onPrint=${(oc,pv)=>printOC(oc,pv,config)}/>`}
       ${sec==="reportes"&&isAdmin&&html`<${ReportesSection}
         ords=${ords} cls=${cls} inv=${inv} tecs=${tecs} svcs=${svcs}
         pagos=${pagos} cots=${cots} gars=${gars} gastos=${gastos} onImportInv=${importInv}/>`}
@@ -9473,7 +10185,7 @@ function App(){
         gars=${gars} ords=${ords} cls=${cls} tecs=${tecs}
         onAdd=${addGar} onReclamo=${reclamoGar} onDel=${delGar}/>`}
       ${sec==="ia"&&html`<${IASection} inv=${inv} svcs=${svcs} tecs=${tecs}/>`}
-      ${sec==="calc"&&html`<${CalcInstalacionSection} inv=${inv} svcs=${svcs} cls=${cls} tecs=${tecs} session=${session} config=${config} onSaveCot=${ct=>{saveCot({...ct,id:`COT-${String(++COTSEQ).padStart(4,"0")}`});goSec("cots");}}/>`}
+      ${sec==="calc"&&html`<${CalcInstalacionSection} inv=${inv} svcs=${svcs} cls=${cls} tecs=${tecs} session=${session} config=${config} onSaveCot=${ct=>{saveCot({...ct,id:`COT-${String(++COTSEQ).padStart(4,"0")}`});}}/>`}
       ${sec==="servicios"&&isAdmin&&html`<${ServiciosSection} svcs=${svcs} onAdd=${()=>setNewSvc(true)} onEdit=${s=>setEditSvc(s)} onDel=${delSvc}/>`}
       ${sec==="users"&&isAdmin&&html`<${UsersSection} users=${users} tecs=${tecs} session=${session} onAdd=${()=>setNewUser(true)} onEdit=${u=>setEditUser(u)} onDel=${delUser}/>`}
       ${sec==="dash"&&html`<${Dashboard} ords=${ords} buds=${buds} cls=${cls} tecs=${tecs} notas=${notas} pagos=${pagos} svcs=${svcs} onDelNota=${delNota} onPrintNota=${nv=>printNotaVenta(nv,config)}/>`}
@@ -9482,7 +10194,7 @@ function App(){
     </main>
 
     <!-- MODALS ÓRDENES -->
-    ${(showNewOrd||editOrd)&&html`<${OrdModal} cls=${cls} tecs=${tecs} edit=${editOrd} onSave=${saveOrd} onClose=${()=>{setNewOrd(false);setEditOrd(null);}} onPrint=${printTicket}/>`}
+    ${(showNewOrd||editOrd)&&html`<${OrdModal} cls=${cls} tecs=${tecs} edit=${editOrd} onSave=${saveOrd} onClose=${()=>{setNewOrd(false);setEditOrd(null);}} onPrint=${(o,c)=>printTicket(o,c,config)}/>`}
     ${budOrd&&html`<${BudModal} ord=${budOrd} cli=${gcl(cls,budOrd.cid)} invItems=${inv} svcItems=${svcs} tarifaMO=${tarifaMO} exist=${Object.values(buds).find(b=>b.oid===budOrd.id)} onSave=${saveBud} onClose=${()=>setBudOrd(null)}/>`}
     <!-- MODALS CLIENTES -->
     ${(showNewCli||editCli)&&html`<${ClientModal} edit=${editCli} onSave=${saveCli} onClose=${()=>{setNewCli(false);setEditCli(null);}}/>`}
