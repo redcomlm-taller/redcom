@@ -5018,10 +5018,10 @@ Gracias por su preferencia 🙏`;
 /* ══ PORTAL FIRMA COTIZACIÓN ═══════════════════════════════════════════ */
 function PortalFirmaCot({cot,cli,tec,cfg,onFirmada}){
   const canvasRef=React.useRef();
+  const wrapRef=React.useRef();
   const [drawing,setDrawing]=useState(false);
   const [signed,setSigned]=useState(false);
   const [nombre,setNombre]=useState(cli?.nombre||"");
-  const [enviada,setEnviada]=useState(false);
   const [step,setStep]=useState("ver"); // ver | firmar | gracias
 
   const items=cot.items||[];
@@ -5031,16 +5031,59 @@ function PortalFirmaCot({cot,cli,tec,cfg,onFirmada}){
   const empresa=(cfg&&cfg.empresa)||"REDCOM";
   const logo=(cfg&&cfg.logo)||"";
 
+  // Canvas responsive: ajusta resolución al tamaño real del contenedor
+  React.useEffect(()=>{
+    if(step!=="firmar") return;
+    function resizeCanvas(){
+      const c=canvasRef.current; if(!c) return;
+      const w=c.offsetWidth||300;
+      if(c.width!==w){
+        // Guardar contenido actual
+        const tmp=c.toDataURL();
+        c.width=w; c.height=Math.round(w*0.38);
+        // Restaurar trazos si había
+        if(signed){const img=new Image();img.onload=()=>c.getContext("2d").drawImage(img,0,0,c.width,c.height);img.src=tmp;}
+      }
+    }
+    // Ajuste inicial con pequeño delay para que el DOM esté listo
+    setTimeout(resizeCanvas,50);
+    const ro=typeof ResizeObserver!=="undefined"?new ResizeObserver(resizeCanvas):null;
+    if(ro&&canvasRef.current) ro.observe(canvasRef.current);
+    return()=>{if(ro) ro.disconnect();}
+  },[step]);
+
   function getPos(e,canvas){
     const rect=canvas.getBoundingClientRect();
+    // Usar relación CSS vs resolución interna
     const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
     if(e.touches) return{x:(e.touches[0].clientX-rect.left)*sx,y:(e.touches[0].clientY-rect.top)*sy};
     return{x:(e.clientX-rect.left)*sx,y:(e.clientY-rect.top)*sy};
   }
-  function startDraw(e){e.preventDefault();const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.beginPath();ctx.moveTo(p.x,p.y);setDrawing(true);setSigned(true);}
-  function draw(e){e.preventDefault();if(!drawing)return;const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.lineWidth=2.5;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1d4ed8";ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
-  function endDraw(e){e.preventDefault();setDrawing(false);}
-  function clear(){const c=canvasRef.current;if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height);setSigned(false);}
+  function startDraw(e){
+    e.preventDefault();
+    const c=canvasRef.current; if(!c) return;
+    const ctx=c.getContext("2d");
+    const p=getPos(e,c);
+    ctx.beginPath(); ctx.moveTo(p.x,p.y);
+    setDrawing(true); setSigned(true);
+  }
+  function draw(e){
+    e.preventDefault();
+    if(!drawing) return;
+    const c=canvasRef.current; if(!c) return;
+    const ctx=c.getContext("2d");
+    const p=getPos(e,c);
+    ctx.lineWidth=2.8; ctx.lineCap="round"; ctx.lineJoin="round";
+    ctx.strokeStyle="#1d4ed8";
+    ctx.lineTo(p.x,p.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x,p.y);
+  }
+  function endDraw(e){e.preventDefault(); setDrawing(false);}
+  function clear(){
+    const c=canvasRef.current; if(!c) return;
+    c.getContext("2d").clearRect(0,0,c.width,c.height);
+    setSigned(false);
+  }
 
   function confirmar(){
     if(!signed){alert("Por favor dibuja tu firma.");return;}
@@ -5145,33 +5188,39 @@ function PortalFirmaCot({cot,cli,tec,cfg,onFirmada}){
           <img src=${cot.firma.base64} style=${{marginTop:12,maxWidth:200,border:"1px solid #bbf7d0",borderRadius:8}}/>
         </div>`
         :step==="ver"
-          ?html`<button onClick=${()=>setStep("firmar")} style=${{
-              width:"100%",padding:"16px",borderRadius:12,border:"none",cursor:"pointer",
-              background:"linear-gradient(135deg,#059669,#10b981)",color:"#fff",
-              fontFamily:"inherit",fontSize:16,fontWeight:700,
-              boxShadow:"0 4px 16px rgba(5,150,105,.35)"}}>
+          ?html`<div>
+            <button onClick=${()=>setStep("firmar")} style=${{
+                width:"100%",padding:"18px",borderRadius:14,border:"none",cursor:"pointer",
+                background:"linear-gradient(135deg,#059669,#10b981)",color:"#fff",
+                fontFamily:"inherit",fontSize:17,fontWeight:700,
+                boxShadow:"0 6px 20px rgba(5,150,105,.4)",
+                display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
               ✍️ Firmar y aceptar cotización
-            </button>`
-          :html`<div style=${{background:"#fff",borderRadius:12,padding:"20px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
-            <div style=${{fontWeight:700,fontSize:15,color:"#1e293b",marginBottom:4}}>✍️ Tu firma de aceptación</div>
-            <div style=${{fontSize:12,color:"#64748b",marginBottom:14}}>Al firmar confirmas que aceptas esta cotización y sus condiciones.</div>
-            <div>
-              <label style=${{fontSize:11,fontWeight:600,color:"#475569",display:"block",marginBottom:5}}>Nombre completo *</label>
+            </button>
+            <div style=${{textAlign:"center",fontSize:11,color:"#94a3b8",marginTop:10,lineHeight:1.6}}>
+              Al firmar confirmas que aceptas esta cotización.<br/>Se guarda como comprobante digital.
+            </div>
+          </div>`
+          :html`<div style=${{background:"#fff",borderRadius:14,padding:"20px 16px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
+            <div style=${{fontWeight:700,fontSize:16,color:"#1e293b",marginBottom:4}}>✍️ Tu firma de aceptación</div>
+            <div style=${{fontSize:13,color:"#64748b",marginBottom:16,lineHeight:1.5}}>Escribe tu nombre y dibuja tu firma con el dedo para aceptar.</div>
+            <div style=${{marginBottom:14}}>
+              <label style=${{fontSize:12,fontWeight:600,color:"#475569",display:"block",marginBottom:6}}>Nombre completo *</label>
               <input value=${nombre} onChange=${e=>setNombre(e.target.value)}
-                placeholder="Escribe tu nombre" style=${{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:14,fontFamily:"inherit",marginBottom:12,boxSizing:"border-box",outline:"none"}}/>
+                placeholder="Escribe tu nombre" style=${{width:"100%",padding:"12px 14px",borderRadius:10,border:"1.5px solid #e2e8f0",fontSize:15,fontFamily:"inherit",boxSizing:"border-box",outline:"none"}}/>
             </div>
-            <div style=${{marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <label style=${{fontSize:11,fontWeight:600,color:"#475569"}}>Firma *</label>
-              <button onClick=${clear} style=${{background:"none",border:"none",cursor:"pointer",fontSize:11,color:"#94a3b8",fontFamily:"inherit"}}>✕ Limpiar</button>
+            <div style={{marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <label style={{fontSize:11,fontWeight:600,color:"#475569"}}>Firma *</label>
+              <button onClick=${clear} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,color:"#94a3b8",fontFamily:"inherit"}}>✕ Limpiar</button>
             </div>
-            <canvas ref=${canvasRef} width=${480} height=${160}
-              style=${{width:"100%",height:160,border:"2px solid #e2e8f0",borderRadius:10,background:"#fafafa",cursor:"crosshair",touchAction:"none",display:"block"}}
+            <canvas ref=${canvasRef}
+              style=${{width:"100%",height:"clamp(120px,38vw,180px)",border:"2px solid #bfdbfe",borderRadius:10,background:"#f8fbff",cursor:"crosshair",touchAction:"none",display:"block",boxSizing:"border-box"}}
               onMouseDown=${startDraw} onMouseMove=${draw} onMouseUp=${endDraw} onMouseLeave=${endDraw}
               onTouchStart=${startDraw} onTouchMove=${draw} onTouchEnd=${endDraw}/>
-            ${!signed?html`<div style=${{textAlign:"center",fontSize:11,color:"#94a3b8",marginTop:6}}>Dibuja tu firma con el dedo o el mouse</div>`:""}
+            ${!signed?html`<div style=${{textAlign:"center",fontSize:12,color:"#94a3b8",marginTop:8,padding:"6px 12px",background:"#f1f5f9",borderRadius:7}}>👆 Dibuja tu firma con el dedo</div>`:""}
             <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:14}}>
-              <button onClick=${()=>setStep("ver")} style=${{padding:"12px",borderRadius:10,border:"1px solid #e2e8f0",background:"#f8fafc",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:600,color:"#64748b"}}>← Volver</button>
-              <button onClick=${confirmar} style=${{padding:"12px",borderRadius:10,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,color:"#fff",background:signed&&nombre.trim()?"linear-gradient(135deg,#059669,#10b981)":"#e2e8f0",color:signed&&nombre.trim()?"#fff":"#94a3b8"}}>
+              <button onClick=${()=>setStep("ver")} style=${{padding:"13px",borderRadius:10,border:"1px solid #e2e8f0",background:"#f8fafc",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:600,color:"#64748b"}}>← Volver</button>
+              <button onClick=${confirmar} style=${{padding:"13px",borderRadius:10,border:"none",cursor:signed&&nombre.trim()?"pointer":"not-allowed",fontFamily:"inherit",fontSize:14,fontWeight:700,background:signed&&nombre.trim()?"linear-gradient(135deg,#059669,#10b981)":"#e2e8f0",color:signed&&nombre.trim()?"#fff":"#94a3b8"}}>
                 ✅ Confirmar firma
               </button>
             </div>
@@ -8823,8 +8872,6 @@ function printCalcInstalacion(calc,cfg,session){
   const logo=cfg.logo||"";
   const terminos=cfg.terminos||"";
   const firmaDigital=session?.firmaBase64||"";
-  const firmaCliente=calc.firma?.base64||"";
-  const firmaClienteNombre=calc.firma?.nombre||"";
 
   const allItems=calc.items||[];
   const sub=allItems.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
@@ -9020,10 +9067,10 @@ function printCalcInstalacion(calc,cfg,session){
         <div class="firma-rol">Representante</div>
       </div>
       <div class="firma-col">
-        <div class="firma-espacio">${firmaCliente?`<img src="${firmaCliente}" class="firma-img" alt="Firma cliente"/>`:`<div style="font-size:9px;color:#94a3b8;font-style:italic;padding-bottom:8px">Pendiente de firma</div>`}</div>
+        <div class="firma-espacio"></div>
         <div class="firma-line"></div>
-        <div class="firma-nombre">${firmaClienteNombre?firmaClienteNombre:"Autoriza cliente"}</div>
-        <div class="firma-rol">${firmaCliente?"✓ Firmado digitalmente":"Firma y nombre"}</div>
+        <div class="firma-nombre">Autoriza cliente</div>
+        <div class="firma-rol">Firma y nombre</div>
       </div>
     </div>
 
@@ -9505,11 +9552,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
 
           <!-- Primario: Imprimir -->
           <button class="btn btn-primary" style=${{justifyContent:"center",padding:"10px"}}
-            onClick=${()=>{
-              // Buscar la cotización guardada en cots para obtener firma del cliente
-              const cotGuardada=cots.find(c=>c.id===calc.id)||{};
-              printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad,firma:cotGuardada.firma||calc.firma},config,session);
-            }}
+            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config,session)}
             disabled=${calc.items.length===0}>
             <${Ic} n="print" z=${15} s="#fff"/> Imprimir / Vista previa
           </button>
