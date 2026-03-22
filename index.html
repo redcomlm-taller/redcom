@@ -5055,51 +5055,19 @@ function PortalFirmaCot({cot,cli,tec,cfg,onFirmada}){
   const EST_C={Borrador:["#f1f5f9","#64748b"],Enviada:["#eff6ff","#1d4ed8"],Aceptada:["#f0fdf4","#059669"],Rechazada:["#fef2f2","#dc2626"],Firmada:["#f0fdf4","#059669"]};
   const ec=EST_C[cot.est]||EST_C["Borrador"];
 
-  if(step==="gracias"){
-    // Confetti al firmar — igual que al entregar un equipo
-    const COLORS=["#1d4ed8","#059669","#d97706","#dc2626","#9333ea","#0891b2","#f59e0b","#10b981"];
-    const pieces=Array.from({length:28},(_,i)=>({
-      id:i, x:Math.random()*100,
-      color:COLORS[i%COLORS.length],
-      delay:Math.random()*.6,
-      size:6+Math.random()*8,
-      rot:Math.random()*360
-    }));
-    return html`
-    <div style=${{minHeight:"100vh",background:"linear-gradient(160deg,#f0fdf4,#dcfce7)",display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"'Segoe UI',sans-serif",position:"relative",overflow:"hidden"}}>
-      <!-- Confetti -->
-      <div style=${{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
-        ${pieces.map(p=>html`
-          <div key=${p.id} class="confetti-piece" style=${{
-            left:p.x+"%", top:"-10px",
-            width:p.size+"px", height:p.size+"px",
-            background:p.color,
-            animationDelay:p.delay+"s",
-            animationDuration:"1.2s",
-            borderRadius:Math.random()>0.4?"50%":"3px",
-            transform:"rotate("+p.rot+"deg)"}}/>
-        `)}
-      </div>
-      <!-- Card -->
-      <div class="deliver-pop" style=${{
-          background:"#fff",borderRadius:20,padding:"40px 32px",textAlign:"center",
-          maxWidth:400,width:"100%",
-          boxShadow:"0 8px 40px rgba(5,150,105,.2), 0 0 0 4px rgba(5,150,105,.1)",
-          position:"relative",zIndex:1}}>
-        <div style=${{fontSize:72,marginBottom:12,animation:"deliverPop .5s cubic-bezier(.16,1,.3,1) both"}}>✅</div>
-        <div style=${{fontSize:22,fontWeight:800,color:"#059669",marginBottom:8}}>¡Cotización aceptada!</div>
-        <div style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 14px",borderRadius:99,background:"#f0fdf4",border:"1px solid #bbf7d0",fontSize:12,fontWeight:700,color:"#059669",marginBottom:16}}>
-          🔒 Firmada digitalmente
+  if(step==="gracias") return html`
+    <div style=${{minHeight:"100vh",background:"#f1f5f9",display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"'Segoe UI',sans-serif"}}>
+      <div style=${{background:"#fff",borderRadius:16,padding:"40px 32px",textAlign:"center",maxWidth:380,width:"100%",boxShadow:"0 4px 24px rgba(0,0,0,.1)"}}>
+        <div style=${{fontSize:64,marginBottom:16}}>✅</div>
+        <div style=${{fontSize:22,fontWeight:800,color:"#059669",marginBottom:8}}>¡Cotización firmada!</div>
+        <div style=${{fontSize:14,color:"#475569",lineHeight:1.6,marginBottom:24}}>
+          Gracias <b>${nombre}</b>, hemos recibido tu firma de aceptación.<br/>
+          Folio: <b style=${{fontFamily:"monospace"}}>${cot.id}</b>
         </div>
-        <div style=${{fontSize:14,color:"#475569",lineHeight:1.7,marginBottom:24}}>
-          Gracias <b>${nombre}</b>, tu firma quedó registrada.<br/>
-          Folio: <b style=${{fontFamily:"monospace",color:"#1d4ed8"}}>${cot.id}</b>
-        </div>
-        <div style=${{fontSize:12,color:"#94a3b8",lineHeight:1.6}}>El equipo de ${empresa} se pondrá<br/>en contacto contigo pronto.</div>
-        <div style=${{marginTop:20,padding:"10px 16px",background:"#f0fdf4",borderRadius:10,fontSize:12,color:"#059669",fontWeight:700}}>${empresa}</div>
+        <div style=${{fontSize:12,color:"#94a3b8"}}>Puedes cerrar esta ventana.<br/>Pronto nos pondremos en contacto contigo.</div>
+        <div style=${{marginTop:24,fontSize:12,fontWeight:600,color:"#1d4ed8"}}>${empresa}</div>
       </div>
     </div>`;
-  }
 
   return html`<div style=${{minHeight:"100vh",background:"#f1f5f9",fontFamily:"'Segoe UI',sans-serif",paddingBottom:32}}>
 
@@ -7502,7 +7470,7 @@ function ReclamoModal({gar,cls,tecs,onSave,onClose}){
 }
 
 /* ══ PANEL NOTIFICACIONES ════════════════════════════════════════════════ */
-function NotifPanel({ords,inv,gars,cls,session,onClose,onNavTo}){
+function NotifPanel({ords,inv,gars,cls,cots,session,onClose,onNavTo}){
   const hoy=new Date();
   const myTecId=session?.tecId||null;
   const isAdmin=session?.rol==="admin";
@@ -7600,15 +7568,36 @@ function NotifPanel({ords,inv,gars,cls,session,onClose,onNavTo}){
     });
   }
 
+  // Cotizaciones firmadas/aceptadas hoy o recientes (últimas 24h)
+  if(isAdmin){
+    (cots||[]).filter(ct=>ct.firma&&ct.est==="Aceptada").forEach(ct=>{
+      const cli=cls.find(c=>c.id===ct.cliId)||cls.find(c=>c.id===ct.cid);
+      const fechaFirma=ct.fechaFirma||ct.firma?.fecha||"";
+      const diasAtras=fechaFirma?Math.floor((new Date()-new Date(fechaFirma))/(864e5)):99;
+      if(diasAtras<=3){
+        notifs.push({
+          id:"firma"+ct.id, tipo:"cotizacion_firmada", prioridad:0,
+          color:"#059669", bg:"#f0fdf4", borde:"#bbf7d0",
+          icon:"✍️",
+          titulo:`${ct.firma?.nombre||cli?.nombre||"Cliente"} firmó la cotización`,
+          desc:`${ct.id} · ${ct.descripcion||"Cotización"} · ${mxn(ct.tot||0)}`,
+          sub:fechaFirma?`Firmada el ${fmtD(fechaFirma)} · Lista para cobrar`:"Firmada recientemente",
+          nav:"calc"
+        });
+      }
+    });
+  }
+
   // Ordenar por prioridad
   notifs.sort((a,b)=>a.prioridad-b.prioridad);
 
   const grupos=[
-    {label:"🔴 Entregas vencidas",   tipos:["entrega_vencida"]},
-    {label:"⏳ Sin movimiento",       tipos:["sin_movimiento"]},
-    {label:"✅ Listos sin entregar",  tipos:["listo_pendiente"]},
-    {label:"📦 Stock bajo",           tipos:["stock"]},
-    {label:"🛡️ Garantías",           tipos:["garantia"]},
+    {label:"✍️ Cotizaciones firmadas", tipos:["cotizacion_firmada"]},
+    {label:"🔴 Entregas vencidas",     tipos:["entrega_vencida"]},
+    {label:"⏳ Sin movimiento",         tipos:["sin_movimiento"]},
+    {label:"✅ Listos sin entregar",    tipos:["listo_pendiente"]},
+    {label:"📦 Stock bajo",             tipos:["stock"]},
+    {label:"🛡️ Garantías",             tipos:["garantia"]},
   ];
 
   return html`<div style=${{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-start",justifyContent:"flex-end",padding:"60px 16px 16px",background:"rgba(0,0,0,.18)"}} onClick=${onClose}>
@@ -8022,41 +8011,16 @@ function PreferenciasModal({config,session,users,setUsers,onSave,onClose}){
 }
 
 function UserModal({edit,tecs,onSave,onClose}){
-  const [f,setF]=useState(edit||{username:"",password:"",nombre:"",rol:"tecnico",tecId:"",activo:true,firmaBase64:""});
+  const [f,setF]=useState(edit||{username:"",password:"",nombre:"",rol:"tecnico",tecId:"",activo:true});
   const s=k=>e=>setF(p=>({...p,[k]:e.target.value}));
   const [showPwd,setShowPwd]=useState(false);
-  const [tab,setTab]=useState("datos");
-  const canvasRef=React.useRef();
-  const [drawing,setDrawing]=useState(false);
-  const [hasTrazos,setHasTrazos]=useState(false);
-
-  React.useEffect(()=>{
-    if(tab==="firma"){
-      setHasTrazos(false);
-      if(f.firmaBase64&&canvasRef.current){
-        const img=new Image();
-        img.onload=()=>{const c=canvasRef.current;if(c){c.getContext("2d").clearRect(0,0,c.width,c.height);c.getContext("2d").drawImage(img,0,0,c.width,c.height);}};
-        img.src=f.firmaBase64;
-      }
-    }
-  },[tab]);
-
-  function getPos(e,c){const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};}
-  function startDraw(e){e.preventDefault();const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.beginPath();ctx.moveTo(p.x,p.y);setDrawing(true);}
-  function draw(e){e.preventDefault();if(!drawing)return;const c=canvasRef.current;if(!c)return;const ctx=c.getContext("2d");const p=getPos(e,c);ctx.lineWidth=2.2;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1d4ed8";ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);setHasTrazos(true);}
-  function endDraw(e){e.preventDefault();setDrawing(false);}
-  function clearCanvas(){const c=canvasRef.current;if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height);setHasTrazos(false);}
-
   function save(){
     if(!f.username.trim()||!f.password.trim()||!f.nombre.trim()){alert("Completa usuario, contraseña y nombre.");return;}
-    let firmaFinal=f.firmaBase64||"";
-    if(tab==="firma"&&hasTrazos&&canvasRef.current){firmaFinal=canvasRef.current.toDataURL("image/png");}
-    onSave({...f,firmaBase64:firmaFinal,id:edit?.id||`U${++USERSEQ}`});
+    onSave({...f,id:edit?.id||`U${++USERSEQ}`});
   }
   const techList=tecs.filter(t=>t.rol!=="Sistema");
-
   return html`<div class="modal-bg" onClick=${onClose}>
-    <div class="modal fade-in" style=${{maxWidth:480}} onClick=${e=>e.stopPropagation()}>
+    <div class="modal fade-in" style=${{maxWidth:460}} onClick=${e=>e.stopPropagation()}>
       <div style=${{padding:"18px 24px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style=${{display:"flex",alignItems:"center",gap:8}}>
           <${Ic} n="shield" z=${18} s="#1d4ed8"/>
@@ -8064,17 +8028,15 @@ function UserModal({edit,tecs,onSave,onClose}){
         </div>
         <button class="btn btn-ghost btn-sm" onClick=${onClose}><${Ic} n="x" z=${14}/></button>
       </div>
-      <div style=${{display:"flex",borderBottom:"1px solid #e2e8f0",background:"#f8fafc"}}>
-        ${[["datos","👤","Datos"],["firma","✍️","Mi firma"]].map(([k,ic,lbl])=>html`
-          <button key=${k} onClick=${()=>setTab(k)} style=${{flex:1,padding:"10px 0",border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:700,background:"transparent",display:"flex",alignItems:"center",justifyContent:"center",gap:6,color:tab===k?"#1d4ed8":"#64748b",borderBottom:tab===k?"2px solid #1d4ed8":"2px solid transparent"}}>
-            ${ic} ${lbl}${k==="firma"&&f.firmaBase64?html`<span style=${{width:7,height:7,borderRadius:"50%",background:"#059669",display:"inline-block"}}/>`:""}
-          </button>`)}
-      </div>
-
-      ${tab==="datos"&&html`<div style=${{padding:"20px 24px",display:"grid",gap:12}}>
+      <div style=${{padding:"20px 24px",display:"grid",gap:12}}>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div><label>Nombre completo *</label><input value=${f.nombre} onChange=${s("nombre")} placeholder="ej. Carlos Mendoza"/></div>
-          <div><label>Rol</label><select value=${f.rol} onChange=${s("rol")}><option value="admin">Administrador</option><option value="tecnico">Técnico</option></select></div>
+          <div><label>Rol</label>
+            <select value=${f.rol} onChange=${s("rol")}>
+              <option value="admin">Administrador</option>
+              <option value="tecnico">Técnico</option>
+            </select>
+          </div>
         </div>
         <div style=${{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           <div><label>Usuario *</label><input value=${f.username} onChange=${s("username")} placeholder="ej. carlos"/></div>
@@ -8093,46 +8055,27 @@ function UserModal({edit,tecs,onSave,onClose}){
           <div style=${{fontSize:11,color:"#78350f",marginTop:3}}>Este usuario podrá ver y crear cotizaciones</div>
         </div>`}
         ${f.rol==="tecnico"&&html`<div><label>Técnico vinculado</label>
-          <select value=${f.tecId} onChange=${s("tecId")}><option value="">— Sin vincular —</option>${techList.map(t=>html`<option key=${t.id} value=${t.id}>${t.nombre}</option>`)}</select>
+          <select value=${f.tecId} onChange=${s("tecId")}>
+            <option value="">— Sin vincular —</option>
+            ${techList.map(t=>html`<option key=${t.id} value=${t.id}>${t.nombre}</option>`)}
+          </select>
           <div style=${{fontSize:11,color:"#94a3b8",marginTop:3}}>Vincula este usuario a un técnico para filtrar sus órdenes automáticamente</div>
         </div>`}
         <div><label>Estado</label>
           <div style=${{display:"flex",gap:8}}>
-            ${[true,false].map(v=>html`<button key=${v} onClick=${()=>setF(p=>({...p,activo:v}))} class="btn btn-sm" style=${{flex:1,justifyContent:"center",background:f.activo===v?(v?"#f0fdf4":"#fef2f2"):"#f8fafc",color:f.activo===v?(v?"#059669":"#dc2626"):"#94a3b8",border:`1px solid ${f.activo===v?(v?"#bbf7d0":"#fca5a5"):"#e2e8f0"}`}}>${v?"Activo":"Inactivo"}</button>`)}
+            ${[true,false].map(v=>html`<button key=${v} onClick=${()=>setF(p=>({...p,activo:v}))} class="btn btn-sm" style=${{
+              flex:1,justifyContent:"center",
+              background:f.activo===v?(v?"#f0fdf4":"#fef2f2"):"#f8fafc",
+              color:f.activo===v?(v?"#059669":"#dc2626"):"#94a3b8",
+              border:`1px solid ${f.activo===v?(v?"#bbf7d0":"#fca5a5"):"#e2e8f0"}`}}>
+              ${v?"Activo":"Inactivo"}
+            </button>`)}
           </div>
         </div>
-      </div>`}
-
-      ${tab==="firma"&&html`<div style=${{padding:"20px 24px",display:"grid",gap:12}}>
-        <div style=${{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"11px 14px",fontSize:12,color:"#1e40af",lineHeight:1.6}}>
-          ✍️ Dibuja tu firma. Al guardar aparecerá automáticamente en los presupuestos que imprimas.
-        </div>
-        ${f.firmaBase64&&!hasTrazos&&html`
-          <div style=${{textAlign:"center",background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"12px"}}>
-            <div style=${{fontSize:10,fontWeight:700,color:"#059669",marginBottom:8,textTransform:"uppercase",letterSpacing:.8}}>✓ Firma guardada</div>
-            <img src=${f.firmaBase64} style=${{maxWidth:300,maxHeight:80,objectFit:"contain",display:"block",margin:"0 auto"}}/>
-          </div>`}
-        <div>
-          <div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-            <label style=${{margin:0,fontWeight:700,fontSize:11,color:"#475569"}}>${f.firmaBase64&&!hasTrazos?"Redibujar firma":"Dibuja aquí"}</label>
-            <button class="btn btn-ghost btn-sm" onClick=${clearCanvas} style=${{fontSize:10,color:"#dc2626",border:"1px solid #fca5a5"}}>✕ Limpiar</button>
-          </div>
-          <canvas ref=${canvasRef} width=${440} height=${170}
-            style=${{width:"100%",height:170,border:"2px solid #bfdbfe",borderRadius:10,background:"#fff",cursor:"crosshair",touchAction:"none",display:"block"}}
-            onMouseDown=${startDraw} onMouseMove=${draw} onMouseUp=${endDraw} onMouseLeave=${endDraw}
-            onTouchStart=${startDraw} onTouchMove=${draw} onTouchEnd=${endDraw}/>
-          <div style=${{fontSize:10,color:"#94a3b8",marginTop:5,textAlign:"center"}}>Fondo blanco · Trazo azul · Guarda con el botón de abajo</div>
-        </div>
-      </div>`}
-
-      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style=${{fontSize:11}}>
-          ${f.firmaBase64?html`<span style=${{color:"#059669",fontWeight:600}}>✓ Firma digital activa</span>`:html`<span style=${{color:"#94a3b8"}}>Sin firma digital</span>`}
-        </div>
-        <div style=${{display:"flex",gap:8}}>
-          <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
-          <button class="btn btn-primary" onClick=${save}><${Ic} n="ok" z=${14} s="#fff"/> ${edit?"Guardar cambios":"Crear usuario"}</button>
-        </div>
+      </div>
+      <div style=${{padding:"14px 24px",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"flex-end",gap:8}}>
+        <button class="btn btn-ghost" onClick=${onClose}>Cancelar</button>
+        <button class="btn btn-primary" onClick=${save}><${Ic} n="ok" z=${14} s="#fff"/> ${edit?"Guardar":"Crear usuario"}</button>
       </div>
     </div>
   </div>`;
@@ -8850,7 +8793,7 @@ function buildCalcWAMsg(calc, tot, sub, iva, config){
   return L.join("\n");
 }
 
-function printCalcInstalacion(calc,cfg,session){
+function printCalcInstalacion(calc,cfg){
   cfg=cfg||{};
   const empresa=cfg.empresa||"Redcom";
   const tel=cfg.tel||"";
@@ -8859,7 +8802,6 @@ function printCalcInstalacion(calc,cfg,session){
   const dir=cfg.calle?(cfg.calle+(cfg.numExt?" "+cfg.numExt:"")+(cfg.colonia?", "+cfg.colonia:"")+", "+(cfg.ciudad||"Los Mochis")+", "+(cfg.estado||"Sinaloa")):"Los Mochis, Sinaloa";
   const logo=cfg.logo||"";
   const terminos=cfg.terminos||"";
-  const firmaDigital=session?.firmaBase64||"";
 
   const allItems=calc.items||[];
   const sub=allItems.reduce((a,i)=>a+(i.qty*(i.precio||0)),0);
@@ -8942,11 +8884,9 @@ function printCalcInstalacion(calc,cfg,session){
     .terms-list{font-size:10px;color:#64748b;line-height:1.7;padding-left:14px}
 
     /* FIRMA */
-    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 28px 32px;border-top:none}
+    .firma{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 28px 20px;border-top:none}
     .firma-col{text-align:center}
-    .firma-espacio{height:72px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
-    .firma-img{max-width:180px;max-height:64px;object-fit:contain;display:block;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:72%;margin-left:auto;margin-right:auto}
+    .firma-line{border-top:1.5px solid #94a3b8;margin-bottom:6px;width:70%;margin-left:auto;margin-right:auto}
     .firma-nombre{font-size:12px;font-weight:600;color:#1e293b}
     .firma-rol{font-size:10px;color:#94a3b8;margin-top:2px}
 
@@ -9047,13 +8987,11 @@ function printCalcInstalacion(calc,cfg,session){
     <!-- FIRMAS -->
     <div class="firma">
       <div class="firma-col">
-        <div class="firma-espacio">${firmaDigital?`<img src="${firmaDigital}" class="firma-img" alt="Firma"/>`:""}</div>
         <div class="firma-line"></div>
         <div class="firma-nombre">Elaboró: ${calc.elaboro||"—"}</div>
         <div class="firma-rol">Representante</div>
       </div>
       <div class="firma-col">
-        <div class="firma-espacio"></div>
         <div class="firma-line"></div>
         <div class="firma-nombre">Autoriza cliente</div>
         <div class="firma-rol">Firma y nombre</div>
@@ -9538,7 +9476,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
 
           <!-- Primario: Imprimir -->
           <button class="btn btn-primary" style=${{justifyContent:"center",padding:"10px"}}
-            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config,session)}
+            onClick=${()=>printCalcInstalacion({...calc,sub,iva:calc.conIva?iva:0,tot,costoTotal,utilidad},config)}
             disabled=${calc.items.length===0}>
             <${Ic} n="print" z=${15} s="#fff"/> Imprimir / Vista previa
           </button>
@@ -9582,18 +9520,14 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
               title=${!hasTel?"El cliente no tiene teléfono":"Enviar link de firma digital por WhatsApp"}
               onClick=${()=>{
                 let token=calc.token;
-                if(!token){ token=genToken(); setCalc(p=>({...p,token})); }
-                const _saved=JSON.parse(localStorage.getItem("redcom_calcs")||"[]");
-                localStorage.setItem("redcom_calcs",JSON.stringify(
-                  _saved.find(c=>c.id===calc.id)?_saved.map(c=>c.id===calc.id?{...c,token}:c):[{...calc,token},..._saved]
-                ));
-                const _cliObj=cls.find(x=>x.id===calc.cliId)||{nombre:calc.cliente||"Cliente"};
-                fbSet("portal_"+token,{token,id:calc.id||token,descripcion:calc.descripcion||"",
-                  cliente:_cliObj.nombre,cliId:calc.cliId||"",validez:Number(calc.validez)||15,
-                  iva:!!calc.conIva,est:calc.est||"Borrador",fecha:calc.fecha||new Date().toISOString().slice(0,10),
-                  notas:calc.notas||"",sub:sub,tot:tot,
-                  items:(calc.items||[]).map(i=>({id:String(i.id||""),nombre:i.nombre||"",cat:i.cat||"",
-                    desc:"",precio:Number(i.precio)||0,qty:Number(i.qty)||1}))});
+                if(!token){
+                  token=genToken();
+                  // Guardar token en localStorage
+                  const saved=JSON.parse(localStorage.getItem("redcom_calcs")||"[]");
+                  const updated=saved.map(c=>c.id===calc.id?{...c,token}:c);
+                  localStorage.setItem("redcom_calcs",JSON.stringify(updated));
+                  setCalc(p=>({...p,token}));
+                }
                 const url=portalCotURL(token);
                 const num=(tel||"").replace(/\D/g,"");
                 const num52=num.length===10?"52"+num:num;
@@ -9699,7 +9633,7 @@ Devuelve SOLO el array JSON, sin ningún texto antes o después.`;
               <div style=${{fontSize:14,fontWeight:700,color:"#1d4ed8",whiteSpace:"nowrap"}}>${mxn(s.tot||0)}</div>
               <div style=${{display:"flex",gap:4}}>
                 <button class="btn btn-ghost btn-sm" onClick=${()=>loadCalc(s)} title="Cargar"><${Ic} n="edit" z=${13}/></button>
-                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config,session)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
+                <button class="btn btn-ghost btn-sm" onClick=${()=>printCalcInstalacion(s,config)} title="Imprimir"><${Ic} n="print" z=${13}/></button>
                 <button class="btn btn-danger btn-sm" onClick=${()=>delCalc(s.id)} title="Eliminar"><${Ic} n="trash" z=${13} s="#dc2626"/></button>
               </div>
             </div>`)}
@@ -9913,9 +9847,15 @@ function App(){
     if(isAdm){
       inv.filter(i=>i.stock<=3).forEach(()=>n++);
       gars.forEach(g=>{const d=Math.ceil((new Date(g.fechaVence)-hoy)/(864e5));if(d>=0&&d<=7&&g.estado!=="Reclamada")n++;});
+      // Cotizaciones firmadas en últimos 3 días
+      cots.filter(ct=>{
+        if(!ct.firma||ct.est!=="Aceptada") return false;
+        const ff=ct.fechaFirma||ct.firma?.fecha||"";
+        return ff&&Math.floor((new Date()-new Date(ff))/(864e5))<=3;
+      }).forEach(()=>n++);
     }
     return n;
-  },[ords,inv,gars,session]);
+  },[ords,inv,gars,cots,session]);
   const canCotizar=isAdmin||session?.canCotizar===true;
   const myTecId=session?.tecId||null;
   // Técnicos only see their own orders
@@ -10093,15 +10033,7 @@ function App(){
   function delCot(id){setCots(p=>{const n=p.filter(x=>x.id!==id);lsSet("redcom_cots",n);return n;});}
   function login(u){setSession(u);try{sessionStorage.setItem("redcom_session",JSON.stringify(u));}catch(e){}}
   function logout(){setSession(null);try{sessionStorage.removeItem("redcom_session");}catch(e){}}
-  function saveUser(u){
-    setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});
-    if(u.id===session?.id){
-      const updated={...session,...u};
-      setSession(updated);
-      try{sessionStorage.setItem("redcom_session",JSON.stringify(updated));}catch(e){}
-    }
-    setNewUser(false);setEditUser(null);
-  }
+  function saveUser(u){setUsers(p=>{const n=p.find(x=>x.id===u.id)?p.map(x=>x.id===u.id?u:x):[...p,u];lsSet("redcom_users",n);saveSeqs();return n;});setNewUser(false);setEditUser(null);}
   function delUser(id){setUsers(p=>{const n=p.filter(u=>u.id!==id);lsSet("redcom_users",n);return n;});}
   function addNota(nv){
     setNotas(p=>{
@@ -10157,73 +10089,44 @@ function App(){
     });
   },[]);
 
-  // Portal del cliente — leer doc portal_TOKEN directo de Firestore
-  const [_cotToken]=useState(()=>{try{return new URLSearchParams(window.location.search).get("cotfirma")||"";}catch(e){return "";}});
-  const [_ordToken]=useState(()=>{try{return new URLSearchParams(window.location.search).get("portal")||"";}catch(e){return "";}});
-  const [_pd,_setPd]=useState(null);
-  const [_pe,_setPe]=useState("");
-  const [_pl,_setPl]=useState(!!(_cotToken||_ordToken));
+  // Portal intercept — check URL for ?portal=TOKEN or ?cotfirma=TOKEN
   React.useEffect(()=>{
-    if(!_cotToken&&!_ordToken)return;
-    (async()=>{
-      try{
-        if(_cotToken){
-          let d=null;
-          if(window.fbDb){const s=await window.fbDb.collection(FB_COL).doc("portal_"+_cotToken).get();if(s.exists)d=s.data().data;}
-          if(!d)d=cots.find(c=>c.token===_cotToken)||null;
-          d?_setPd({tipo:"cot",cot:d}):_setPe("Cotización no encontrada. Pide al taller que reenvíe el enlace.");
-        }else{
-          let d=null;
-          if(window.fbDb){const s=await window.fbDb.collection(FB_COL).doc("portal_ord_"+_ordToken).get();if(s.exists)d=s.data().data;}
-          if(!d)d=ords.find(o=>o.token===_ordToken)||null;
-          d?_setPd({tipo:"ord",ord:d}):_setPe("Orden no encontrada. Pide al taller que reenvíe el enlace.");
-        }
-      }catch(e){
-        const fc=cots.find(c=>c.token===_cotToken);const fo=ords.find(o=>o.token===_ordToken);
-        if(fc)_setPd({tipo:"cot",cot:fc});else if(fo)_setPd({tipo:"ord",ord:fo});
-        else _setPe("Sin conexión. Verifica tu internet e intenta de nuevo.");
-      }
-      _setPl(false);
-    })();
+    const params=new URLSearchParams(window.location.search);
+    const tok=params.get("portal");
+    if(tok){
+      const found=ords.find(o=>o.token===tok);
+      if(found) setPortalOrd(found);
+    }
+    const ctok=params.get("cotfirma");
+    if(ctok){
+      const found=cots.find(c=>c.token===ctok);
+      if(found) setPortalCot(found);
+    }
   },[]);
-  if(_cotToken||_ordToken){
-    if(_pl)return html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(160deg,#1e3a8a,#1d4ed8)",fontFamily:"'Segoe UI',sans-serif"}}>
-      <div style=${{textAlign:"center",color:"#fff"}}>
-        <div style=${{width:52,height:52,border:"4px solid rgba(255,255,255,.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite",margin:"0 auto 20px"}}/>
-        <div style=${{fontSize:17,fontWeight:700,marginBottom:6}}>Cargando...</div>
-        <div style=${{fontSize:13,opacity:.65}}>Un momento por favor</div>
-      </div></div>`;
-    if(_pe)return html`<div style=${{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#f1f5f9",fontFamily:"'Segoe UI',sans-serif",padding:24}}>
-      <div style=${{textAlign:"center",maxWidth:340}}>
-        <div style=${{fontSize:52,marginBottom:16}}>🔗</div>
-        <div style=${{fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:10}}>Enlace no válido</div>
-        <div style=${{fontSize:14,color:"#64748b",lineHeight:1.7}}>${_pe}</div>
-      </div></div>`;
-    if(_pd?.tipo==="cot"){
-      const pCot=_pd.cot,pCli=cls.find(c=>c.id===pCot.cliId)||{nombre:pCot.cliente||"Cliente"},pTec=tecs.find(t=>t.id===pCot.tec);
-      return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
-        onFirmada=${(cotId,firma)=>{
-          const ff=new Date().toISOString().slice(0,10);
-          fbSet("portal_"+_cotToken,{..._pd.cot,firma,est:"Aceptada",fechaFirma:ff});
-          setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma:ff}:c);lsSet("redcom_cots",n);return n;});
-          _setPd(prev=>({...prev,cot:{...prev.cot,firma,est:"Aceptada"}}));
-        }}/>`;
-    }
-    if(_pd?.tipo==="ord"){
-      const pOrd=_pd.ord,pCli=cls.find(c=>c.id===pOrd.cid),pTec=tecs.find(t=>t.id===pOrd.tec);
-      return html`<${PortalCliente} ord=${pOrd} cli=${pCli} tec=${pTec}/>`;
-    }
-    return html`<div/>`;
-  }
+
+  // Portal view (no login required)
   if(portalCot){
-    const pCot=cots.find(c=>c.id===portalCot.id)||portalCot,pCli=cls.find(c=>c.id===pCot.cid),pTec=tecs.find(t=>t.id===pCot.tec);
+    const pCot=cots.find(c=>c.id===portalCot.id)||portalCot;
+    const pCli=cls.find(c=>c.id===pCot.cid);
+    const pTec=tecs.find(t=>t.id===pCot.tec);
     return html`<${PortalFirmaCot} cot=${pCot} cli=${pCli} tec=${pTec} cfg=${config}
-      onFirmada=${(cotId,firma)=>{const ff=new Date().toISOString().slice(0,10);setCots(p=>{const n=p.map(c=>c.id===cotId?{...c,firma,est:"Aceptada",fechaFirma:ff}:c);lsSet("redcom_cots",n);return n;});setPortalCot(prev=>({...prev,firma,est:"Aceptada"}));}}/>`;
+      onFirmada=${(cotId,firma)=>{
+        setCots(p=>{
+          const n=p.map(c=>c.id===cotId?{...c,firma,est:"Firmada"}:c);
+          lsSet("redcom_cots",n);
+          return n;
+        });
+        setPortalCot(prev=>({...prev,firma,est:"Firmada"}));
+      }}/>`;
   }
   if(portalOrd){
-    const pOrd=ords.find(o=>o.id===portalOrd.id)||portalOrd,pCli=cls.find(c=>c.id===pOrd.cid),pTec=tecs.find(t=>t.id===pOrd.tec);
+    const pOrd=ords.find(o=>o.id===portalOrd.id)||portalOrd;
+    const pCli=cls.find(c=>c.id===pOrd.cid);
+    const pTec=tecs.find(t=>t.id===pOrd.tec);
     return html`<${PortalCliente} ord=${pOrd} cli=${pCli} tec=${pTec}/>`;
   }
+
+  // Show login screen if not authenticated
   if(!session) return html`<${LoginScreen} users=${users} onLogin=${login} config=${config}/>`;
 
   const NAV=[
@@ -10740,7 +10643,7 @@ Gracias por su preferencia 🙏`;
     <!-- NOTIFICACIONES -->
 
     ${showNotif&&html`<${NotifPanel}
-      ords=${ords} inv=${inv} gars=${gars} cls=${cls} session=${session}
+      ords=${ords} inv=${inv} gars=${gars} cls=${cls} cots=${cots} session=${session}
       onClose=${()=>setShowNotif(false)}
       onNavTo=${k=>{setSec(k);setSel(null);setShowNotif(false);}}/>`}
     <!-- FOTOS -->
